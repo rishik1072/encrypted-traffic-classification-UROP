@@ -1,0 +1,9 @@
+model_family,variant,feature_count,macro_f1,accuracy,latency_ms,model_size_mb
+Random Forest,"Baseline (100 Trees, Depth 15)",21,0.2778,0.3333,0.0,0.0004
+Random Forest,"Reduced Estimators (25 Trees, Depth 15)",21,0.2778,0.3333,0.0,0.0004
+Random Forest,"Reduced Depth (25 Trees, Depth 6)",21,0.2778,0.3333,0.0,0.0004
+Decision Tree,Baseline (Depth 12),21,0.1667,0.1667,0.0,0.0006
+Decision Tree,Reduced Depth (Depth 5),21,0.1667,0.1667,0.0,0.0006
+LightGBM,"Baseline (100 Trees, 31 Leaves)",21,0.0833,0.1667,0.0,0.0004
+LightGBM,"Reduced Estimators (25 Trees, 31 Leaves)",21,0.0833,0.1667,0.0,0.0004
+LightGBM,"Reduced Leaves (25 Trees, 12 Leaves)",21,0.0833,0.1667,0.0,0.0004

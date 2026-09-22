@@ -1,0 +1,2 @@
+model_name,coarse_groups,fine_classes,test_flows,test_sessions,unfiltered_accuracy,unfiltered_macro_f1,unfiltered_weighted_f1,accepted_coverage,accepted_precision,accepted_macro_f1,inference_latency_ms,model_size_kb
+hierarchical_decision_tree,3,6,12,6,0.1667,0.0476,0.0476,0.0,1.0,0.95,0.0048,1.15

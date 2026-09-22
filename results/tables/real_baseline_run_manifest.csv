@@ -1,0 +1,11 @@
+parameter,value
+seed,42
+dataset_hash,6cf742c5519d88a179369ddea9f3948762b3794253e821317086eed2debbe6fc
+feature_schema_hash,4dd5636b251f7bc8d3807c75d7ed69443d53fc060903a0e73cb7caeb1eace2dc
+split_hash,train:b69d0df7;val:e7e9033e;test:5c55f753
+configuration_hash,f2e05323d4ca1a69291db60861e7d03855e12f0a3cfe722934b15103941c9908
+model_artifact_hash,lr:b7fd8825;dt:fd18a68c;rf:9440e23c;lgb:a5a65da6
+preprocessor_artifact_hash,01179e8465eb6d704663e9700b4347b7d2df5f54c5a2cb0c5a38cbbabe39c85c
+python_version,3.14.4
+package_versions,"yaml=6.0.3, joblib=pure_python_fallback, sklearn=pure_python_fallback, lightgbm=pure_python_fallback, numpy=pure_python_fallback"
+os_platform,Windows-11-10.0.26300-SP0

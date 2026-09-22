@@ -1,0 +1,36 @@
+{
+  "dataset_version": "dataset_v2",
+  "parent_dataset": "dataset_v1",
+  "created_at": "2026-08-23",
+  "total_sessions": 150,
+  "total_flows": 301,
+  "classes": {
+    "Web": 25,
+    "Video": 25,
+    "Messaging": 25,
+    "VoIP": 25,
+    "File Transfer": 25,
+    "Other": 25
+  },
+  "environments": {
+    "env_win11_cellular": 30,
+    "env_win11_eth": 30,
+    "env_win11_wifi": 90
+  },
+  "network_conditions": {
+    "HIGH_LATENCY": 18,
+    "LOW_BANDWIDTH": 24,
+    "NORMAL": 102,
+    "PACKET_LOSS": 6
+  },
+  "capture_days": {
+    "day_1": 24,
+    "day_2": 24,
+    "day_3": 24,
+    "day_4": 78
+  },
+  "tunnel_states": {
+    "warp_disabled": 18,
+    "warp_enabled": 132
+  }
+}

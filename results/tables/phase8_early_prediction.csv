@@ -1,0 +1,6 @@
+milestone,packets_required,elapsed_s,coarse_macro_f1,fine_macro_f1,unknown_abstention_pct
+5 Packets Prefix,5,0.25,0.284,0.165,84.5
+10 Packets Prefix,10,0.45,0.312,0.194,81.2
+20 Packets Prefix,20,0.9,0.325,0.198,79.8
+50 Packets Prefix,50,2.2,0.341,0.201,78.4
+100 Packets Prefix,100,4.5,0.355,0.204,77.0

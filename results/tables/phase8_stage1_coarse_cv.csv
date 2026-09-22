@@ -1,0 +1,5 @@
+stage,target,model_name,macro_f1,macro_f1_std,accuracy,latency_ms,model_size_kb
+Stage 1 (Coarse),"3 Families (Bulk_Streaming, Interactive, Other)",decision_tree,0.3203,0.0463,0.3371,0.2135,0.52
+Stage 1 (Coarse),"3 Families (Bulk_Streaming, Interactive, Other)",random_forest,0.3335,0.0519,0.3522,0.2054,1.25
+Stage 1 (Coarse),"3 Families (Bulk_Streaming, Interactive, Other)",lightgbm,0.3665,0.0318,0.378,0.21,1.25
+Stage 1 (Coarse),"3 Families (Bulk_Streaming, Interactive, Other)",logistic_regression,0.299,0.0613,0.3306,0.2145,1.25

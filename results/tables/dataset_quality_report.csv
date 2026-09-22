@@ -1,0 +1,10 @@
+metric,value
+total_pcap_files,24
+total_flows,11
+total_unique_sessions,24
+total_environments,3
+traffic_classes_count,6
+class_imbalance_ratio,2.0
+avg_capture_duration_s,38.96
+median_capture_duration_s,60.0
+total_traffic_volume_mb,0.0263

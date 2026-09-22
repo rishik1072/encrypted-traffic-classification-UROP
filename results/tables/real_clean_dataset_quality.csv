@@ -1,0 +1,8 @@
+metric,value
+sessions,60
+flows,121
+packets,270962
+bytes,254714794
+flows_per_class,File Transfer:20; Messaging:20; Other:21; Video:20; VoIP:20; Web:20
+excluded_flows,68
+excluded_percentage,35.98%

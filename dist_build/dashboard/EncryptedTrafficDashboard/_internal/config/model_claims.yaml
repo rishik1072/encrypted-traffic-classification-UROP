@@ -1,0 +1,53 @@
+# Explicit Model Capabilities, Scientific Boundaries, and Claims Manifest
+# Phase 9 Production Specification
+
+model_claims:
+  model_lightgbm_v1:
+    supported_task: "Encrypted traffic coarse-family monitoring and selective fine-grained flow classification"
+    known_classes:
+      coarse_families:
+        - Bulk_Streaming
+        - Interactive
+        - Other
+      fine_classes:
+        - Web
+        - Video
+        - Messaging
+        - VoIP
+        - "File Transfer"
+        - Other
+    confidence_policy: "Versioned threshold gating (tau >= 0.70) with conservative fallback to LOW_CONFIDENCE or UNKNOWN"
+    minimum_packets: 3
+    minimum_bytes: 128
+    known_limitations:
+      - "Fine-grained six-class application classification is not reliably generalized under outer tunnel conditions (Cloudflare WARP / WireGuard)."
+      - "Outer tunnel padding and MTU multiplexing obscure subtle intra-family packet size distributions."
+      - "Predictions for flows with < 5 observed packets are held in INSUFFICIENT_EVIDENCE state."
+    not_a_guarantee: "This system does NOT guarantee 100% fine-grained attribution across arbitrary VPN or Tor encapsulation. It provides honest statistical visibility with zero payload inspection."
+
+  model_decision_tree_v1:
+    supported_task: "Edge-embedded coarse-family traffic routing and threshold abstention"
+    known_classes:
+      coarse_families:
+        - Bulk_Streaming
+        - Interactive
+        - Other
+      fine_classes:
+        - Web
+        - Video
+        - Messaging
+        - VoIP
+        - "File Transfer"
+        - Other
+    confidence_policy: "Strict confidence threshold (tau >= 0.75)"
+    minimum_packets: 3
+    minimum_bytes: 128
+    known_limitations:
+      - "Step-discontinuity boundaries may cause unstable predictions across different MTU configurations."
+    not_a_guarantee: "No guarantee of accurate fine-grained differentiation when payload length distributions overlap."
+
+deployment_defaults:
+  uncalibrated_action: "EMIT_LOW_CONFIDENCE"
+  unregistered_model_action: "FAIL_CLOSED_PIPELINE_DEGRADED"
+  schema_mismatch_action: "FAIL_CLOSED_STOP_CLASSIFICATION"
+  zero_payload_policy: "STRICT_METADATA_ONLY_ZERO_DPI"

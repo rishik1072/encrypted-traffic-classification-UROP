@@ -1,0 +1,27 @@
+{
+  "project_name": "encrypted-traffic-classification",
+  "project_version": "1.0.0",
+  "git_commit": "unavailable",
+  "timestamp": "2026-08-23T13:55:00Z",
+  "python_version": "3.14.0",
+  "operating_system": "Windows 11",
+  "dataset_version": "dataset_v1",
+  "dataset_manifest_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "configuration_hash": "4a7d6e8f1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e",
+  "model_hashes": {
+    "lightgbm_baseline": "results/models/baseline/lightgbm.joblib",
+    "lightgbm_lightweight_10": "results/models/lightweight_10/lightgbm.joblib",
+    "preprocessor": "results/models/preprocessor.joblib"
+  },
+  "locked_configuration": {
+    "selected_model": "lightgbm",
+    "feature_count": 10,
+    "validation_macro_f1": 0.95,
+    "validation_latency_ms": 0.0026,
+    "model_size_mb": 0.15
+  },
+  "experiment_ids": [
+    "EXP-01", "EXP-02", "EXP-03", "EXP-04", "EXP-05", "EXP-06",
+    "EXP-07", "EXP-08", "EXP-09", "EXP-10", "EXP-11", "EXP-12"
+  ]
+}

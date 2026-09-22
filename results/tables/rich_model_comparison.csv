@@ -1,0 +1,5 @@
+model_name,feature_count,cv_macro_f1_mean,cv_macro_f1_std,cv_accuracy_mean
+decision_tree,30,0.1514,0.0464,0.1661
+lightgbm,30,0.1499,0.0561,0.1595
+random_forest,30,0.1225,0.0606,0.1297
+logistic_regression,30,0.0736,0.0140,0.1896

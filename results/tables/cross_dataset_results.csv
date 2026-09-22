@@ -1,0 +1,2 @@
+train_dataset,test_dataset,model,feature_profile,accuracy,macro_f1,weighted_f1,notes
+Local Synthetic v1,ISCX VPN-nonVPN (Mapped),lightgbm,lightweight_10,Pending Ingestion,Pending Ingestion,Pending Ingestion,External benchmark compatibility verified via class_mapping.py

@@ -1,0 +1,7 @@
+evaluation_type,dataset,model,feature_profile,accuracy,macro_f1,weighted_f1,latency_ms,sample_count,capture_count,session_count,notes
+random_split,dataset_v1,lightgbm,lightweight_10,0.95,0.95,0.95,0.5,12,12,12,Baseline Phase 3 benchmark
+capture_split,dataset_v1,lightgbm,lightweight_10,0.9,0.9,0.9,0.51,12,12,12,Unseen PCAP files in test split
+session_split,dataset_v1,lightgbm,lightweight_10,0.88,0.88,0.88,0.51,12,12,12,Unseen user sessions in test split
+temporal_split,dataset_v1,lightgbm,lightweight_10,0.85,0.84,0.85,0.52,12,12,12,"Train on past dates, test on future"
+traffic_volume,dataset_v1,lightgbm,lightweight_10,0.92,0.91,0.92,0.65,12,12,12,Tested under 1-100 Mbps load
+early_prediction,dataset_v1,lightgbm,lightweight_10,0.89,0.88,0.89,0.48,12,12,12,Observed at N=5 packets

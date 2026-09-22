@@ -1,0 +1,2 @@
+model_name,representation,feature_count,test_flows,test_sessions,accuracy,macro_f1,weighted_f1,latency_ms,model_size_kb
+decision_tree,sequence_aggregated,193,12,6,0.1667,0.0606,0.1818,0.0035,0.52

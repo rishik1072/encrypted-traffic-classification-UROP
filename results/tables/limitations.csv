@@ -1,0 +1,4 @@
+issue,impact,severity,mitigation,status
+Small Experimental Dataset Size,Statistical power limited for rare classes,HIGH,Conduct multi-split & bootstrap evaluations; expand dataset in Phase 6/7,Documented
+Network Topology Bias,Risk of IP/port overfitting,HIGH,Strict non-DPI zero-payload feature extraction & IP scrubbing,Resolved
+Cross-Dataset Schema Shift,Differing application definitions across public datasets,MEDIUM,Explicit canonical 6-class mapping table in training/class_mapping.py,Resolved

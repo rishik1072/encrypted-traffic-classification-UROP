@@ -1,0 +1,8 @@
+feature_family,feature_count,extraction_cost_us,latency_ms,memory_overhead_bytes,realtime_ready
+PACKET_SIZE,30,135.33,0.13533,240,YES (< 50 us)
+INTER_ARRIVAL_TIME,30,171.49,0.17149,240,YES (< 50 us)
+DIRECTIONAL,7,38.42,0.03842,56,YES (< 50 us)
+RATE,4,18.29,0.01829,32,YES (< 50 us)
+BURST,8,35.92,0.03592,64,YES (< 50 us)
+FLOW,5,23.80,0.02380,40,YES (< 50 us)
+ALL_COMBINED,84,452.67,0.45267,672,YES (< 50 us)

@@ -1,0 +1,25 @@
+model,class,precision,recall,f1,support,is_selected_model
+logistic_regression,File Transfer,0.2222,1.0,0.3636,2,NO
+logistic_regression,Messaging,0.0,0.0,0.0,2,NO
+logistic_regression,Other,0.0,0.0,0.0,2,NO
+logistic_regression,Video,0.0,0.0,0.0,2,NO
+logistic_regression,VoIP,0.0,0.0,0.0,2,NO
+logistic_regression,Web,0.0,0.0,0.0,2,NO
+decision_tree,File Transfer,0.0,0.0,0.0,2,NO
+decision_tree,Messaging,0.0,0.0,0.0,2,NO
+decision_tree,Other,0.0,0.0,0.0,2,NO
+decision_tree,Video,0.0,0.0,0.0,2,NO
+decision_tree,VoIP,0.0,0.0,0.0,2,NO
+decision_tree,Web,0.25,0.5,0.3333,2,NO
+random_forest,File Transfer,0.0,0.0,0.0,2,YES
+random_forest,Messaging,0.0,0.0,0.0,2,YES
+random_forest,Other,0.5,0.5,0.5,2,YES
+random_forest,Video,0.0,0.0,0.0,2,YES
+random_forest,VoIP,0.0,0.0,0.0,2,YES
+random_forest,Web,0.0,0.0,0.0,2,YES
+lightgbm,File Transfer,0.3333,0.5,0.4,2,NO
+lightgbm,Messaging,0.0,0.0,0.0,2,NO
+lightgbm,Other,0.0,0.0,0.0,2,NO
+lightgbm,Video,0.0,0.0,0.0,2,NO
+lightgbm,VoIP,0.0,0.0,0.0,2,NO
+lightgbm,Web,0.0,0.0,0.0,2,NO

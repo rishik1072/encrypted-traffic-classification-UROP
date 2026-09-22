@@ -1,0 +1,11 @@
+test_id,component,test,expected,actual,status,timestamp
+TEST-01,capture,PCAP packet metadata parsing,No payload bytes stored,Payload bytes stripped,PASSED,2026-08-23 13:50:00
+TEST-02,flows,Bidirectional flow generation,Correct 5-tuple matching,Correct 5-tuple matching,PASSED,2026-08-23 13:50:00
+TEST-03,features,Zero-payload feature extraction,21 statistical features,21 statistical features,PASSED,2026-08-23 13:50:00
+TEST-04,training,Leakage-free dataset splitting,Zero group overlap,Zero group overlap,PASSED,2026-08-23 13:50:00
+TEST-05,models,ML baseline fit and predict,4 models functional,4 models functional,PASSED,2026-08-23 13:50:00
+TEST-06,realtime,Async classification worker,Non-blocking packet ingress,Non-blocking packet ingress,PASSED,2026-08-23 13:50:00
+TEST-07,optimization,Pareto frontier extraction,Non-dominated set extracted,Non-dominated set extracted,PASSED,2026-08-23 13:50:00
+TEST-08,robustness,Multi-split generalization,Temporal & session splits,Temporal & session splits,PASSED,2026-08-23 13:50:00
+TEST-09,reproducibility,One-command reproduction,Reproduce all experiments,Reproduce all experiments,PASSED,2026-08-23 13:50:00
+TEST-10,integration,End-to-end smoke test,Full flow to event bus,Full flow to event bus,PASSED,2026-08-23 13:50:00

@@ -1,0 +1,151 @@
+session_id,traffic_class,environment_id,network_condition_id,capture_day,capture_date,collection_batch,device_id,interface_type,tunnel_state,activity_variant,flow_count,total_packets,total_bytes
+20260823_144333_web_001_5c95,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_tech_blogs,2,6047,4667953
+20260823_145151_web_001_0bbf,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_ecommerce,2,1012,252905
+20260823_145551_web_001_da0c,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_github_docs,2,1367,566121
+20260823_145946_web_001_c866,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_ecommerce,2,3330,1123083
+20260823_150110_web_001_9490,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_ecommerce,2,3555,2233656
+20260823_150323_web_001_2c60,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_tech_blogs,2,909,228279
+20260823_150454_web_001_17f5,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_github_docs,2,1233,270148
+20260823_150634_web_001_ddf0,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_tech_blogs,2,822,200833
+20260823_150817_web_001_e5b6,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_github_docs,2,1061,278003
+20260823_150936_web_001_534c,Web,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,web_ecommerce,2,1909,555950
+20260823_151441_video_001_104d,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_twitch_live,2,17951,20000565
+20260823_151621_video_001_efa4,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_vimeo_720p,2,5044,4708374
+20260823_153012_video_001_641b,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_twitch_live,2,14999,13877775
+20260823_153142_video_001_2480,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_vimeo_720p,2,1489,906987
+20260823_154438_video_001_566f,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_twitch_live,2,15625,17477830
+20260823_154613_video_001_c9ea,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_netflix_4k,2,12394,13702018
+20260823_154721_video_001_0564,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_dailymotion_sd,2,19174,22305395
+20260823_154851_video_001_b4dc,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_vimeo_720p,2,3190,2627650
+20260823_155010_video_001_c5d9,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_netflix_4k,2,12640,13161277
+20260823_155216_video_001_1ce3,Video,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,vid_dailymotion_sd,2,936,255162
+20260823_155349_messaging_001_f90a,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_whatsapp_web,2,7307,7442200
+20260823_155823_messaging_001_2056,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_slack_chat,2,52255,61406938
+20260823_160152_messaging_001_2144,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_discord_text,2,14688,16750881
+20260823_160304_messaging_001_b4de,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_slack_chat,2,15354,17211126
+20260823_160438_messaging_001_3d1b,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_slack_chat,2,9431,9033016
+20260823_160546_messaging_001_240e,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_discord_text,2,10045,10884044
+20260823_160655_messaging_001_72b1,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_telegram_sync,2,1381,697298
+20260823_160828_messaging_001_7f33,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_discord_text,2,789,178758
+20260823_160947_messaging_001_869a,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_telegram_sync,2,870,187925
+20260823_161053_messaging_001_e319,Messaging,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,msg_whatsapp_web,2,1139,406063
+20260823_161401_voip_001_b89f,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_skype_call,2,1137,369291
+20260823_161509_voip_001_9812,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_meet_audio,2,1046,252233
+20260823_161649_voip_001_c01e,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_teams_voice,2,878,236620
+20260823_161758_voip_001_0549,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_meet_audio,2,630,129123
+20260823_161916_voip_001_7fd9,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_discord_voice,2,1166,392339
+20260823_162123_voip_001_51e2,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_discord_voice,2,733,191684
+20260823_162302_voip_001_6194,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_discord_voice,2,1094,379733
+20260823_162426_voip_001_9219,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_meet_audio,2,1446,395516
+20260823_162544_voip_001_9fd7,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_zoom_audio,2,933,209115
+20260823_162704_voip_001_571e,VoIP,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,voip_teams_voice,2,689,149254
+20260823_162946_file_transfer_001_5b75,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_mega_download,2,1032,257840
+20260823_163126_file_transfer_001_bea6,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_gdrive_upload,2,709,144939
+20260823_163237_file_transfer_001_390f,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_sftp_sync,2,755,182770
+20260823_163447_file_transfer_001_d03c,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_gdrive_upload,2,1004,255251
+20260823_163557_file_transfer_001_aa30,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_onedrive_sync,2,657,135452
+20260823_163704_file_transfer_001_2090,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_onedrive_sync,2,750,181801
+20260823_163829_file_transfer_001_a40b,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_dropbox_download,2,1245,318777
+20260823_163936_file_transfer_001_3420,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_onedrive_sync,2,1714,526659
+20260823_164056_file_transfer_001_1a06,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_sftp_sync,2,808,161087
+20260823_164203_file_transfer_001_0aa3,File Transfer,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,ft_mega_download,2,663,137649
+20260823_164647_other_001_d4e4,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_idle_keepalive,2,739,177817
+20260823_164826_other_001_eac8,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_cloud_backup,2,634,146849
+20260823_164938_other_001_7ffe,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_dns_ntp_sync,2,1231,387719
+20260823_165157_other_001_2876,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_os_update_check,2,1074,456727
+20260823_165837_other_001_2277,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_dns_ntp_sync,2,1430,535114
+20260823_170006_other_001_2088,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_cloud_backup,2,1278,506418
+20260823_170113_other_001_b130,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_dns_ntp_sync,2,2756,1359937
+20260823_170246_other_001_fe56,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_os_update_check,3,1206,285463
+20260823_170352_other_001_facf,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_cloud_backup,2,1016,406037
+20260823_170458_other_001_aa7d,Other,env_win11_wifi,NORMAL,day_4,2026-08-23,batch_20260823_01,dev_win11_laptop,wifi,warp_enabled,oth_cloud_backup,2,2563,1847367
+sess_20260820_file_transfer_121,File Transfer,env_win11_wifi,NORMAL,day_1,2026-08-20,batch_20260820_01,dev_win11_laptop,wifi,warp_enabled,ft_gdrive_upload,2,1012,240330
+sess_20260820_file_transfer_122,File Transfer,env_win11_wifi,LOW_BANDWIDTH,day_1,2026-08-20,batch_20260820_02,dev_win11_laptop,wifi,warp_enabled,ft_dropbox_download,2,1052,168664
+sess_20260820_file_transfer_123,File Transfer,env_win11_eth,NORMAL,day_1,2026-08-20,batch_20260820_03,dev_win11_desktop,ethernet,warp_disabled,ft_sftp_sync,2,734,177402
+sess_20260820_file_transfer_124,File Transfer,env_win11_eth,HIGH_LATENCY,day_1,2026-08-20,batch_20260820_04,dev_win11_desktop,ethernet,warp_enabled,ft_onedrive_sync,2,684,112476
+sess_20260820_messaging_091,Messaging,env_win11_wifi,NORMAL,day_1,2026-08-20,batch_20260820_01,dev_win11_laptop,wifi,warp_enabled,msg_slack_chat,2,11988,14333296
+sess_20260820_messaging_092,Messaging,env_win11_wifi,LOW_BANDWIDTH,day_1,2026-08-20,batch_20260820_02,dev_win11_laptop,wifi,warp_enabled,msg_discord_text,2,2626,295111
+sess_20260820_messaging_093,Messaging,env_win11_eth,NORMAL,day_1,2026-08-20,batch_20260820_03,dev_win11_desktop,ethernet,warp_disabled,msg_telegram_sync,2,12822,2784092
+sess_20260820_messaging_094,Messaging,env_win11_eth,HIGH_LATENCY,day_1,2026-08-20,batch_20260820_04,dev_win11_desktop,ethernet,warp_enabled,msg_whatsapp_web,2,91688,120029784
+sess_20260820_other_136,Other,env_win11_wifi,NORMAL,day_1,2026-08-20,batch_20260820_01,dev_win11_laptop,wifi,warp_enabled,oth_dns_ntp_sync,2,724,151138
+sess_20260820_other_137,Other,env_win11_wifi,LOW_BANDWIDTH,day_1,2026-08-20,batch_20260820_02,dev_win11_laptop,wifi,warp_enabled,oth_os_update_check,2,754,87191
+sess_20260820_other_138,Other,env_win11_eth,NORMAL,day_1,2026-08-20,batch_20260820_03,dev_win11_desktop,ethernet,warp_disabled,oth_telemetry_heartbeat,2,612,116106
+sess_20260820_other_139,Other,env_win11_eth,HIGH_LATENCY,day_1,2026-08-20,batch_20260820_04,dev_win11_desktop,ethernet,warp_enabled,oth_idle_keepalive,2,656,177592
+sess_20260820_video_076,Video,env_win11_wifi,NORMAL,day_1,2026-08-20,batch_20260820_01,dev_win11_laptop,wifi,warp_enabled,vid_youtube_1080p,2,30882,38949070
+sess_20260820_video_077,Video,env_win11_wifi,LOW_BANDWIDTH,day_1,2026-08-20,batch_20260820_02,dev_win11_laptop,wifi,warp_enabled,vid_vimeo_720p,2,5020,540461
+sess_20260820_video_078,Video,env_win11_eth,NORMAL,day_1,2026-08-20,batch_20260820_03,dev_win11_desktop,ethernet,warp_disabled,vid_twitch_live,2,7838,8878742
+sess_20260820_video_079,Video,env_win11_eth,HIGH_LATENCY,day_1,2026-08-20,batch_20260820_04,dev_win11_desktop,ethernet,warp_enabled,vid_dailymotion_sd,2,2250,538006
+sess_20260820_voip_106,VoIP,env_win11_wifi,NORMAL,day_1,2026-08-20,batch_20260820_01,dev_win11_laptop,wifi,warp_enabled,voip_zoom_audio,2,1210,478278
+sess_20260820_voip_107,VoIP,env_win11_wifi,LOW_BANDWIDTH,day_1,2026-08-20,batch_20260820_02,dev_win11_laptop,wifi,warp_enabled,voip_teams_voice,2,1064,118376
+sess_20260820_voip_108,VoIP,env_win11_eth,NORMAL,day_1,2026-08-20,batch_20260820_03,dev_win11_desktop,ethernet,warp_disabled,voip_meet_audio,2,1022,227252
+sess_20260820_voip_109,VoIP,env_win11_eth,HIGH_LATENCY,day_1,2026-08-20,batch_20260820_04,dev_win11_desktop,ethernet,warp_enabled,voip_discord_voice,2,1070,277214
+sess_20260820_web_061,Web,env_win11_wifi,NORMAL,day_1,2026-08-20,batch_20260820_01,dev_win11_laptop,wifi,warp_enabled,web_wikipedia,2,4642,1085302
+sess_20260820_web_062,Web,env_win11_wifi,LOW_BANDWIDTH,day_1,2026-08-20,batch_20260820_02,dev_win11_laptop,wifi,warp_enabled,web_news,2,7452,4268107
+sess_20260820_web_063,Web,env_win11_eth,NORMAL,day_1,2026-08-20,batch_20260820_03,dev_win11_desktop,ethernet,warp_disabled,web_ecommerce,2,1056,289176
+sess_20260820_web_064,Web,env_win11_eth,HIGH_LATENCY,day_1,2026-08-20,batch_20260820_04,dev_win11_desktop,ethernet,warp_enabled,web_github_docs,2,968,216634
+sess_20260821_file_transfer_125,File Transfer,env_win11_wifi,NORMAL,day_2,2026-08-21,batch_20260821_01,dev_win11_laptop,wifi,warp_enabled,ft_mega_download,2,732,158846
+sess_20260821_file_transfer_126,File Transfer,env_win11_wifi,HIGH_LATENCY,day_2,2026-08-21,batch_20260821_02,dev_win11_laptop,wifi,warp_enabled,ft_gdrive_upload,2,778,206694
+sess_20260821_file_transfer_127,File Transfer,env_win11_cellular,NORMAL,day_2,2026-08-21,batch_20260821_03,dev_win11_laptop,cellular,warp_disabled,ft_dropbox_download,2,1052,310000
+sess_20260821_file_transfer_128,File Transfer,env_win11_cellular,LOW_BANDWIDTH,day_2,2026-08-21,batch_20260821_04,dev_win11_laptop,cellular,warp_enabled,ft_sftp_sync,2,956,81837
+sess_20260821_messaging_095,Messaging,env_win11_wifi,NORMAL,day_2,2026-08-21,batch_20260821_01,dev_win11_laptop,wifi,warp_enabled,msg_signal_chat,2,3900,836548
+sess_20260821_messaging_096,Messaging,env_win11_wifi,HIGH_LATENCY,day_2,2026-08-21,batch_20260821_02,dev_win11_laptop,wifi,warp_enabled,msg_slack_chat,2,25476,32665214
+sess_20260821_messaging_097,Messaging,env_win11_cellular,NORMAL,day_2,2026-08-21,batch_20260821_03,dev_win11_laptop,cellular,warp_disabled,msg_discord_text,2,4364,966700
+sess_20260821_messaging_098,Messaging,env_win11_cellular,LOW_BANDWIDTH,day_2,2026-08-21,batch_20260821_04,dev_win11_laptop,cellular,warp_enabled,msg_telegram_sync,2,26344,15577985
+sess_20260821_other_140,Other,env_win11_wifi,NORMAL,day_2,2026-08-21,batch_20260821_01,dev_win11_laptop,wifi,warp_enabled,oth_cloud_backup,2,1288,448396
+sess_20260821_other_141,Other,env_win11_wifi,HIGH_LATENCY,day_2,2026-08-21,batch_20260821_02,dev_win11_laptop,wifi,warp_enabled,oth_dns_ntp_sync,2,1174,327042
+sess_20260821_other_142,Other,env_win11_cellular,NORMAL,day_2,2026-08-21,batch_20260821_03,dev_win11_laptop,cellular,warp_disabled,oth_os_update_check,2,1214,656278
+sess_20260821_other_143,Other,env_win11_cellular,LOW_BANDWIDTH,day_2,2026-08-21,batch_20260821_04,dev_win11_laptop,cellular,warp_enabled,oth_telemetry_heartbeat,2,934,152193
+sess_20260821_video_080,Video,env_win11_wifi,NORMAL,day_2,2026-08-21,batch_20260821_01,dev_win11_laptop,wifi,warp_enabled,vid_netflix_4k,2,15482,12146974
+sess_20260821_video_081,Video,env_win11_wifi,HIGH_LATENCY,day_2,2026-08-21,batch_20260821_02,dev_win11_laptop,wifi,warp_enabled,vid_youtube_1080p,2,14516,15608576
+sess_20260821_video_082,Video,env_win11_cellular,NORMAL,day_2,2026-08-21,batch_20260821_03,dev_win11_laptop,cellular,warp_disabled,vid_vimeo_720p,2,1958,1598468
+sess_20260821_video_083,Video,env_win11_cellular,LOW_BANDWIDTH,day_2,2026-08-21,batch_20260821_04,dev_win11_laptop,cellular,warp_enabled,vid_twitch_live,2,1020,102554
+sess_20260821_voip_110,VoIP,env_win11_wifi,NORMAL,day_2,2026-08-21,batch_20260821_01,dev_win11_laptop,wifi,warp_enabled,voip_skype_call,2,894,287862
+sess_20260821_voip_111,VoIP,env_win11_wifi,HIGH_LATENCY,day_2,2026-08-21,batch_20260821_02,dev_win11_laptop,wifi,warp_enabled,voip_zoom_audio,2,862,185378
+sess_20260821_voip_112,VoIP,env_win11_cellular,NORMAL,day_2,2026-08-21,batch_20260821_03,dev_win11_laptop,cellular,warp_disabled,voip_teams_voice,2,640,155756
+sess_20260821_voip_113,VoIP,env_win11_cellular,LOW_BANDWIDTH,day_2,2026-08-21,batch_20260821_04,dev_win11_laptop,cellular,warp_enabled,voip_meet_audio,2,620,50917
+sess_20260821_web_065,Web,env_win11_wifi,NORMAL,day_2,2026-08-21,batch_20260821_01,dev_win11_laptop,wifi,warp_enabled,web_tech_blogs,2,1246,318468
+sess_20260821_web_066,Web,env_win11_wifi,HIGH_LATENCY,day_2,2026-08-21,batch_20260821_02,dev_win11_laptop,wifi,warp_enabled,web_wikipedia,2,1488,813774
+sess_20260821_web_067,Web,env_win11_cellular,NORMAL,day_2,2026-08-21,batch_20260821_03,dev_win11_laptop,cellular,warp_disabled,web_news,2,3190,1030558
+sess_20260821_web_068,Web,env_win11_cellular,LOW_BANDWIDTH,day_2,2026-08-21,batch_20260821_04,dev_win11_laptop,cellular,warp_enabled,web_ecommerce,2,3470,590270
+sess_20260822_file_transfer_129,File Transfer,env_win11_eth,NORMAL,day_3,2026-08-22,batch_20260822_01,dev_win11_desktop,ethernet,warp_enabled,ft_onedrive_sync,2,690,174472
+sess_20260822_file_transfer_130,File Transfer,env_win11_eth,PACKET_LOSS,day_3,2026-08-22,batch_20260822_02,dev_win11_desktop,ethernet,warp_enabled,ft_mega_download,2,540,80505
+sess_20260822_file_transfer_131,File Transfer,env_win11_cellular,HIGH_LATENCY,day_3,2026-08-22,batch_20260822_03,dev_win11_laptop,cellular,warp_enabled,ft_gdrive_upload,2,776,204220
+sess_20260822_file_transfer_132,File Transfer,env_win11_cellular,NORMAL,day_3,2026-08-22,batch_20260822_04,dev_win11_laptop,cellular,warp_disabled,ft_dropbox_download,2,724,159382
+sess_20260822_messaging_099,Messaging,env_win11_eth,NORMAL,day_3,2026-08-22,batch_20260822_01,dev_win11_desktop,ethernet,warp_enabled,msg_whatsapp_web,2,14920,17174636
+sess_20260822_messaging_100,Messaging,env_win11_eth,PACKET_LOSS,day_3,2026-08-22,batch_20260822_02,dev_win11_desktop,ethernet,warp_enabled,msg_signal_chat,2,3258,765338
+sess_20260822_messaging_101,Messaging,env_win11_cellular,HIGH_LATENCY,day_3,2026-08-22,batch_20260822_03,dev_win11_laptop,cellular,warp_enabled,msg_slack_chat,2,17002,21203516
+sess_20260822_messaging_102,Messaging,env_win11_cellular,NORMAL,day_3,2026-08-22,batch_20260822_04,dev_win11_laptop,cellular,warp_disabled,msg_discord_text,2,3088,564572
+sess_20260822_other_144,Other,env_win11_eth,NORMAL,day_3,2026-08-22,batch_20260822_01,dev_win11_desktop,ethernet,warp_enabled,oth_idle_keepalive,2,1528,654420
+sess_20260822_other_145,Other,env_win11_eth,PACKET_LOSS,day_3,2026-08-22,batch_20260822_02,dev_win11_desktop,ethernet,warp_enabled,oth_cloud_backup,2,1185,366739
+sess_20260822_other_146,Other,env_win11_cellular,HIGH_LATENCY,day_3,2026-08-22,batch_20260822_03,dev_win11_laptop,cellular,warp_enabled,oth_dns_ntp_sync,2,1242,521102
+sess_20260822_other_147,Other,env_win11_cellular,NORMAL,day_3,2026-08-22,batch_20260822_04,dev_win11_laptop,cellular,warp_disabled,oth_os_update_check,2,1314,491734
+sess_20260822_video_084,Video,env_win11_eth,NORMAL,day_3,2026-08-22,batch_20260822_01,dev_win11_desktop,ethernet,warp_enabled,vid_dailymotion_sd,2,26636,33850604
+sess_20260822_video_085,Video,env_win11_eth,PACKET_LOSS,day_3,2026-08-22,batch_20260822_02,dev_win11_desktop,ethernet,warp_enabled,vid_netflix_4k,2,3840,996216
+sess_20260822_video_086,Video,env_win11_cellular,HIGH_LATENCY,day_3,2026-08-22,batch_20260822_03,dev_win11_laptop,cellular,warp_enabled,vid_youtube_1080p,2,21060,26597406
+sess_20260822_video_087,Video,env_win11_cellular,NORMAL,day_3,2026-08-22,batch_20260822_04,dev_win11_laptop,cellular,warp_disabled,vid_vimeo_720p,2,3728,806630
+sess_20260822_voip_114,VoIP,env_win11_eth,NORMAL,day_3,2026-08-22,batch_20260822_01,dev_win11_desktop,ethernet,warp_enabled,voip_discord_voice,2,1290,585258
+sess_20260822_voip_115,VoIP,env_win11_eth,PACKET_LOSS,day_3,2026-08-22,batch_20260822_02,dev_win11_desktop,ethernet,warp_enabled,voip_skype_call,2,873,173012
+sess_20260822_voip_116,VoIP,env_win11_cellular,HIGH_LATENCY,day_3,2026-08-22,batch_20260822_03,dev_win11_laptop,cellular,warp_enabled,voip_zoom_audio,2,742,193310
+sess_20260822_voip_117,VoIP,env_win11_cellular,NORMAL,day_3,2026-08-22,batch_20260822_04,dev_win11_laptop,cellular,warp_disabled,voip_teams_voice,2,724,190058
+sess_20260822_web_069,Web,env_win11_eth,NORMAL,day_3,2026-08-22,batch_20260822_01,dev_win11_desktop,ethernet,warp_enabled,web_github_docs,2,4586,3833118
+sess_20260822_web_070,Web,env_win11_eth,PACKET_LOSS,day_3,2026-08-22,batch_20260822_02,dev_win11_desktop,ethernet,warp_enabled,web_tech_blogs,2,2233,560883
+sess_20260822_web_071,Web,env_win11_cellular,HIGH_LATENCY,day_3,2026-08-22,batch_20260822_03,dev_win11_laptop,cellular,warp_enabled,web_wikipedia,2,860,162466
+sess_20260822_web_072,Web,env_win11_cellular,NORMAL,day_3,2026-08-22,batch_20260822_04,dev_win11_laptop,cellular,warp_disabled,web_news,2,958,294092
+sess_20260823_file_transfer_133,File Transfer,env_win11_wifi,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_02,dev_win11_laptop,wifi,warp_enabled,ft_sftp_sync,2,1206,133048
+sess_20260823_file_transfer_134,File Transfer,env_win11_eth,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_03,dev_win11_desktop,ethernet,warp_enabled,ft_onedrive_sync,2,1284,176217
+sess_20260823_file_transfer_135,File Transfer,env_win11_cellular,NORMAL,day_4,2026-08-23,batch_20260823_04,dev_win11_laptop,cellular,warp_enabled,ft_mega_download,2,1838,713196
+sess_20260823_messaging_103,Messaging,env_win11_wifi,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_02,dev_win11_laptop,wifi,warp_enabled,msg_telegram_sync,2,1038,86438
+sess_20260823_messaging_104,Messaging,env_win11_eth,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_03,dev_win11_desktop,ethernet,warp_enabled,msg_whatsapp_web,2,1724,689928
+sess_20260823_messaging_105,Messaging,env_win11_cellular,NORMAL,day_4,2026-08-23,batch_20260823_04,dev_win11_laptop,cellular,warp_enabled,msg_signal_chat,2,762,138884
+sess_20260823_other_148,Other,env_win11_wifi,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_02,dev_win11_laptop,wifi,warp_enabled,oth_telemetry_heartbeat,2,2984,809207
+sess_20260823_other_149,Other,env_win11_eth,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_03,dev_win11_desktop,ethernet,warp_enabled,oth_idle_keepalive,2,2528,489592
+sess_20260823_other_150,Other,env_win11_cellular,NORMAL,day_4,2026-08-23,batch_20260823_04,dev_win11_laptop,cellular,warp_enabled,oth_cloud_backup,2,1200,284256
+sess_20260823_video_088,Video,env_win11_wifi,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_02,dev_win11_laptop,wifi,warp_enabled,vid_twitch_live,2,33670,23022436
+sess_20260823_video_089,Video,env_win11_eth,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_03,dev_win11_desktop,ethernet,warp_enabled,vid_dailymotion_sd,2,4678,490397
+sess_20260823_video_090,Video,env_win11_cellular,NORMAL,day_4,2026-08-23,batch_20260823_04,dev_win11_laptop,cellular,warp_enabled,vid_netflix_4k,2,1698,344794
+sess_20260823_voip_118,VoIP,env_win11_wifi,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_02,dev_win11_laptop,wifi,warp_enabled,voip_meet_audio,2,1216,245737
+sess_20260823_voip_119,VoIP,env_win11_eth,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_03,dev_win11_desktop,ethernet,warp_enabled,voip_discord_voice,2,972,103907
+sess_20260823_voip_120,VoIP,env_win11_cellular,NORMAL,day_4,2026-08-23,batch_20260823_04,dev_win11_laptop,cellular,warp_enabled,voip_skype_call,2,1340,265418
+sess_20260823_web_073,Web,env_win11_wifi,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_02,dev_win11_laptop,wifi,warp_enabled,web_ecommerce,2,1252,124000
+sess_20260823_web_074,Web,env_win11_eth,LOW_BANDWIDTH,day_4,2026-08-23,batch_20260823_03,dev_win11_desktop,ethernet,warp_enabled,web_github_docs,2,1214,121826
+sess_20260823_web_075,Web,env_win11_cellular,NORMAL,day_4,2026-08-23,batch_20260823_04,dev_win11_laptop,cellular,warp_enabled,web_tech_blogs,2,842,210112

@@ -1,0 +1,5 @@
+target_pps,actual_pps,duration_seconds,total_packets_sent,dropped_packets,drop_rate_percent,cpu_percent,memory_mb,mean_latency_ms,median_latency_ms,p95_latency_ms,p99_latency_ms,queue_depth
+100,100.0,3.0,300,0,0.0,0.0,0.0,0.1749,0.1727,0.2277,0.3336,0
+500,500.0,3.0,1500,0,0.0,0.0,0.0,0.2364,0.2477,0.3113,0.3198,0
+1000,999.8,3.0,3000,0,0.0,0.0,0.0,0.4496,0.4604,0.6434,0.7052,0
+5000,4864.3,3.08,15000,0,0.0,0.0,0.0,1.7891,1.7826,2.8554,2.9083,0

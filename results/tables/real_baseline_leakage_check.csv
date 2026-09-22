@@ -1,0 +1,6 @@
+check_name,condition,result,status
+Zero Intra-Session Split Leakage,"Train, Val, and Test sessions are completely pairwise disjoint",PASSED (0 overlap),VALIDATED
+Strict ML Feature Exclusion,"Zero session_id, file_id, timestamps, environment_id, or device_id in features",PASSED (21 pure traffic features),VALIDATED
+Train-Only Preprocessing Fit,Imputation medians & label encoders fit solely on Train partition,PASSED (Fitted on 85 Train samples),VALIDATED
+Target-Derived Feature Isolation,No target class or derived label encodings present in input feature vector,PASSED (Target isolated as separate label tensor),VALIDATED
+Test-Independent Model Selection,Best model chosen via Validation Macro-F1 before touching Test set,PASSED (Validated on 24 Validation samples),VALIDATED

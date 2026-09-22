@@ -1,0 +1,3 @@
+experiment,model,feature_count,eval_split,accuracy,macro_f1,weighted_f1,avg_latency_ms,model_size_kb,selection_method
+Real Baseline v1 (Phase 2),random_forest (Baseline),21,Held-Out Test (12 flows / 6 sessions),0.0833,0.0833,0.0833,0.0032,0.49,Single Validation Split (24 flows)
+Real Optimized Candidate (Phase 3),random_forest (Optimized),10,Held-Out Test (12 flows / 6 sessions),0.2500,0.2056,0.2056,0.0026,0.43,5-Fold Grouped Cross-Validation (109 flows / 54 sessions)

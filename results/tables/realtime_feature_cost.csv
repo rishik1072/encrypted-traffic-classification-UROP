@@ -1,0 +1,6 @@
+feature_count,feature_extraction_latency_ms,inference_latency_ms,total_pipeline_latency_ms
+21,0.0358,0.5,0.5358
+15,0.0357,0.5,0.5357
+10,0.0343,0.5,0.5343
+5,0.0344,0.5,0.5344
+3,0.0335,0.5,0.5335

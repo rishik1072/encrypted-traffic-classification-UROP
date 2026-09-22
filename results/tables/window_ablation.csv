@@ -1,0 +1,41 @@
+window_key,window_label,model_name,sample_count,macro_f1,macro_f1_std,accuracy,accuracy_std
+prefix_5,Prefix (5 pkts),decision_tree,289,0.1423,0.0419,0.1457,0.0428
+prefix_5,Prefix (5 pkts),random_forest,289,0.1669,0.0143,0.1696,0.0065
+prefix_5,Prefix (5 pkts),lightgbm,289,0.1489,0.0447,0.1491,0.0453
+prefix_5,Prefix (5 pkts),logistic_regression,289,0.0768,0.0149,0.1772,0.0222
+prefix_10,Prefix (10 pkts),decision_tree,288,0.1934,0.048,0.1912,0.0425
+prefix_10,Prefix (10 pkts),random_forest,288,0.1182,0.0476,0.1214,0.0453
+prefix_10,Prefix (10 pkts),lightgbm,288,0.1925,0.0293,0.1938,0.0303
+prefix_10,Prefix (10 pkts),logistic_regression,288,0.0799,0.0079,0.181,0.0133
+prefix_20,Prefix (20 pkts),decision_tree,288,0.134,0.029,0.1355,0.0258
+prefix_20,Prefix (20 pkts),random_forest,288,0.162,0.0549,0.164,0.0555
+prefix_20,Prefix (20 pkts),lightgbm,288,0.1444,0.016,0.1533,0.0238
+prefix_20,Prefix (20 pkts),logistic_regression,288,0.0827,0.0079,0.1876,0.0074
+prefix_50,Prefix (50 pkts),decision_tree,288,0.1715,0.0308,0.1807,0.0374
+prefix_50,Prefix (50 pkts),random_forest,288,0.1455,0.0373,0.1493,0.042
+prefix_50,Prefix (50 pkts),lightgbm,288,0.1621,0.0212,0.1702,0.0223
+prefix_50,Prefix (50 pkts),logistic_regression,288,0.0825,0.0086,0.1878,0.0117
+prefix_100,Prefix (100 pkts),decision_tree,288,0.1686,0.0417,0.1733,0.0352
+prefix_100,Prefix (100 pkts),random_forest,288,0.1482,0.0541,0.1493,0.0551
+prefix_100,Prefix (100 pkts),lightgbm,288,0.174,0.0458,0.1759,0.045
+prefix_100,Prefix (100 pkts),logistic_regression,288,0.0877,0.0141,0.1981,0.0099
+window_1s,Time Window (1s),decision_tree,279,0.1936,0.039,0.1978,0.0428
+window_1s,Time Window (1s),random_forest,279,0.186,0.0553,0.1895,0.0586
+window_1s,Time Window (1s),lightgbm,279,0.1776,0.0415,0.1795,0.0464
+window_1s,Time Window (1s),logistic_regression,279,0.0817,0.0079,0.1862,0.0105
+window_2s,Time Window (2s),decision_tree,287,0.1933,0.0477,0.2012,0.0529
+window_2s,Time Window (2s),random_forest,287,0.1817,0.0556,0.186,0.0594
+window_2s,Time Window (2s),lightgbm,287,0.1657,0.0502,0.1738,0.0522
+window_2s,Time Window (2s),logistic_regression,287,0.08,0.0073,0.1849,0.0156
+window_5s,Time Window (5s),decision_tree,289,0.1354,0.034,0.1382,0.0347
+window_5s,Time Window (5s),random_forest,289,0.1898,0.055,0.1938,0.0552
+window_5s,Time Window (5s),lightgbm,289,0.1752,0.0488,0.1766,0.0515
+window_5s,Time Window (5s),logistic_regression,289,0.0824,0.0119,0.1874,0.0212
+window_10s,Time Window (10s),decision_tree,289,0.1468,0.0152,0.1487,0.0126
+window_10s,Time Window (10s),random_forest,289,0.1831,0.0227,0.1827,0.0223
+window_10s,Time Window (10s),lightgbm,289,0.1534,0.0467,0.165,0.0498
+window_10s,Time Window (10s),logistic_regression,289,0.0796,0.0075,0.1838,0.0176
+whole_flow,Whole Flow,decision_tree,289,0.184,0.0228,0.1862,0.0249
+whole_flow,Whole Flow,random_forest,289,0.1479,0.0251,0.1529,0.0242
+whole_flow,Whole Flow,lightgbm,289,0.2033,0.0591,0.2044,0.0564
+whole_flow,Whole Flow,logistic_regression,289,0.0869,0.0098,0.1941,0.0155

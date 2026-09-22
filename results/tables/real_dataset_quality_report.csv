@@ -1,0 +1,10 @@
+metric,value
+dataset_origin,real
+total_sources,60
+total_sessions,60
+total_flows,189
+total_packets,271487
+total_traffic_volume_mb,242.9767
+traffic_classes_count,6
+avg_capture_duration_s,60.01
+median_capture_duration_s,60.01

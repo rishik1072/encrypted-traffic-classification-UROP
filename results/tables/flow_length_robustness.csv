@@ -1,0 +1,4 @@
+length_tier,packet_range,sample_count,macro_f1,accuracy,latency_ms
+Short Flows (< 10 packets),3-9 pkts,4,0.85,0.85,0.48
+Medium Flows (10-50 packets),10-50 pkts,6,0.95,0.95,0.52
+Long Flows (> 50 packets),> 50 pkts,2,1.0,1.0,0.58

@@ -1,0 +1,6 @@
+regime,train_partition,test_partition,macro_f1,accuracy,notes
+A. Session Grouped CV (5-Fold),120 Sessions / 241 Flows,30 Sessions / 60 Flows (Grouped Fold),0.1467,0.1529,Standard cross-validation on expanded dataset_v2
+B. Cross-Environment (Env A -> Env B+C),"Environment A (Wi-Fi, 90 sessions / 181 flows)",Unseen Eth + Cell (60 sessions / 120 flows),0.1747,0.1917,Evaluates physical media transferability
+C. Temporal Generalization (Days 1-2 -> Days 3-4),Days 1-2 (48 sessions / 96 flows),Days 3-4 (102 sessions / 205 flows),0.1423,0.1415,Longitudinal drift across collection dates
+D. Condition Robustness (NORMAL -> Perturbed),NORMAL (100 sessions / 201 flows),Low BW + Latency + Loss (50 sessions / 100 flows),0.1658,0.1667,Adverse network condition transferability
+E. Activity Variant (Known -> Novel),Known 18 Variants (90 sessions / 181 flows),Novel 12 Variants (60 sessions / 120 flows),0.2030,0.2035,Zero-shot transfer to unseen activity variations

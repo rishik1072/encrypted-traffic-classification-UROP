@@ -1,0 +1,7 @@
+phase,feature_representation,feature_count,window_mode,model,macro_f1,accuracy,latency_ms
+Phase 2 (Real Baseline v1),21 Raw Summary Features,21,Whole Flow,Random Forest,0.0833,0.0833,0.0032
+Phase 3 (Optimized Candidate),10 Consensus Features,10,Whole Flow,Decision Tree (depth 5),0.2056,0.25,0.0026
+Phase 4 (Generalization),10 Consensus (v2),10,Whole Flow,Decision Tree (depth 5),0.1467,0.1529,0.0026
+Phase 5 (Rich Features),30 Rich Consensus,30,Whole Flow,Decision Tree (depth 5),0.1074,0.25,0.0051
+Phase 6 (Temporal Window),20 Compact Temporal,20,Prefix (10 pkts),Decision Tree (depth 5),0.0333,0.0833,0.0028
+Phase 7 (Sequential Aggregation),193 Sequential Aggregated,193,2s Window / 1s Stride Sequence,Decision Tree (depth 5),0.0606,0.1667,0.0035

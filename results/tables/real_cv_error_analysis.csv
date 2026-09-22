@@ -1,0 +1,29 @@
+confused_pair,error_count,percentage_of_errors
+Web -> Other,7,7.95%
+File Transfer -> Video,6,6.82%
+Other -> File Transfer,5,5.68%
+Web -> Messaging,4,4.55%
+Video -> File Transfer,4,4.55%
+Messaging -> Other,4,4.55%
+Messaging -> File Transfer,4,4.55%
+VoIP -> Web,4,4.55%
+File Transfer -> Other,4,4.55%
+Other -> VoIP,4,4.55%
+Video -> Web,4,4.55%
+Web -> File Transfer,3,3.41%
+VoIP -> Messaging,3,3.41%
+Other -> Web,3,3.41%
+Video -> Messaging,3,3.41%
+VoIP -> Other,3,3.41%
+Messaging -> Web,3,3.41%
+Messaging -> VoIP,3,3.41%
+File Transfer -> Web,2,2.27%
+Other -> Video,2,2.27%
+Web -> Video,2,2.27%
+Video -> Other,2,2.27%
+VoIP -> File Transfer,2,2.27%
+File Transfer -> Messaging,2,2.27%
+Video -> VoIP,2,2.27%
+Messaging -> Video,1,1.14%
+Other -> Messaging,1,1.14%
+VoIP -> Video,1,1.14%

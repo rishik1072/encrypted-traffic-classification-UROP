@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "random_seed": 42,
+  "train_samples": 6,
+  "val_samples": 0,
+  "test_samples": 5,
+  "feature_count": 21,
+  "class_count": 6,
+  "classes": [
+    "File Transfer",
+    "Messaging",
+    "Other",
+    "Video",
+    "VoIP",
+    "Web"
+  ],
+  "best_f1_model": "lightgbm",
+  "fastest_model": "decision_tree",
+  "smallest_model": "random_forest",
+  "timestamp": "2026-08-23T07:36:07.446678"
+}

@@ -1,0 +1,2 @@
+selected_model,feature_count,features,cv_macro_f1_mean,cv_macro_f1_std,cv_accuracy_mean,selection_criterion
+decision_tree,10,avg_packet_size;burst_count;max_iat;min_packet_size;forward_packet_count;fwd_bwd_byte_ratio;fwd_bwd_packet_ratio;total_bytes;total_packet_count;avg_burst_bytes,0.1642,0.0570,0.2208,Development 5-Fold Grouped CV Macro-F1 Mean

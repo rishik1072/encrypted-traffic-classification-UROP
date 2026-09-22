@@ -1,0 +1,7 @@
+traffic_class,session_count,flow_count,packet_count,byte_count,average_duration,median_duration
+Web,1,6,6082,4670741,60.01,60.01
+Video,0,0,0,0,0.0,0.0
+Messaging,0,0,0,0,0.0,0.0
+VoIP,0,0,0,0,0.0,0.0
+File Transfer,0,0,0,0,0.0,0.0
+Other,0,0,0,0,0.0,0.0

@@ -1,0 +1,4 @@
+architecture,macro_f1,macro_f1_std,accuracy,weighted_f1,coverage,accepted_precision,unknown_rejection,inference_latency_ms,model_size_kb
+Flat 6-Class Decision Tree (depth 5),0.142,0.0458,0.1478,0.1418,1.0,0.1478,None (Forced 6-class assignment),0.0026,0.43
+Hierarchical 2-Stage Classifier (Unfiltered),0.0686,0.0336,0.1626,0.0691,1.0,0.1626,Parent Coarse Filtering,0.0048,1.15
+Hierarchical Selective Prediction (Gated tau >= 0.60),0.0,0.0,0.0,0.0,0.0,1.0,Active (LOW_CONFIDENCE / UNKNOWN),0.0048,1.15

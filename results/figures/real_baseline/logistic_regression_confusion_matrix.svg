@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="540" viewBox="0 0 560 540">
+  <style>
+    .title { font-family: "Segoe UI", Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #1e293b; }
+    .subtitle { font-family: "Segoe UI", Arial, sans-serif; font-size: 12px; fill: #64748b; }
+    .axis-label { font-family: "Segoe UI", Arial, sans-serif; font-size: 11px; fill: #334155; }
+    .cell-text { font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; font-weight: bold; text-anchor: middle; }
+  </style>
+  <rect width="100%" height="100%" fill="#ffffff" rx="6" />
+  <text x="20" y="35" class="title">Confusion Matrix: Logistic Regression</text>
+  <text x="20" y="55" class="subtitle">Held-out real test set evaluation (n=12)</text>
+  <text x="280" y="75" class="axis-label" text-anchor="middle" font-weight="bold">Predicted Class</text>
+  <text x="150" y="92" class="axis-label" text-anchor="middle">File</text>
+  <text x="210" y="92" class="axis-label" text-anchor="middle">Mess</text>
+  <text x="270" y="92" class="axis-label" text-anchor="middle">Othe</text>
+  <text x="330" y="92" class="axis-label" text-anchor="middle">Vide</text>
+  <text x="390" y="92" class="axis-label" text-anchor="middle">VoIP</text>
+  <text x="450" y="92" class="axis-label" text-anchor="middle">Web</text>
+  <text x="110" y="134" class="axis-label" text-anchor="end">File Transfer</text>
+  <rect x="120" y="100" width="60" height="60" fill="rgba(37, 99, 235, 1.00)" stroke="#cbd5e1" />
+  <text x="150" y="135" class="cell-text" fill="#ffffff">2</text>
+  <rect x="180" y="100" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="210" y="135" class="cell-text" fill="#475569">0</text>
+  <rect x="240" y="100" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="270" y="135" class="cell-text" fill="#475569">0</text>
+  <rect x="300" y="100" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="330" y="135" class="cell-text" fill="#475569">0</text>
+  <rect x="360" y="100" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="390" y="135" class="cell-text" fill="#475569">0</text>
+  <rect x="420" y="100" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="450" y="135" class="cell-text" fill="#475569">0</text>
+  <text x="110" y="194" class="axis-label" text-anchor="end">Messaging</text>
+  <rect x="120" y="160" width="60" height="60" fill="rgba(239, 68, 68, 1.00)" stroke="#cbd5e1" />
+  <text x="150" y="195" class="cell-text" fill="#ffffff">2</text>
+  <rect x="180" y="160" width="60" height="60" fill="rgba(37, 99, 235, 0.08)" stroke="#cbd5e1" />
+  <text x="210" y="195" class="cell-text" fill="#1e293b">0</text>
+  <rect x="240" y="160" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="270" y="195" class="cell-text" fill="#475569">0</text>
+  <rect x="300" y="160" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="330" y="195" class="cell-text" fill="#475569">0</text>
+  <rect x="360" y="160" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="390" y="195" class="cell-text" fill="#475569">0</text>
+  <rect x="420" y="160" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="450" y="195" class="cell-text" fill="#475569">0</text>
+  <text x="110" y="254" class="axis-label" text-anchor="end">Other</text>
+  <rect x="120" y="220" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="150" y="255" class="cell-text" fill="#475569">0</text>
+  <rect x="180" y="220" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="210" y="255" class="cell-text" fill="#475569">0</text>
+  <rect x="240" y="220" width="60" height="60" fill="rgba(37, 99, 235, 0.08)" stroke="#cbd5e1" />
+  <text x="270" y="255" class="cell-text" fill="#1e293b">0</text>
+  <rect x="300" y="220" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="330" y="255" class="cell-text" fill="#475569">0</text>
+  <rect x="360" y="220" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="390" y="255" class="cell-text" fill="#475569">0</text>
+  <rect x="420" y="220" width="60" height="60" fill="rgba(239, 68, 68, 1.00)" stroke="#cbd5e1" />
+  <text x="450" y="255" class="cell-text" fill="#ffffff">2</text>
+  <text x="110" y="314" class="axis-label" text-anchor="end">Video</text>
+  <rect x="120" y="280" width="60" height="60" fill="rgba(239, 68, 68, 1.00)" stroke="#cbd5e1" />
+  <text x="150" y="315" class="cell-text" fill="#ffffff">2</text>
+  <rect x="180" y="280" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="210" y="315" class="cell-text" fill="#475569">0</text>
+  <rect x="240" y="280" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="270" y="315" class="cell-text" fill="#475569">0</text>
+  <rect x="300" y="280" width="60" height="60" fill="rgba(37, 99, 235, 0.08)" stroke="#cbd5e1" />
+  <text x="330" y="315" class="cell-text" fill="#1e293b">0</text>
+  <rect x="360" y="280" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="390" y="315" class="cell-text" fill="#475569">0</text>
+  <rect x="420" y="280" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="450" y="315" class="cell-text" fill="#475569">0</text>
+  <text x="110" y="374" class="axis-label" text-anchor="end">VoIP</text>
+  <rect x="120" y="340" width="60" height="60" fill="rgba(239, 68, 68, 0.50)" stroke="#cbd5e1" />
+  <text x="150" y="375" class="cell-text" fill="#ffffff">1</text>
+  <rect x="180" y="340" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="210" y="375" class="cell-text" fill="#475569">0</text>
+  <rect x="240" y="340" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="270" y="375" class="cell-text" fill="#475569">0</text>
+  <rect x="300" y="340" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="330" y="375" class="cell-text" fill="#475569">0</text>
+  <rect x="360" y="340" width="60" height="60" fill="rgba(37, 99, 235, 0.08)" stroke="#cbd5e1" />
+  <text x="390" y="375" class="cell-text" fill="#1e293b">0</text>
+  <rect x="420" y="340" width="60" height="60" fill="rgba(239, 68, 68, 0.50)" stroke="#cbd5e1" />
+  <text x="450" y="375" class="cell-text" fill="#ffffff">1</text>
+  <text x="110" y="434" class="axis-label" text-anchor="end">Web</text>
+  <rect x="120" y="400" width="60" height="60" fill="rgba(239, 68, 68, 1.00)" stroke="#cbd5e1" />
+  <text x="150" y="435" class="cell-text" fill="#ffffff">2</text>
+  <rect x="180" y="400" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="210" y="435" class="cell-text" fill="#475569">0</text>
+  <rect x="240" y="400" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="270" y="435" class="cell-text" fill="#475569">0</text>
+  <rect x="300" y="400" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="330" y="435" class="cell-text" fill="#475569">0</text>
+  <rect x="360" y="400" width="60" height="60" fill="#f8fafc" stroke="#cbd5e1" />
+  <text x="390" y="435" class="cell-text" fill="#475569">0</text>
+  <rect x="420" y="400" width="60" height="60" fill="rgba(37, 99, 235, 0.08)" stroke="#cbd5e1" />
+  <text x="450" y="435" class="cell-text" fill="#1e293b">0</text>
+</svg>

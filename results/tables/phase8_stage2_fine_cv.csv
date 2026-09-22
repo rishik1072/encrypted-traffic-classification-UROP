@@ -1,0 +1,9 @@
+stage,coarse_family,target_classes,model_name,macro_f1,macro_f1_std,accuracy,latency_ms,sample_count
+Stage 2 (Fine),Bulk_Streaming,File Transfer / Video,decision_tree,0.5313,0.1531,0.535,0.3003,96
+Stage 2 (Fine),Bulk_Streaming,File Transfer / Video,random_forest,0.5532,0.1243,0.555,0.2616,96
+Stage 2 (Fine),Bulk_Streaming,File Transfer / Video,lightgbm,0.5317,0.0524,0.5325,0.2765,96
+Stage 2 (Fine),Bulk_Streaming,File Transfer / Video,logistic_regression,0.6337,0.1195,0.655,0.2836,96
+Stage 2 (Fine),Interactive,Web / Messaging / VoIP,decision_tree,0.2864,0.0474,0.2917,0.2553,144
+Stage 2 (Fine),Interactive,Web / Messaging / VoIP,random_forest,0.3598,0.1335,0.3617,0.2343,144
+Stage 2 (Fine),Interactive,Web / Messaging / VoIP,lightgbm,0.2513,0.0473,0.2567,0.2609,144
+Stage 2 (Fine),Interactive,Web / Messaging / VoIP,logistic_regression,0.1853,0.0267,0.26,0.2815,144

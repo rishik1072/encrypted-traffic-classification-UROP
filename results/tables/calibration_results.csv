@@ -1,0 +1,6 @@
+bucket_index,bucket_range,sample_count,avg_confidence,empirical_accuracy,calibration_gap
+1,0.0-0.2,0,0.1,0.0,0.0
+2,0.2-0.4,0,0.3,0.0,0.0
+3,0.4-0.6,1,0.55,0.0,0.55
+4,0.6-0.8,3,0.7,0.6667,0.0333
+5,0.8-1.0,6,0.9133,1.0,0.0867

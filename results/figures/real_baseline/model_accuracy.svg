@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="420" viewBox="0 0 700 420">
+  <style>
+    .title { font-family: "Segoe UI", Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #1e293b; }
+    .subtitle { font-family: "Segoe UI", Arial, sans-serif; font-size: 12px; fill: #64748b; }
+    .axis { font-family: "Segoe UI", Arial, sans-serif; font-size: 12px; fill: #475569; }
+    .bar-text { font-family: "Segoe UI", Arial, sans-serif; font-size: 12px; font-weight: bold; fill: #ffffff; text-anchor: middle; }
+    .grid { stroke: #e2e8f0; stroke-dasharray: 4; }
+  </style>
+  <rect width="100%" height="100%" fill="#ffffff" rx="6" />
+  <text x="30" y="35" class="title">Test Accuracy Across Baseline Models (Real Data)</text>
+  <text x="30" y="55" class="subtitle">Evaluated on real clean dataset partitions</text>
+  <line x1="80" y1="320" x2="650" y2="320" stroke="#94a3b8" stroke-width="1.5" />
+  <rect x="120" y="100" width="80" height="220" fill="#3b82f6" rx="4" />
+  <text x="160" y="210" class="bar-text">0.1667</text>
+  <text x="160" y="345" class="axis" text-anchor="middle">logistic_r</text>
+  <rect x="250" y="211" width="80" height="109" fill="#10b981" rx="4" />
+  <text x="290" y="265" class="bar-text">0.0833</text>
+  <text x="290" y="345" class="axis" text-anchor="middle">decision_t</text>
+  <rect x="380" y="211" width="80" height="109" fill="#f59e0b" rx="4" />
+  <text x="420" y="265" class="bar-text">0.0833</text>
+  <text x="420" y="345" class="axis" text-anchor="middle">random_for</text>
+  <rect x="510" y="211" width="80" height="109" fill="#8b5cf6" rx="4" />
+  <text x="550" y="265" class="bar-text">0.0833</text>
+  <text x="550" y="345" class="axis" text-anchor="middle">lightgbm</text>
+</svg>

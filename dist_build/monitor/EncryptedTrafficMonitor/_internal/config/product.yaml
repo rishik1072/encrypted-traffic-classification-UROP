@@ -1,0 +1,43 @@
+# Encrypted Traffic Monitor - Product Configuration
+# Privacy-Preserving Zero-Payload Network Monitoring
+
+app_name: "Encrypted Traffic Monitor"
+version: "1.0.0"
+
+# Strict Local-Only Guarantee: no cloud analytics, no remote telemetry, no external telemetry uploads
+local_only: true
+
+# Default Execution Mode: LIVE_MODE (options: LIVE_MODE, DEMO_MODE, RESEARCH_MODE)
+default_mode: "LIVE_MODE"
+
+# Default Network Interface: auto (resolves best available active Wi-Fi or Ethernet adapter)
+default_interface: "auto"
+
+# Minimum packet threshold before generating classification event
+minimum_packets: 5
+
+# Local SOC Dashboard Port
+dashboard_port: 8501
+
+# Auto-open browser on dashboard startup
+auto_open_browser: true
+
+# Logging Configuration
+log_level: "INFO"
+log_directory: "data/local/logs"
+max_log_size_mb: 10
+log_backup_count: 5
+
+# Local Analytics Persistence (Sanitized metadata only)
+save_prediction_logs: true
+save_metrics_logs: true
+
+# CRITICAL SECURITY INVARIANT: Raw packet persistence is strictly forbidden.
+# This flag is hard-locked to false in the product security boundary.
+save_raw_packets: false
+
+# Local API Configuration (Localhost binding only)
+local_api:
+  enabled: true
+  host: "127.0.0.1"
+  port: 8080

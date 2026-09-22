@@ -1,0 +1,21 @@
+run_id,timestamp,model,feature_count,macro_f1,latency_ms,model_size_mb
+RUN-LOG-K21,2026-08-23 13:16:16,logistic_regression,21,0.0,0.0,0.0014
+RUN-DEC-K21,2026-08-23 13:16:16,decision_tree,21,0.1111,0.0,0.0007
+RUN-RAN-K21,2026-08-23 13:16:16,random_forest,21,0.0833,0.0,0.0005
+RUN-LIG-K21,2026-08-23 13:16:16,lightgbm,21,0.1111,0.0,0.0005
+RUN-LOG-K15,2026-08-23 13:16:16,logistic_regression,15,0.0,0.0,0.001
+RUN-DEC-K15,2026-08-23 13:16:16,decision_tree,15,0.1111,0.0,0.0006
+RUN-RAN-K15,2026-08-23 13:16:16,random_forest,15,0.0833,0.0,0.0004
+RUN-LIG-K15,2026-08-23 13:16:16,lightgbm,15,0.1111,0.0,0.0005
+RUN-LOG-K10,2026-08-23 13:16:16,logistic_regression,10,0.0,0.0,0.0008
+RUN-DEC-K10,2026-08-23 13:16:16,decision_tree,10,0.2778,0.0,0.0005
+RUN-RAN-K10,2026-08-23 13:16:16,random_forest,10,0.2778,0.0,0.0004
+RUN-LIG-K10,2026-08-23 13:16:16,lightgbm,10,0.0,0.0,0.0004
+RUN-LOG-K5,2026-08-23 13:16:16,logistic_regression,5,0.0,0.0,0.0005
+RUN-DEC-K5,2026-08-23 13:16:16,decision_tree,5,0.0,0.0,0.0004
+RUN-RAN-K5,2026-08-23 13:16:16,random_forest,5,0.0833,0.0,0.0003
+RUN-LIG-K5,2026-08-23 13:16:16,lightgbm,5,0.0,0.0,0.0004
+RUN-LOG-K3,2026-08-23 13:16:16,logistic_regression,3,0.0,0.0,0.0004
+RUN-DEC-K3,2026-08-23 13:16:16,decision_tree,3,0.1667,0.0,0.0003
+RUN-RAN-K3,2026-08-23 13:16:16,random_forest,3,0.0,0.0,0.0003
+RUN-LIG-K3,2026-08-23 13:16:16,lightgbm,3,0.2778,0.0,0.0003

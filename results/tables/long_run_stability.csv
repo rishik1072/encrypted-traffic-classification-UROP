@@ -1,0 +1,2 @@
+elapsed_seconds,total_packets,active_flows,completed_flows,expired_flows,dropped_packets,queue_depth,avg_latency_ms,p95_latency_ms,known_class_rate,low_conf_rate,unknown_rate
+15.0,4501,25,0,0,0,0,0.743,0.9342,0.9333,0.0,0.0

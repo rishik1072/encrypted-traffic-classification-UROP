@@ -1,0 +1,30 @@
+{
+  "model_name": "decision_tree",
+  "window_type": "prefix_10",
+  "features": [
+    "packet_count",
+    "byte_count",
+    "mean_packet_size",
+    "std_packet_size",
+    "median_packet_size",
+    "p95_packet_size",
+    "mean_iat",
+    "std_iat",
+    "median_iat",
+    "p95_iat",
+    "forward_packet_count",
+    "backward_packet_count",
+    "forward_byte_count",
+    "backward_byte_count",
+    "packet_rate",
+    "byte_rate",
+    "burst_count",
+    "mean_burst_size",
+    "burst_rate",
+    "direction_switch_count"
+  ],
+  "train_samples": 288,
+  "test_samples": 12,
+  "test_macro_f1": 0.0333,
+  "test_accuracy": 0.0833
+}

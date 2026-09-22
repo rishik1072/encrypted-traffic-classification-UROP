@@ -1,0 +1,5 @@
+model,avg_latency_ms,median_latency_ms,p95_latency_ms,p99_latency_ms,batch_latency_ms_per_flow,memory_rss_mb
+logistic_regression,0.0159,0.0152,0.0195,0.0294,0.0164,0.00
+decision_tree,0.0034,0.0032,0.0038,0.0062,0.0030,0.00
+random_forest,0.0032,0.0032,0.0034,0.0052,0.0031,0.00
+lightgbm,0.0034,0.0033,0.0038,0.0060,0.0030,0.00

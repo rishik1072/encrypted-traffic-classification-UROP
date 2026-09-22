@@ -1,0 +1,4 @@
+target_environment,train_environment,train_flows,train_sessions,test_flows,test_sessions,accuracy,macro_f1,weighted_f1,precision_macro,recall_macro
+Environment B (Ethernet),Environment A (Wi-Fi),181,90,60,30,0.2167,0.1926,0.1926,0.1739,0.2167
+Environment C (Cellular),Environment A (Wi-Fi),181,90,60,30,0.1667,0.1462,0.1462,0.1303,0.1667
+Combined Unseen (Eth + Cell),Environment A (Wi-Fi),181,90,120,60,0.1917,0.1747,0.1747,0.1633,0.1917

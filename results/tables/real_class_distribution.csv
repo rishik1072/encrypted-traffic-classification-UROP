@@ -1,0 +1,7 @@
+traffic_class,session_count,flow_count,packet_count,byte_count,data_volume_mb
+Web,10,32,21335,10386027,9.9
+Video,10,26,103470,109028825,103.98
+Messaging,10,29,113317,124205835,118.45
+VoIP,10,29,9808,2712070,2.59
+File Transfer,10,25,9358,2306599,2.2
+Other,10,48,14199,6143816,5.86

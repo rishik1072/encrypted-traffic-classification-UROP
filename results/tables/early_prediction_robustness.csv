@@ -1,0 +1,6 @@
+observation_point_packets,coverage_percent,accuracy,macro_f1,average_confidence,latency_ms
+3,100.0,0.82,0.8,0.84,0.45
+5,100.0,0.89,0.88,0.89,0.48
+10,85.0,0.94,0.93,0.92,0.51
+20,65.0,0.96,0.95,0.95,0.53
+50,30.0,1.0,1.0,0.98,0.56

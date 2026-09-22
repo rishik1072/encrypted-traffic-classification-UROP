@@ -1,0 +1,2 @@
+session_id,traffic_class,packet_count,byte_count,flow_count,duration,protocol_distribution,validation_status,duplicate_suspected,metadata_completeness
+20260823_144333_web_001_5c95,Web,6082,4670741,6,60.01,TCP:98%;UDP:2%,PASS,False,100%

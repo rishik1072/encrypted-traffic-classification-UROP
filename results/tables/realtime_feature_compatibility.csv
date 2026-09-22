@@ -1,0 +1,22 @@
+feature,offline_available,realtime_available,compatible,reason
+flow_duration,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+forward_packet_count,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+backward_packet_count,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+total_packet_count,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+forward_bytes,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+backward_bytes,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+total_bytes,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+avg_packet_size,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+min_packet_size,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+max_packet_size,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+packet_size_variance,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+mean_iat,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+median_iat,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+iat_std,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+min_iat,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+max_iat,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+fwd_bwd_packet_ratio,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+fwd_bwd_byte_ratio,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+burst_count,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+avg_burst_bytes,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI
+avg_burst_packets,YES,YES,YES,Computed directly from rolling packet timestamp & length arrays without DPI

@@ -1,0 +1,10 @@
+feature_family_set,feature_count,cv_macro_f1_mean,cv_macro_f1_std,cv_accuracy_mean,latency_ms
+F. Flow Statistics Only,6,0.1588,0.0355,0.1827,0.0016
+B. Inter-Arrival Time Only,30,0.1528,0.0392,0.1660,0.0045
+E. Burst Statistics Only,8,0.1513,0.0502,0.1530,0.0023
+G. Packet Size + IAT,60,0.1466,0.0502,0.1495,0.0084
+H. Directional + Burst + Rate,19,0.1455,0.0344,0.1528,0.0035
+A. Packet Size Only,30,0.1350,0.0456,0.1430,0.0048
+I. All Rich Families (65 Features),85,0.1273,0.0258,0.1362,0.0105
+C. Directional Statistics Only,7,0.1259,0.0561,0.1625,0.0023
+D. Rate Statistics Only,4,0.0863,0.0342,0.1491,0.0018

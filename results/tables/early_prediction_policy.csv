@@ -1,0 +1,5 @@
+confidence_threshold,coverage,low_confidence_rate,precision,macro_f1,avg_prediction_packets,avg_prediction_time_s
+0.6,0.1912,0.8088,0.8667,0.8667,10,0.45
+0.7,0.1912,0.8088,0.8667,0.8667,10,0.45
+0.8,0.1912,0.8088,0.8667,0.8667,10,0.45
+0.9,0.0,1.0,0.0,0.0,10,0.45

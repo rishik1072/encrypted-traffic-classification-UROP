@@ -1,0 +1,9 @@
+class,protocol,flow_count,packet_count,byte_count,percentage
+File Transfer,UDP,25,9357,2306465,13.23%
+Messaging,UDP,29,113314,124205277,15.34%
+Other,OTHER,6,43,3582,3.17%
+Other,TCP,1,9,703,0.53%
+Other,UDP,41,14140,6138281,21.69%
+Video,UDP,26,103464,109027697,13.76%
+VoIP,UDP,29,9807,2711936,15.34%
+Web,UDP,32,21333,10385603,16.93%

@@ -1,0 +1,13 @@
+experiment_id,objective,dataset,model,feature_profile,split,primary_metric,secondary_metrics,result_location,status
+EXP-01,Baseline model comparison,dataset_v1,All 4 Models,baseline (21 feats),Group-Aware Random,Macro-F1,Accuracy; Latency; Model Size,results/tables/model_comparison.csv,COMPLETED
+EXP-02,Multi-method feature ranking,dataset_v1,RF / LightGBM,baseline (21 feats),Train / Val,Composite Score,MI Rank; Gini Rank; Permutation Rank,results/tables/feature_ranking.csv,COMPLETED
+EXP-03,Controlled feature reduction,dataset_v1,All 4 Models,K in {21; 15; 10; 5; 3},Train / Val,Macro-F1,Delta F1; Latency Reduction %,results/tables/feature_reduction_performance.csv,COMPLETED
+EXP-04,Model complexity reduction,dataset_v1,RF / DT / LGBM,baseline & reduced,Train / Val,Macro-F1,Inference Latency; Tree Depth,experiments/lightweight_model/complexity_comparison.csv,COMPLETED
+EXP-05,Pareto optimization,dataset_v1,All Configurations,All K subsets,Train / Val,Lightweight Score,Pareto Optimality; Size; Latency,results/tables/feature_model_pareto_frontier.csv,COMPLETED
+EXP-06,Real-time pipeline latency,dataset_v1,LightGBM,lightweight_10,Streaming Window,Single Latency (ms),Extraction Latency; Total Latency,results/tables/realtime_feature_cost.csv,COMPLETED
+EXP-07,Traffic volume load stress,dataset_v1,LightGBM,lightweight_10,Rate Variation (1-100M),Throughput Mbps,Latency; CPU %; Dropped Packets,results/tables/traffic_volume_robustness.csv,COMPLETED
+EXP-08,Capture file generalization,dataset_v1,LightGBM,lightweight_10,Capture Isolated,Macro-F1,Accuracy; Per-class F1,results/tables/generalization_scorecard.csv,COMPLETED
+EXP-09,Session generalization,dataset_v1,LightGBM,lightweight_10,Session Isolated,Macro-F1,Accuracy; Session Counts,results/tables/generalization_scorecard.csv,COMPLETED
+EXP-10,Temporal generalization,dataset_v1,LightGBM,lightweight_10,Chronological Split,Macro-F1,Accuracy; Temporal Gap,results/tables/generalization_scorecard.csv,COMPLETED
+EXP-11,Early prediction robustness,dataset_v1,LightGBM,lightweight_10,N in {3; 5; 10; 20; 50},Macro-F1,Flow Coverage %; Confidence,results/tables/early_prediction_robustness.csv,COMPLETED
+EXP-12,Confidence calibration & ECE,dataset_v1,LightGBM,lightweight_10,Calibration Buckets,ECE,Bucket Accuracy; Calibration Gap,results/tables/calibration_results.csv,COMPLETED

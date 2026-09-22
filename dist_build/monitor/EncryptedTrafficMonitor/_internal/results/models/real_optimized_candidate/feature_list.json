@@ -1,0 +1,12 @@
+[
+  "avg_packet_size",
+  "burst_count",
+  "max_iat",
+  "min_packet_size",
+  "forward_packet_count",
+  "fwd_bwd_byte_ratio",
+  "fwd_bwd_packet_ratio",
+  "total_bytes",
+  "total_packet_count",
+  "avg_burst_bytes"
+]

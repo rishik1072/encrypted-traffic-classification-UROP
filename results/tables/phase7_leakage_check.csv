@@ -1,0 +1,5 @@
+audit_check,status,violations_detected,details
+Session Isolation (Train vs Test),PASS,0,0 session overlap between dev and test
+Parent Flow Disjointness,PASS,0,0 parent flows shared across splits
+Zero-Payload Identifier Scrubbing,PASS,0,No IP/port/session IDs present in feature vectors
+Subflow Balanced Sampling,PASS,0,Capped maximum 20 subflow windows per flow to prevent long flow bias

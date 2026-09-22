@@ -1,0 +1,7 @@
+environment_id,traffic_class,session_count,total_class_sessions,class_session_percentage,bias_risk
+lab_env_win11,File Transfer,10,10,100.00%,UNIFORM_BALANCED
+lab_env_win11,Messaging,10,10,100.00%,UNIFORM_BALANCED
+lab_env_win11,Other,10,10,100.00%,UNIFORM_BALANCED
+lab_env_win11,Video,10,10,100.00%,UNIFORM_BALANCED
+lab_env_win11,VoIP,10,10,100.00%,UNIFORM_BALANCED
+lab_env_win11,Web,10,10,100.00%,UNIFORM_BALANCED

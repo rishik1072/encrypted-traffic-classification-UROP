@@ -1,0 +1,2 @@
+model,feature_count,test_samples,test_sessions,accuracy,macro_f1,weighted_f1,precision_macro,recall_macro,avg_latency_ms,model_size_kb
+decision_tree,10,12,6,0.2500,0.2056,0.2056,0.1806,0.2500,0.0026,0.43

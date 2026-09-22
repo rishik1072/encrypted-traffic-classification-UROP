@@ -1,0 +1,11 @@
+rank,feature_name
+1,flow_duration
+2,total_packet_count
+3,forward_bytes
+4,backward_bytes
+5,total_bytes
+6,min_packet_size
+7,packet_size_variance
+8,fwd_bwd_byte_ratio
+9,avg_burst_bytes
+10,forward_packet_count

@@ -1,0 +1,2 @@
+selected_model,feature_count,selected_features,validation_macro_f1,validation_latency_ms,model_size_mb,selection_rationale
+lightgbm,3,flow_duration; total_packet_count; forward_bytes,0.2778,0.0,0.0003,Selected lightgbm with 3 features (Score: 1.0003). Maintains top validation Macro-F1 (0.2778) while reducing feature dimensions from 21 to 3.

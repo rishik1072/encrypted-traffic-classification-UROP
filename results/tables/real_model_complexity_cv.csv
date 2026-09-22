@@ -1,0 +1,47 @@
+model,hyperparameters,cv_macro_f1_mean,cv_macro_f1_std,cv_accuracy_mean
+decision_tree,"{""max_depth"": 2}",0.1642,0.0570,0.2208
+decision_tree,"{""max_depth"": 3}",0.1642,0.0570,0.2208
+decision_tree,"{""max_depth"": 5}",0.1642,0.0570,0.2208
+decision_tree,"{""max_depth"": 10}",0.1642,0.0570,0.2208
+random_forest,"{""n_estimators"": 25, ""max_depth"": 2}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 25, ""max_depth"": 3}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 25, ""max_depth"": 5}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 25, ""max_depth"": null}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 50, ""max_depth"": 2}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 50, ""max_depth"": 3}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 50, ""max_depth"": 5}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 50, ""max_depth"": null}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 100, ""max_depth"": 2}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 100, ""max_depth"": 3}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 100, ""max_depth"": 5}",0.1548,0.0445,0.1922
+random_forest,"{""n_estimators"": 100, ""max_depth"": null}",0.1548,0.0445,0.1922
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 2, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 2, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 2, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 3, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 3, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 3, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 5, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 5, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 25, ""max_depth"": 5, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 2, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 2, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 2, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 3, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 3, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 3, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 5, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 5, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 50, ""max_depth"": 5, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 2, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 2, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 2, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 3, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 3, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 3, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 5, ""learning_rate"": 0.03}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 5, ""learning_rate"": 0.05}",0.1023,0.0879,0.1195
+lightgbm,"{""n_estimators"": 100, ""max_depth"": 5, ""learning_rate"": 0.1}",0.1023,0.0879,0.1195
+logistic_regression,"{""C"": 0.1}",0.0662,0.0543,0.1567
+logistic_regression,"{""C"": 1.0}",0.0662,0.0543,0.1567
+logistic_regression,"{""C"": 10.0}",0.0662,0.0543,0.1567

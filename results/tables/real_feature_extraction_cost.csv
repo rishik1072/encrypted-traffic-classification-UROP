@@ -1,0 +1,7 @@
+feature_subset,feature_count,extraction_latency_ms,per_flow_computation_cost,memory_overhead_bytes,realtime_compatible
+all_21,21,0.00150,1.50 us,168,YES (< 0.05ms)
+top_15,15,0.00111,1.11 us,120,YES (< 0.05ms)
+top_10,10,0.00081,0.81 us,80,YES (< 0.05ms)
+top_7,7,0.00057,0.57 us,56,YES (< 0.05ms)
+top_5,5,0.00051,0.51 us,40,YES (< 0.05ms)
+top_3,3,0.00038,0.38 us,24,YES (< 0.05ms)

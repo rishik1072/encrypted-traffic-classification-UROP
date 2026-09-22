@@ -1,0 +1,2 @@
+regime,train_days,test_days,train_flows,train_sessions,test_flows,test_sessions,accuracy,macro_f1,weighted_f1,precision_macro,recall_macro
+Temporal Split (Days 1-2 -> Days 3-4),"day_1, day_2 (2026-08-20, 2026-08-21)","day_3, day_4 (2026-08-22, 2026-08-23)",96,48,205,102,0.1415,0.1423,0.1422,0.1447,0.1415

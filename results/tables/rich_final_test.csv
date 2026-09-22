@@ -1,0 +1,2 @@
+model_name,feature_count,test_flows,test_sessions,accuracy,macro_f1,weighted_f1,latency_ms,model_size_kb
+decision_tree,30,12,6,0.2500,0.1074,0.3222,0.0051,0.82

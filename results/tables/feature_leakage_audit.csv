@@ -1,0 +1,28 @@
+feature_name,feature_group,unique_values,variance,near_zero_variance,mutual_information_bits,max_possible_entropy,deterministic_associations,leakage_flag
+max_iat,numerical,189,32.6371,NO,0.6215,2.5456,None,NORMAL
+mean_iat,numerical,189,1.3352,NO,0.5085,2.5456,None,NORMAL
+avg_burst_packets,numerical,132,739166.0435,NO,0.4850,2.5456,None,NORMAL
+forward_packet_count,numerical,127,18051258.5503,NO,0.4789,2.5456,None,NORMAL
+total_packet_count,numerical,127,18051258.5503,NO,0.4789,2.5456,None,NORMAL
+fwd_bwd_packet_ratio,numerical,127,18051258.5503,NO,0.4789,2.5456,None,NORMAL
+iat_std,numerical,189,3.8268,NO,0.4552,2.5456,None,NORMAL
+max_packet_size,numerical,26,339772.6657,NO,0.4190,2.5456,Val '1385.0' (n=7) -> 100% Other,SUSPICIOUS_DETERMINISTIC_LEAK
+burst_count,numerical,17,22.4389,NO,0.4067,2.5456,None,NORMAL
+flow_duration,numerical,189,711.5312,NO,0.4007,2.5456,None,NORMAL
+avg_burst_bytes,numerical,136,1131022874886.0920,NO,0.3924,2.5456,None,NORMAL
+avg_packet_size,numerical,133,88411.3165,NO,0.3848,2.5456,None,NORMAL
+median_iat,numerical,164,0.1704,NO,0.3718,2.5456,None,NORMAL
+forward_bytes,numerical,139,30045234920314.1602,NO,0.3462,2.5456,None,NORMAL
+total_bytes,numerical,139,30045234920314.1602,NO,0.3462,2.5456,None,NORMAL
+fwd_bwd_byte_ratio,numerical,139,30045234920314.1602,NO,0.3462,2.5456,None,NORMAL
+packet_size_variance,numerical,131,8724475798.5831,NO,0.3193,2.5456,None,NORMAL
+dst_port,categorical,9,N/A,NO,0.3155,2.5456,Val '50468' (n=6) -> 100% Other; Val '0' (n=6) -> 100% Other,SUSPICIOUS_DETERMINISTIC_LEAK
+min_iat,numerical,99,0.1377,NO,0.2896,2.5456,None,NORMAL
+min_packet_size,numerical,11,2157.2326,NO,0.1359,2.5456,Val '108.0' (n=6) -> 100% Other; Val '104.0' (n=6) -> 100% Other,SUSPICIOUS_DETERMINISTIC_LEAK
+protocol,categorical,3,N/A,NO,0.0763,2.5456,Val 'OTHER' (n=6) -> 100% Other,SUSPICIOUS_DETERMINISTIC_LEAK
+backward_packet_count,numerical,1,0.0000,YES,0.0000,2.5456,None,NORMAL
+backward_bytes,numerical,1,0.0000,YES,0.0000,2.5456,None,NORMAL
+tls_version,tls,1,N/A,YES,0.0000,2.5456,None,NORMAL
+tls_cipher_suites_count,tls,1,N/A,YES,0.0000,2.5456,None,NORMAL
+tls_extensions_count,tls,1,N/A,YES,0.0000,2.5456,None,NORMAL
+tls_sni_present,tls,1,N/A,YES,0.0000,2.5456,None,NORMAL

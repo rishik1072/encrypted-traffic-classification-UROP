@@ -1,0 +1,13 @@
+metric,value
+total_flows,12
+valid_flows,11
+removed_flows,1
+duplicate_flows,1
+missing_value_rows,0
+invalid_value_rows,0
+class_count_File Transfer,2
+class_count_Messaging,2
+class_count_Other,2
+class_count_Video,2
+class_count_VoIP,1
+class_count_Web,2

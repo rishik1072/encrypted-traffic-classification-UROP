@@ -1,0 +1,19 @@
+split,traffic_class,flow_count,session_count,percentage_of_split
+Train,File Transfer,14,7,16.47%
+Train,Messaging,14,7,16.47%
+Train,Other,15,7,17.65%
+Train,Video,14,7,16.47%
+Train,VoIP,14,7,16.47%
+Train,Web,14,7,16.47%
+Validation,File Transfer,4,2,16.67%
+Validation,Messaging,4,2,16.67%
+Validation,Other,4,2,16.67%
+Validation,Video,4,2,16.67%
+Validation,VoIP,4,2,16.67%
+Validation,Web,4,2,16.67%
+Test,File Transfer,2,1,16.67%
+Test,Messaging,2,1,16.67%
+Test,Other,2,1,16.67%
+Test,Video,2,1,16.67%
+Test,VoIP,2,1,16.67%
+Test,Web,2,1,16.67%

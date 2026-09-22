@@ -1,0 +1,6 @@
+rank,feature_name
+1,flow_duration
+2,total_packet_count
+3,forward_bytes
+4,backward_bytes
+5,total_bytes

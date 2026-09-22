@@ -1,0 +1,11 @@
+metadata_variable,data_level,unique_values,mutual_information_bits,class_entropy_bits,confounder_risk,deterministic_associations,recommendation
+session_sequence_index,session_metadata,60,1.7813,2.5850,HIGH_CONFOUNDER_RISK,None,STRICTLY_EXCLUDE_FROM_FEATURES
+byte_count,session_metadata,60,0.8600,2.5850,LOW_NO_BIAS,None,BENIGN_METRIC
+packet_count,session_metadata,59,0.5714,2.5850,LOW_NO_BIAS,None,BENIGN_METRIC
+flow_count,session_metadata,7,0.3846,2.5850,LOW_NO_BIAS,None,BENIGN_METRIC
+capture_duration,session_metadata,3,0.2265,2.5850,LOW_NO_BIAS,None,BENIGN_METRIC
+environment_id,session_metadata,1,0.0000,2.5850,LOW_NO_BIAS,None,STRICTLY_EXCLUDE_FROM_FEATURES
+device_id,session_metadata,1,0.0000,2.5850,LOW_NO_BIAS,None,STRICTLY_EXCLUDE_FROM_FEATURES
+dataset_id,session_metadata,1,0.0000,2.5850,LOW_NO_BIAS,None,BENIGN_METRIC
+capture_source,session_metadata,1,0.0000,2.5850,LOW_NO_BIAS,None,BENIGN_METRIC
+capture_date,session_metadata,1,0.0000,2.5850,LOW_NO_BIAS,None,BENIGN_METRIC

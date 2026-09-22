@@ -1,0 +1,6 @@
+component,latency_us
+Feature Extraction (Zero-Payload),8.93
+Stage 1 Coarse Inference,283.11
+Stage 2 Fine Inference,1062.4
+Composed Probability & Routing,1345.51
+Total End-to-End Latency per Flow,1354.44

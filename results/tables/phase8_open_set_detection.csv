@@ -1,0 +1,7 @@
+holdout_unknown_class,unknown_samples,known_samples,unknown_rejection_rate,unknown_detection_precision,auroc,auprc
+Web,48,241,1.0,0.1661,0.5,0.3161
+Video,48,241,1.0,0.1661,0.5,0.3161
+Messaging,48,241,1.0,0.1661,0.5,0.3161
+VoIP,48,241,1.0,0.1661,0.5,0.3161
+File Transfer,48,241,1.0,0.1661,0.5,0.3161
+Other,49,240,1.0,0.1696,0.5,0.3196

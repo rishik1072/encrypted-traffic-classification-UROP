@@ -1,0 +1,5 @@
+model,ece,brier_score,reliability_slope
+Hierarchical Decision Tree (Uncalibrated),0.214,0.165,0.76
+Hierarchical + Platt Scaling (Logistic),0.072,0.102,0.95
+Hierarchical + Isotonic Regression,0.061,0.098,0.99
+Flat Decision Tree Baseline,0.2415,0.1824,0.72

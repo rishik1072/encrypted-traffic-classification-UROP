@@ -1,0 +1,2 @@
+regime,known_variants_count,novel_variants_count,train_flows,train_sessions,test_flows,test_sessions,accuracy,macro_f1,weighted_f1,precision_macro,recall_macro
+Activity Variant Split (Known 3/class -> Unseen 2/class),18,12,188,94,113,56,0.2035,0.2030,0.1989,0.2054,0.2082

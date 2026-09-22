@@ -1,0 +1,4 @@
+component,mean_latency_us,throughput_windows_per_sec
+Temporal Feature Extractor (20 feats),24.61,40638
+Decision Tree Inference (depth 5),2.74,364710
+End-to-End Pipeline (Extract + Predict),27.35,36564

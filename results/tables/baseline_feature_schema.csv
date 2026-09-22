@@ -1,0 +1,22 @@
+feature_name,feature_type,description,available_realtime,source_module
+flow_duration,Numerical (float/int),Total active duration of bidirectional session in seconds,YES,preprocessing.feature_extractor
+forward_packet_count,Numerical (float/int),Total packet count transmitted from initiator to receiver,YES,preprocessing.feature_extractor
+backward_packet_count,Numerical (float/int),Total packet count transmitted from receiver to initiator,YES,preprocessing.feature_extractor
+total_packet_count,Numerical (float/int),Sum of forward and backward packets in flow,YES,preprocessing.feature_extractor
+forward_bytes,Numerical (float/int),Total payload and header bytes in forward direction,YES,preprocessing.feature_extractor
+backward_bytes,Numerical (float/int),Total payload and header bytes in backward direction,YES,preprocessing.feature_extractor
+total_bytes,Numerical (float/int),Sum of bidirectional transmitted bytes,YES,preprocessing.feature_extractor
+avg_packet_size,Numerical (float/int),Mean size of all packets in the flow in bytes,YES,preprocessing.feature_extractor
+min_packet_size,Numerical (float/int),Minimum packet size observed in flow in bytes,YES,preprocessing.feature_extractor
+max_packet_size,Numerical (float/int),Maximum packet size observed in flow in bytes,YES,preprocessing.feature_extractor
+packet_size_variance,Numerical (float/int),Statistical variance of packet sizes,YES,preprocessing.feature_extractor
+mean_iat,Numerical (float/int),Mean inter-arrival time between consecutive packets (seconds),YES,preprocessing.feature_extractor
+median_iat,Numerical (float/int),Median inter-arrival time between consecutive packets,YES,preprocessing.feature_extractor
+iat_std,Numerical (float/int),Standard deviation of packet inter-arrival times,YES,preprocessing.feature_extractor
+min_iat,Numerical (float/int),Minimum observed inter-arrival time (seconds),YES,preprocessing.feature_extractor
+max_iat,Numerical (float/int),Maximum observed inter-arrival time (seconds),YES,preprocessing.feature_extractor
+fwd_bwd_packet_ratio,Numerical (float/int),Ratio of forward packet count to backward packet count,YES,preprocessing.feature_extractor
+fwd_bwd_byte_ratio,Numerical (float/int),Ratio of forward byte volume to backward byte volume,YES,preprocessing.feature_extractor
+burst_count,Numerical (float/int),Number of consecutive transmission bursts (IAT < threshold),YES,preprocessing.feature_extractor
+avg_burst_bytes,Numerical (float/int),Mean volume in bytes per transmission burst,YES,preprocessing.feature_extractor
+avg_burst_packets,Numerical (float/int),Mean packet count per transmission burst,YES,preprocessing.feature_extractor

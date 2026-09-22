@@ -1,0 +1,22 @@
+consensus_rank,feature,importance_score,methods_supporting_feature
+1,flow_duration,0.057234,Mutual Information; Random Forest; LightGBM; Permutation
+2,total_packet_count,0.057234,Mutual Information; Random Forest; LightGBM; Permutation
+3,forward_bytes,0.057234,Mutual Information; Random Forest; LightGBM; Permutation
+4,backward_bytes,0.057234,Mutual Information; Random Forest; LightGBM; Permutation
+5,total_bytes,0.057234,Mutual Information; Random Forest; LightGBM; Permutation
+6,min_packet_size,0.057234,Mutual Information; Random Forest; LightGBM; Permutation
+7,packet_size_variance,0.057234,Permutation
+8,fwd_bwd_byte_ratio,0.057234,Permutation
+9,avg_burst_bytes,0.057234,Permutation
+10,forward_packet_count,0.053389,Mutual Information; Random Forest; LightGBM; Permutation
+11,avg_packet_size,0.051464,Mutual Information; Random Forest; LightGBM
+12,max_packet_size,0.049543,Mutual Information; Random Forest; LightGBM
+13,fwd_bwd_packet_ratio,0.049543,None (Lower Tier)
+14,backward_packet_count,0.047619,Mutual Information; Random Forest; LightGBM
+15,avg_burst_packets,0.047619,None (Lower Tier)
+16,mean_iat,0.030952,None (Lower Tier)
+17,median_iat,0.030952,None (Lower Tier)
+18,iat_std,0.030952,None (Lower Tier)
+19,min_iat,0.030952,None (Lower Tier)
+20,max_iat,0.030952,None (Lower Tier)
+21,burst_count,0.030952,None (Lower Tier)

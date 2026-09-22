@@ -1,0 +1,5 @@
+model,total_test_samples,total_misclassifications,error_rate,top_confused_pairs,low_confidence_predictions
+logistic_regression,5,5,1.0,Web -> File Transfer (1); Video -> Web (1); Messaging -> File Transfer (1),0
+decision_tree,5,5,1.0,Web -> Other (1); Video -> Messaging (1); Messaging -> Video (1),0
+random_forest,5,5,1.0,Web -> VoIP (1); Video -> Messaging (1); Messaging -> File Transfer (1),0
+lightgbm,5,3,0.6,Video -> Messaging (1); Messaging -> VoIP (1); Other -> Video (1),0

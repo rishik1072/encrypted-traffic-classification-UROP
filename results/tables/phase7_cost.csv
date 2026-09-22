@@ -1,0 +1,5 @@
+component,latency_us
+Window-level Extraction (21 feats),20.91
+Sequence Aggregation (193 feats),151.89
+Sequence Model Inference,20.09
+Total Pipeline Latency per Flow Step,192.89

@@ -1,0 +1,6 @@
+milestone,windows_required,packets_required,elapsed_s,coverage,macro_f1,accuracy
+Window 1 (Initial burst),1,10,2.0,1.0,0.1742,0.18
+Window 2 (Early subflow),2,18,3.0,0.996,0.1895,0.195
+Window 4 (Stable subflow),4,32,5.0,0.996,0.1984,0.201
+Window 8 (Deep subflow),8,64,9.0,0.99,0.1912,0.194
+Full Sequence,20,100,21.0,0.99,0.1845,0.189

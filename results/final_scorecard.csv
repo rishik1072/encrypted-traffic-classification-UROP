@@ -1,0 +1,10 @@
+phase,evaluation_type,model_architecture,feature_set,sample_count,accuracy,macro_f1,accepted_coverage,p95_latency_ms,primary_finding
+Phase 1,Data Collection & Pipeline,Baseline Capture,Raw Metadata,12 Sessions (60 Flows),N/A,N/A,N/A,N/A,Successful payload-agnostic multi-class WireGuard/WARP capture pipeline established
+Phase 2,Initial Model Benchmarking,LightGBM/RF/DT/LR,Lightweight-10,60 Flows,0.3667,0.1444,1.0000,0.0031,Monolithic 6-class classification demonstrates low macro-F1 due to severe outer tunnel packet homogenization
+Phase 3,Feature Expansion Exploration,LightGBM,Rich-21,60 Flows,0.3500,0.1389,1.0000,0.0034,Adding packet burst and ratio features does not break outer tunnel VPN encryption veil
+Phase 4,Temporal & Window Segmentation,Temporal-LightGBM,Subflow Slices,60 Flows,0.3667,0.1444,1.0000,0.0032,Subflow slicing preserves macro volume but fine-grained separation remains flat
+Phase 5,Hyperparameter & Cost Tuning,Tuned-LightGBM,Lightweight-10,60 Flows,0.3667,0.1444,1.0000,0.0029,Bayesian & grid search confirm model capacity is not the bottleneck; information limit reached
+Phase 6,Generalization & Session Splitting,LightGBM,Lightweight-10,Held-Out Splits,0.2500,0.1000,1.0000,0.0030,Cross-session evaluation reveals significant domain shift under dynamic network interfaces
+Phase 7,Sequential Multi-Stage Pipeline,Two-Stage Cascaded,Lightweight-10,60 Flows,0.3667,0.1444,1.0000,0.0041,Cascaded application classifiers inherit upstream outer tunnel error propagation
+Phase 8,Hierarchical Coarse + Abstention,Hierarchical-LightGBM,Lightweight-10,60 Flows,0.3833,0.3644,0.1793,0.0045,Coarse super-family separation (Bulk vs Interactive) is learnable; selective abstention avoids false alarms
+Phase 9,Production Real-Time SOC System,Streaming LightGBM Engine,Lightweight-10,15000 Pkts Benchmark,N/A (Streaming),N/A (Streaming),0.9333,0.9103,"Sub-millisecond real-time streaming SOC console, zero-payload privacy, and fail-closed model registry verified"

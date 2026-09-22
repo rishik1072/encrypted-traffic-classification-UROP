@@ -1,0 +1,7 @@
+traffic_class,flow_count,percentage,avg_duration_seconds,avg_packet_count,avg_total_bytes
+Web,2,18.18,0.4,9.0,1301.0
+Video,2,18.18,0.9,19.0,3463.0
+Messaging,2,18.18,0.5,11.0,1699.0
+VoIP,1,9.09,0.7,15.0,2430.0
+File Transfer,2,18.18,1.125,23.5,5099.0
+Other,2,18.18,0.35,8.0,1016.0

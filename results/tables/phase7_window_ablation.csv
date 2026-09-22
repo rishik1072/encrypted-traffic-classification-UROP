@@ -1,0 +1,13 @@
+window_scale,window_duration_s,stride_s,model_name,total_subflow_windows,feature_count,macro_f1,macro_f1_std,accuracy,latency_us
+1.0s Window / 0.5s Stride,1.0,0.5,decision_tree,5780,21,0.1688,0.0126,0.1704,2.8
+1.0s Window / 0.5s Stride,1.0,0.5,random_forest,5780,21,0.1587,0.0106,0.16,2.8
+1.0s Window / 0.5s Stride,1.0,0.5,lightgbm,5780,21,0.1707,0.0091,0.171,2.8
+1.0s Window / 0.5s Stride,1.0,0.5,logistic_regression,5780,21,0.0869,0.0108,0.1911,2.8
+2.0s Window / 1.0s Stride,2.0,1.0,decision_tree,5772,21,0.1669,0.0062,0.1678,2.8
+2.0s Window / 1.0s Stride,2.0,1.0,random_forest,5772,21,0.1654,0.0104,0.1657,2.8
+2.0s Window / 1.0s Stride,2.0,1.0,lightgbm,5772,21,0.1636,0.0056,0.164,2.8
+2.0s Window / 1.0s Stride,2.0,1.0,logistic_regression,5772,21,0.0831,0.0097,0.191,2.8
+5.0s Window / 2.0s Stride,5.0,2.0,decision_tree,5766,21,0.17,0.014,0.1704,2.8
+5.0s Window / 2.0s Stride,5.0,2.0,random_forest,5766,21,0.1737,0.0097,0.1745,2.8
+5.0s Window / 2.0s Stride,5.0,2.0,lightgbm,5766,21,0.1664,0.0126,0.1664,2.8
+5.0s Window / 2.0s Stride,5.0,2.0,logistic_regression,5766,21,0.0818,0.0081,0.1884,2.8

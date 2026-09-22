@@ -1,0 +1,15 @@
+{
+  "app_name": "Encrypted Traffic Monitor",
+  "version": "1.0.0",
+  "build_date": "2026-08-26",
+  "platform": "Windows 10/11 x64",
+  "model_id": "model_lightgbm_v1",
+  "model_name": "lightgbm",
+  "model_hash": "a5a65da6d74e9b3e61e654ac6a81066aaf2b247996b8364d6d71d826023c08cd",
+  "preprocessor_hash": "a4b16727401d19417572f97d7b66656adf2f9d1964a53bf5eefcca8c35351e21",
+  "schema_hash": "9178786dc46dba8800c66b551c3ebcf78034f357f53405bf6b2ed70b40d88101",
+  "feature_profile": "lightweight_10",
+  "privacy_mode": "ZERO_PAYLOAD_LOCAL_ONLY",
+  "capture_engine": "Npcap / Scapy",
+  "dashboard": "Streamlit SOC Console"
+}
