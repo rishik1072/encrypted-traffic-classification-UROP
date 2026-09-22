@@ -1,16 +1,24 @@
+# ==============================================================================
+# Git Ignore Configuration: Real-Time Encrypted Traffic Classification
+# ==============================================================================
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
 
-# Distribution / packaging
-.Python
+# C extensions & dynamic libraries
+*.dll
+*.dylib
+
+# PyInstaller / Build / Distribution Artifacts
 build/
-develop-eggs/
 dist/
+dist_build/
+*.spec.bak
+.Python
+develop-eggs/
 downloads/
 eggs/
 .eggs/
@@ -24,6 +32,13 @@ wheels/
 .installed.cfg
 *.egg
 
+# Archives & recursive bundles
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+
 # Virtual environments
 venv/
 env/
@@ -35,24 +50,36 @@ ENV/
 .idea/
 *.swp
 *.swo
+*~
 
-# Testing / Coverage
+# Testing & Coverage
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
 
-# Data and Artifacts
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-data/external/*
-!data/external/.gitkeep
+# Runtime Logs
+*.log
+packaged_runtime.log
+results/realtime/*.log
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Large Raw PCAP Captures (Keep manifests & metadata, exclude heavy binary captures)
 *.pcap
 *.pcapng
 *.cap
+!data/raw/pcap/*.pcap
 
-# Saved models and logs
-*.joblib
-*.pkl
-*.log
+# Temporary scratch & cache directories
+scratch/
+tmp/
+temp/
+

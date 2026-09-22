@@ -1,0 +1,1065 @@
+{
+  "manifest_version": "1.0.0",
+  "generated_at": "2026-09-22T09:34:15.266123+00:00",
+  "codebase_version": "0dea637199",
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.7",
+    "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "machine": "Rouge017"
+  },
+  "dataset": {
+    "dataset_id": "dataset_v2",
+    "version": "2.0.0",
+    "origin": "REAL_DATA",
+    "flow_count": 301,
+    "session_count": 150,
+    "traffic_classes": [
+      "Web",
+      "Video",
+      "Messaging",
+      "VoIP",
+      "File Transfer",
+      "Other"
+    ],
+    "checksum_sha256": "cd3193ecdd2ecb4859ba6b23bb75153571e205930f05fa2dc7323fcfc1a2c16d"
+  },
+  "feature_profile": "lightweight_10",
+  "split_strategy": "group_aware_session_split",
+  "random_seed": 42,
+  "model_versions": {
+    "lightgbm": "1.0.0",
+    "random_forest": "1.0.0",
+    "decision_tree": "1.0.0",
+    "logistic_regression": "1.0.0"
+  },
+  "experiments": {
+    "EXP-R09": {
+      "experiment_id": "EXP-R09",
+      "name": "Research Baseline Benchmark (Group-Aware)",
+      "dataset_id": "dataset_v2",
+      "feature_profile": "canonical_21",
+      "models": [
+        "logistic_regression",
+        "decision_tree",
+        "random_forest",
+        "lightgbm"
+      ],
+      "split_strategy": "group_aware_session_split",
+      "seed": 42,
+      "artifact": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\research_baseline.csv"
+    },
+    "EXP-R10_ablation": {
+      "experiment_id": "EXP-R10",
+      "sub_study": "feature_family_ablation",
+      "families": [
+        "packet_size",
+        "timing",
+        "counts_bytes",
+        "direction",
+        "burst",
+        "all_families"
+      ],
+      "artifact": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\feature_family_ablation_research.csv"
+    },
+    "EXP-R10_reduction": {
+      "experiment_id": "EXP-R10",
+      "sub_study": "feature_count_tradeoff",
+      "selected_profile": "profile_10_features",
+      "candidate_counts": [
+        3,
+        5,
+        10,
+        15,
+        20,
+        30,
+        84
+      ],
+      "artifact": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\feature_count_tradeoff_research.csv"
+    },
+    "EXP-R11": {
+      "experiment_id": "EXP-R11",
+      "name": "Research Generalization Benchmark",
+      "regimes_count": 8,
+      "artifact": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\research_generalization_scorecard.csv"
+    },
+    "EXP-R12": {
+      "experiment_id": "EXP-R12",
+      "name": "Early Encrypted-Traffic Classification Study",
+      "observation_points": [
+        3,
+        5,
+        10,
+        20,
+        30,
+        50,
+        "full_flow"
+      ],
+      "artifact": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\research_early_prediction.csv"
+    },
+    "EXP-R13": {
+      "experiment_id": "EXP-R13",
+      "name": "Selective Classification & Uncertainty Calibration",
+      "thresholds": [
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9
+      ],
+      "artifact_selective": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\research_selective_prediction.csv",
+      "artifact_calibration": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\research_calibration.csv"
+    },
+    "EXP-R14": {
+      "experiment_id": "EXP-R14",
+      "name": "Computational Efficiency Benchmark",
+      "machine": "Rouge017",
+      "cpu": "12th Gen Intel(R) Core(TM) i5-12500H",
+      "ram_gb": 15.69,
+      "artifact_latency": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\research_latency.csv",
+      "artifact_resource": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\research_resource_usage.csv",
+      "artifact_footprint": "C:\\UROP project\\encrypted-traffic-classification-UROP\\results\\tables\\research_model_footprint.csv"
+    }
+  },
+  "stages_executed": [
+    "1_environment_verification",
+    "2_dataset_verification",
+    "3_dataset_quality_audit",
+    "4_leakage_audit",
+    "5_baseline_benchmark",
+    "6_feature_ablation",
+    "7_feature_reduction",
+    "8_model_comparison",
+    "9_generalization_experiments",
+    "10_early_prediction",
+    "11_selective_prediction",
+    "12_latency_benchmark",
+    "13_result_aggregation",
+    "14_figure_generation"
+  ],
+  "stage_timings": {
+    "1_environment_verification": {
+      "duration_sec": 1.159
+    },
+    "2_dataset_verification": {
+      "duration_sec": 0.001
+    },
+    "3_dataset_quality_audit": {
+      "duration_sec": 0.007
+    },
+    "4_leakage_audit": {
+      "duration_sec": 0.002
+    },
+    "5_baseline_benchmark": {
+      "duration_sec": 14.342
+    },
+    "6_feature_ablation": {
+      "duration_sec": 39.349
+    },
+    "7_feature_reduction": {
+      "duration_sec": 47.094
+    },
+    "8_model_comparison": {
+      "duration_sec": 0.0
+    },
+    "9_generalization_experiments": {
+      "duration_sec": 34.572
+    },
+    "10_early_prediction": {
+      "duration_sec": 4.546
+    },
+    "11_selective_prediction": {
+      "duration_sec": 1.025
+    },
+    "12_latency_benchmark": {
+      "duration_sec": 26.866
+    },
+    "13_result_aggregation": {
+      "duration_sec": 0.003
+    },
+    "14_figure_generation": {
+      "duration_sec": 0.002
+    }
+  },
+  "artifact_paths": {
+    "tables": {
+      "activity_variant_generalization.csv": {
+        "path": "results\\tables\\activity_variant_generalization.csv",
+        "size_bytes": 274,
+        "sha256": "a037c78612fb8ec024081f8e82bd5179ac85dbdaa7e7c289eca120b437e74e56"
+      },
+      "baseline_feature_schema.csv": {
+        "path": "results\\tables\\baseline_feature_schema.csv",
+        "size_bytes": 2674,
+        "sha256": "2632bf78ae931cf49ccd65919a9fc1855a4527c73b4dc97a7f893bac32e8c426"
+      },
+      "calibration_results.csv": {
+        "path": "results\\tables\\calibration_results.csv",
+        "size_bytes": 229,
+        "sha256": "b81e90f595b4355da0ecee8c83be9b9b4c4a6350a1ccb42ba241fd4ffe866362"
+      },
+      "capture_quality_report.csv": {
+        "path": "results\\tables\\capture_quality_report.csv",
+        "size_bytes": 236,
+        "sha256": "b4cc7f6d8c51075742c0b4306cfd034f6a6e9fb56811692efca695711068a822"
+      },
+      "class_distribution.csv": {
+        "path": "results\\tables\\class_distribution.csv",
+        "size_bytes": 286,
+        "sha256": "d31c5cee056865179fb95ef7de49f8ab4cd2f1c1c85e1e9be3b39491dca8bfc0"
+      },
+      "class_protocol_distribution.csv": {
+        "path": "results\\tables\\class_protocol_distribution.csv",
+        "size_bytes": 340,
+        "sha256": "9886f6e200d563d482ff20daa02c4a0f765a5a929034cbaf1a2e8aae4689fc19"
+      },
+      "collection_bias.csv": {
+        "path": "results\\tables\\collection_bias.csv",
+        "size_bytes": 997,
+        "sha256": "1646263f514ad09cf4462fbc44049150d618554d678576d1ec2ac5df60289246"
+      },
+      "collection_class_distribution.csv": {
+        "path": "results\\tables\\collection_class_distribution.csv",
+        "size_bytes": 250,
+        "sha256": "73790308efd062222960b2a90936c84d43f2263df8da416fd6cf95bc42a62f75"
+      },
+      "condition_robustness.csv": {
+        "path": "results\\tables\\condition_robustness.csv",
+        "size_bytes": 525,
+        "sha256": "af03e3ee647951044a94d28a1b209d6ae3bcba44a1245cbdf53e50707e53fc56"
+      },
+      "cross_dataset_results.csv": {
+        "path": "results\\tables\\cross_dataset_results.csv",
+        "size_bytes": 272,
+        "sha256": "807b677a4cedd8ceccfa9f4d1f9d0849737a4ef3fdb04e11e23fad4d5e3f422a"
+      },
+      "dataset_cleaning_report.csv": {
+        "path": "results\\tables\\dataset_cleaning_report.csv",
+        "size_bytes": 261,
+        "sha256": "dc92ffcc60eccf6e3b10d2e25415d9656fd6bb61c2ada25f80ff8576e67af207"
+      },
+      "dataset_quality_report.csv": {
+        "path": "results\\tables\\dataset_quality_report.csv",
+        "size_bytes": 245,
+        "sha256": "61749dc6d201117d556fdf48ac3f6b7d833e05b0920c7a04dc5536cdb2a20397"
+      },
+      "dataset_version_manifest.csv": {
+        "path": "results\\tables\\dataset_version_manifest.csv",
+        "size_bytes": 14994,
+        "sha256": "004dafc557e182069f1b9a34b021258bd2f53414ec116cacaf0c29e48a5e565f"
+      },
+      "early_prediction_policy.csv": {
+        "path": "results\\tables\\early_prediction_policy.csv",
+        "size_bytes": 267,
+        "sha256": "28bae81f79ed05ab736efae0c0fabdd702fee1ce654402363e3eeb6cf75c50e0"
+      },
+      "early_prediction_robustness.csv": {
+        "path": "results\\tables\\early_prediction_robustness.csv",
+        "size_bytes": 234,
+        "sha256": "170315e2c7a5409664ee0927b41c9a2eeb2c1d3315de053fff94ba2dd8ec058a"
+      },
+      "environment_class_distribution.csv": {
+        "path": "results\\tables\\environment_class_distribution.csv",
+        "size_bytes": 421,
+        "sha256": "d76f025d020d62d2eadc413d35cc0b8ef172b0e6f58e98233fb5b68213841003"
+      },
+      "environment_generalization.csv": {
+        "path": "results\\tables\\environment_generalization.csv",
+        "size_bytes": 442,
+        "sha256": "d2d1d40223bfcfbb75ebde2543563af1eca19ba36865121dd11a00364e458574"
+      },
+      "error_analysis.csv": {
+        "path": "results\\tables\\error_analysis.csv",
+        "size_bytes": 487,
+        "sha256": "cf66c386fb99f54e26c1256d9a9d5d8a6e9bfe78b773acbb25ef740c726fac3a"
+      },
+      "feature_class_separability.csv": {
+        "path": "results\\tables\\feature_class_separability.csv",
+        "size_bytes": 2062,
+        "sha256": "c5764faf9704e2ff143678b82ad2906a2d1d721c1bc838a98788ea688ffed607"
+      },
+      "feature_correlation.csv": {
+        "path": "results\\tables\\feature_correlation.csv",
+        "size_bytes": 3055,
+        "sha256": "46ffcdc645f90733ff1743edbb17370259a10cb3fd7c5d9e15b5b96703e08d05"
+      },
+      "feature_count_tradeoff_research.csv": {
+        "path": "results\\tables\\feature_count_tradeoff_research.csv",
+        "size_bytes": 1485,
+        "sha256": "553e4f5e1f724b288c1e0e9903dfd30ebbdc6cf035a009295067db156a29a1f4"
+      },
+      "feature_experiment_manifest.csv": {
+        "path": "results\\tables\\feature_experiment_manifest.csv",
+        "size_bytes": 1393,
+        "sha256": "4b5e288505f68e503d493a79722e5b1d75a89d17380e6065b6f157e93b1fd16b"
+      },
+      "feature_family_ablation.csv": {
+        "path": "results\\tables\\feature_family_ablation.csv",
+        "size_bytes": 616,
+        "sha256": "8fa6309e5728e50c2b70527bc3ac719293882baec7c205cb44aa9718b48f5358"
+      },
+      "feature_family_ablation_research.csv": {
+        "path": "results\\tables\\feature_family_ablation_research.csv",
+        "size_bytes": 1063,
+        "sha256": "6003f6c36b38806699510157a36c138414e64db96b1736f3bff8c717758f7471"
+      },
+      "feature_importance_consensus.csv": {
+        "path": "results\\tables\\feature_importance_consensus.csv",
+        "size_bytes": 1359,
+        "sha256": "8f303526eb23db3930be2e10342b6969947a6c96bfa2f93b928cbee1ae99ffcb"
+      },
+      "feature_importance_decision_tree.csv": {
+        "path": "results\\tables\\feature_importance_decision_tree.csv",
+        "size_bytes": 610,
+        "sha256": "8dc60384ceff2c53fbdd97b4c2b21a993f8ca312c87f3d053c426d9e77878498"
+      },
+      "feature_importance_lightgbm.csv": {
+        "path": "results\\tables\\feature_importance_lightgbm.csv",
+        "size_bytes": 610,
+        "sha256": "8dc60384ceff2c53fbdd97b4c2b21a993f8ca312c87f3d053c426d9e77878498"
+      },
+      "feature_importance_logistic_regression.csv": {
+        "path": "results\\tables\\feature_importance_logistic_regression.csv",
+        "size_bytes": 610,
+        "sha256": "8dc60384ceff2c53fbdd97b4c2b21a993f8ca312c87f3d053c426d9e77878498"
+      },
+      "feature_importance_random_forest.csv": {
+        "path": "results\\tables\\feature_importance_random_forest.csv",
+        "size_bytes": 610,
+        "sha256": "8dc60384ceff2c53fbdd97b4c2b21a993f8ca312c87f3d053c426d9e77878498"
+      },
+      "feature_leakage_audit.csv": {
+        "path": "results\\tables\\feature_leakage_audit.csv",
+        "size_bytes": 2252,
+        "sha256": "07c9b8944e20c2727d7225040605c06073a70ba60e105a2e45ca5fe6a21c1d2f"
+      },
+      "feature_model_pareto_frontier.csv": {
+        "path": "results\\tables\\feature_model_pareto_frontier.csv",
+        "size_bytes": 1101,
+        "sha256": "40f1950c34ce097d068c919ec40098de4f5a884b2723e7404368ba3365b661ff"
+      },
+      "feature_ranking.csv": {
+        "path": "results\\tables\\feature_ranking.csv",
+        "size_bytes": 910,
+        "sha256": "b6bf53d16777b525e4ad7399b15a742837a3d0b0dd3a58ca515d994821da14e1"
+      },
+      "feature_reduction_performance.csv": {
+        "path": "results\\tables\\feature_reduction_performance.csv",
+        "size_bytes": 1472,
+        "sha256": "8d1836cd118ffaf79184b6553dad34dfd2d1a3be170f59db6b715030dc82d093"
+      },
+      "feature_statistics.csv": {
+        "path": "results\\tables\\feature_statistics.csv",
+        "size_bytes": 1083,
+        "sha256": "46e00eb1eb34b5b30e7751ac2a1b001bf5f2dc4a5bb97f45964e3c374c12166e"
+      },
+      "final_configuration.csv": {
+        "path": "results\\tables\\final_configuration.csv",
+        "size_bytes": 345,
+        "sha256": "151e2146bb0c826cee80d5e9155ac4912e3ba227fd9e29bbb45a6d81540b2d08"
+      },
+      "final_experiment_matrix.csv": {
+        "path": "results\\tables\\final_experiment_matrix.csv",
+        "size_bytes": 2338,
+        "sha256": "4671044e4a5dac3b584222bf763c07247bb3d1d6ecf9eec60e91df51ba7b4100"
+      },
+      "final_results_summary.csv": {
+        "path": "results\\tables\\final_results_summary.csv",
+        "size_bytes": 1025,
+        "sha256": "a052398d495946c7e65caac36ee2317d5c30f43e3d12799c4a4b043efca7ca4c"
+      },
+      "final_test_matrix.csv": {
+        "path": "results\\tables\\final_test_matrix.csv",
+        "size_bytes": 1270,
+        "sha256": "3440d507fc4f2d72387685cbdda7174184dea70877ff29ebc4bee4f660789e37"
+      },
+      "final_test_results.csv": {
+        "path": "results\\tables\\final_test_results.csv",
+        "size_bytes": 151,
+        "sha256": "a14d7d88ed111d8e713ec5e77dda5e089892c82c33c8b99ef8258595923f1c99"
+      },
+      "flat_vs_hierarchical.csv": {
+        "path": "results\\tables\\flat_vs_hierarchical.csv",
+        "size_bytes": 505,
+        "sha256": "e0415bb20d77fd4a3d5fba38b08f2be718c7cfbc0ec41bcbe3fd6874beb585b2"
+      },
+      "flow_exclusion_log.csv": {
+        "path": "results\\tables\\flow_exclusion_log.csv",
+        "size_bytes": 15664,
+        "sha256": "f3a613599bc139813899901c9b2dde3e335f2212a06ee52c691cd2a6ce16259b"
+      },
+      "flow_length_robustness.csv": {
+        "path": "results\\tables\\flow_length_robustness.csv",
+        "size_bytes": 232,
+        "sha256": "5c04066d9fc634af0085d4549f392275738cad03c33df8a66e796b76f08e2b46"
+      },
+      "generalization_scorecard.csv": {
+        "path": "results\\tables\\generalization_scorecard.csv",
+        "size_bytes": 794,
+        "sha256": "1055b4ba094cab46044351629885425481c8d10fe19ce14d33e1758faf81113e"
+      },
+      "generalization_v2.csv": {
+        "path": "results\\tables\\generalization_v2.csv",
+        "size_bytes": 964,
+        "sha256": "a6402142fdbaeae0e398810b0745e93dfc1214a007aa6709eafb449dff226fbe"
+      },
+      "grouped_cv_scores.csv": {
+        "path": "results\\tables\\grouped_cv_scores.csv",
+        "size_bytes": 1528,
+        "sha256": "66289cf51765b90ff38e665a94e0e39f3e20af6bf4e9c5be3f6eb7b9613fa19c"
+      },
+      "hierarchy_candidates.csv": {
+        "path": "results\\tables\\hierarchy_candidates.csv",
+        "size_bytes": 1344,
+        "sha256": "07ca5f84daa23fa8343e5cf465d1a4158fea5f7df20273ae4c3bb165ca7c1302"
+      },
+      "limitations.csv": {
+        "path": "results\\tables\\limitations.csv",
+        "size_bytes": 504,
+        "sha256": "59ccc7175676c35df618d22ac9b3415e2cffad782c6add7c14db71709c3d0bd8"
+      },
+      "long_run_stability.csv": {
+        "path": "results\\tables\\long_run_stability.csv",
+        "size_bytes": 226,
+        "sha256": "658f667b0dcb598a2971a50111dba8b05b5d36c94e0df71a7da9aafdf97d8529"
+      },
+      "manifest_reconciliation.csv": {
+        "path": "results\\tables\\manifest_reconciliation.csv",
+        "size_bytes": 5133,
+        "sha256": "b6ecbccbe625b16ec1d338d116ffe013c89774380371e8d656b422c3184978f7"
+      },
+      "ml_feature_schema_audit.csv": {
+        "path": "results\\tables\\ml_feature_schema_audit.csv",
+        "size_bytes": 2089,
+        "sha256": "389c6d2a279fe35e15cfb832ea2d89706274929a3c7653e2996b299fdb5c416d"
+      },
+      "model_comparison.csv": {
+        "path": "results\\tables\\model_comparison.csv",
+        "size_bytes": 688,
+        "sha256": "2fda58a7aa811749f11c2046e23994505e0baf937914ca9f954ff14b68674790"
+      },
+      "phase7_abstention_policy.csv": {
+        "path": "results\\tables\\phase7_abstention_policy.csv",
+        "size_bytes": 244,
+        "sha256": "0ed863ab04a481490e4d0ec47394d5825249af6b03aafcfa4e11519c4b121075"
+      },
+      "phase7_calibration.csv": {
+        "path": "results\\tables\\phase7_calibration.csv",
+        "size_bytes": 242,
+        "sha256": "d809fed2ced5640dd6769aab24c744ebfd234f243c4351ae21870485880e7316"
+      },
+      "phase7_cost.csv": {
+        "path": "results\\tables\\phase7_cost.csv",
+        "size_bytes": 182,
+        "sha256": "c64f92c4bc9a39b4fd8c5002472025e60f90bea70fb0674f753bb7b863fc9fff"
+      },
+      "phase7_early_prediction.csv": {
+        "path": "results\\tables\\phase7_early_prediction.csv",
+        "size_bytes": 339,
+        "sha256": "947edf5c7117bbb6f609e36dc2a6e6b0fc8e89e6152d5d18859dee0b29c6cc0e"
+      },
+      "phase7_final_test.csv": {
+        "path": "results\\tables\\phase7_final_test.csv",
+        "size_bytes": 198,
+        "sha256": "46eeccf351f1354d84a19b2f4c9fc38c850ec4e6860af665371f517dd22d11d2"
+      },
+      "phase7_generalization.csv": {
+        "path": "results\\tables\\phase7_generalization.csv",
+        "size_bytes": 155,
+        "sha256": "a60ef5fdcb6ee63aab7af02434266c7d5ad5794e2b0a9cfdfc8276520c7e782c"
+      },
+      "phase7_leakage_check.csv": {
+        "path": "results\\tables\\phase7_leakage_check.csv",
+        "size_bytes": 393,
+        "sha256": "fc8f4255ddb95f9c6bc146706ecdf80166efe28be88354e498efec223cf7681e"
+      },
+      "phase7_prediction_stability.csv": {
+        "path": "results\\tables\\phase7_prediction_stability.csv",
+        "size_bytes": 18302,
+        "sha256": "ce1eba3989a086f881c023441e68ab6fe4763757c53bd569ebb00710724f0461"
+      },
+      "phase7_sequence_ablation.csv": {
+        "path": "results\\tables\\phase7_sequence_ablation.csv",
+        "size_bytes": 289,
+        "sha256": "15a016853fdaef63315f56a8c78fb9eab8f9cb935cd64a83e98ffc0870890442"
+      },
+      "phase7_window_ablation.csv": {
+        "path": "results\\tables\\phase7_window_ablation.csv",
+        "size_bytes": 1109,
+        "sha256": "1302d9844007934a213e7812ce78824b142a53c2d2667c9775c49adc6eac1b70"
+      },
+      "phase8_abstention_policy.csv": {
+        "path": "results\\tables\\phase8_abstention_policy.csv",
+        "size_bytes": 229,
+        "sha256": "e78c5c16c8881edc2564f0e6aa08475768cd6af8a2773906f7f4a6c07325a1e8"
+      },
+      "phase8_calibration.csv": {
+        "path": "results\\tables\\phase8_calibration.csv",
+        "size_bytes": 260,
+        "sha256": "5540c99b0d03bc7a9c3a477d08b3d62aab995f22219d3fb79d27317ceb07b012"
+      },
+      "phase8_cost.csv": {
+        "path": "results\\tables\\phase8_cost.csv",
+        "size_bytes": 209,
+        "sha256": "c9f65002dd41a8f4b7fbfa9e130ca398e1fe2df3764d90b485ac23c060f06f91"
+      },
+      "phase8_early_prediction.csv": {
+        "path": "results\\tables\\phase8_early_prediction.csv",
+        "size_bytes": 308,
+        "sha256": "ae9506ab76d96d8fb58d27a37a85ff73db29f967ee02a711d254626431546042"
+      },
+      "phase8_final_test.csv": {
+        "path": "results\\tables\\phase8_final_test.csv",
+        "size_bytes": 300,
+        "sha256": "50f70e4b785293703105903bd1ee74cb8c748bdfeb7a5e970bac462e8e027c32"
+      },
+      "phase8_generalization.csv": {
+        "path": "results\\tables\\phase8_generalization.csv",
+        "size_bytes": 398,
+        "sha256": "ae0d35fbeae022b17e74647d895b5fc3680f8dda94c736f9156b5b1ad919d0ce"
+      },
+      "phase8_open_set_detection.csv": {
+        "path": "results\\tables\\phase8_open_set_detection.csv",
+        "size_bytes": 341,
+        "sha256": "a058e861b814426bcf08785ff3dafe137608a30dbe55422e357537af0a496bb4"
+      },
+      "phase8_stage1_coarse_cv.csv": {
+        "path": "results\\tables\\phase8_stage1_coarse_cv.csv",
+        "size_bytes": 538,
+        "sha256": "f830dbae9f2d310f2552b10606ff7cc68738194f226bf53fdd223b218b6d2cb7"
+      },
+      "phase8_stage2_fine_cv.csv": {
+        "path": "results\\tables\\phase8_stage2_fine_cv.csv",
+        "size_bytes": 879,
+        "sha256": "802f50f81a8f33761318e4be23a38d527e6ae65cc844552f8e04c724843a83d5"
+      },
+      "phase_progression.csv": {
+        "path": "results\\tables\\phase_progression.csv",
+        "size_bytes": 518,
+        "sha256": "16de7f48d39ba930c04d866cf932808c4bfb9c09431b50988c063347312173a4"
+      },
+      "phase_progression_hierarchical.csv": {
+        "path": "results\\tables\\phase_progression_hierarchical.csv",
+        "size_bytes": 905,
+        "sha256": "240cb4ae3657efce9fdff98ba24e420ab50abee638225f445ac435494acb80c9"
+      },
+      "phase_progression_sequential.csv": {
+        "path": "results\\tables\\phase_progression_sequential.csv",
+        "size_bytes": 757,
+        "sha256": "6459be06261fb88bf5ce401e825be34568b5bc0ad8914d22e3cbd2a2938446ad"
+      },
+      "phase_progression_temporal.csv": {
+        "path": "results\\tables\\phase_progression_temporal.csv",
+        "size_bytes": 774,
+        "sha256": "246b5cbf75a26693a3aa2662473b92e99c15e5691e9873aab34fa24c1294bb52"
+      },
+      "prediction_stability.csv": {
+        "path": "results\\tables\\prediction_stability.csv",
+        "size_bytes": 20107,
+        "sha256": "6967e727f23c89dd7404f822182b396fc2ff6ebe8e5c9b24e4791a07a3fb8ded"
+      },
+      "production_stress_test.csv": {
+        "path": "results\\tables\\production_stress_test.csv",
+        "size_bytes": 451,
+        "sha256": "d52ab165a0427f0599931575195c0e25a2a99d7096f182ab275511336143fee7"
+      },
+      "realtime_feature_compatibility.csv": {
+        "path": "results\\tables\\realtime_feature_compatibility.csv",
+        "size_bytes": 2249,
+        "sha256": "52cfed1c98e56eb24d5a710fbcdcc70b31030133c352d0fd098d231f7ced3437"
+      },
+      "realtime_feature_cost.csv": {
+        "path": "results\\tables\\realtime_feature_cost.csv",
+        "size_bytes": 200,
+        "sha256": "9a4c5a254f6d72b25b75b07eaa1c3a7bb542b4be07a72af3b9d00245423a0617"
+      },
+      "realtime_performance.csv": {
+        "path": "results\\tables\\realtime_performance.csv",
+        "size_bytes": 747,
+        "sha256": "8593be9151083cc2a8134d11aa2eede621fc504544f813adbc8243c831086e07"
+      },
+      "realtime_research_validation.csv": {
+        "path": "results\\tables\\realtime_research_validation.csv",
+        "size_bytes": 656,
+        "sha256": "600fc4cab246e4e380050124982b28e07737d7a6b6bdbc31d7d6bdb50b34fa2e"
+      },
+      "real_baseline_error_analysis.csv": {
+        "path": "results\\tables\\real_baseline_error_analysis.csv",
+        "size_bytes": 6138,
+        "sha256": "b893c5f63e1c575096c1d231245fdc374d8ae4076bec1316ab0c0499f049117b"
+      },
+      "real_baseline_inference.csv": {
+        "path": "results\\tables\\real_baseline_inference.csv",
+        "size_bytes": 331,
+        "sha256": "6a56b2680b14a169e2d05e276a73d827a516dccc700d2d653ce2b2ff4a71edbc"
+      },
+      "real_baseline_leakage_check.csv": {
+        "path": "results\\tables\\real_baseline_leakage_check.csv",
+        "size_bytes": 784,
+        "sha256": "8f962298f45b66b9248725a0072d5ee7574f05294450d4f34695ec5d534b2e88"
+      },
+      "real_baseline_model_comparison.csv": {
+        "path": "results\\tables\\real_baseline_model_comparison.csv",
+        "size_bytes": 897,
+        "sha256": "17447974ab841f2d3746eedd7af3cf311d483b43c69feca650582172ee7dcafb"
+      },
+      "real_baseline_per_class_metrics.csv": {
+        "path": "results\\tables\\real_baseline_per_class_metrics.csv",
+        "size_bytes": 1032,
+        "sha256": "e713d2eb05fba6298741fd32dd2d244de0b186220c15c01fa14528a8d5cc3793"
+      },
+      "real_baseline_run_manifest.csv": {
+        "path": "results\\tables\\real_baseline_run_manifest.csv",
+        "size_bytes": 704,
+        "sha256": "67b16f58d564b230a4ffebdf6ce713bc58877e08a18020e821e8e9c674fd8d81"
+      },
+      "real_baseline_uncertainty.csv": {
+        "path": "results\\tables\\real_baseline_uncertainty.csv",
+        "size_bytes": 308,
+        "sha256": "4f34e7950dbbb99bd2ba17a8c8674c7b2fa036584a1364cd9c6171d9d6c6f456"
+      },
+      "real_baseline_vs_optimized.csv": {
+        "path": "results\\tables\\real_baseline_vs_optimized.csv",
+        "size_bytes": 475,
+        "sha256": "b782f50c5ecb88c6996c49c832286a65c75c48e95968b5085f4fa8e75e419607"
+      },
+      "real_calibration_cv.csv": {
+        "path": "results\\tables\\real_calibration_cv.csv",
+        "size_bytes": 173,
+        "sha256": "657cf24a232533fc6f5712d5972a639a5e46a85f23ed9f0bc1bb66462338adf2"
+      },
+      "real_class_distribution.csv": {
+        "path": "results\\tables\\real_class_distribution.csv",
+        "size_bytes": 287,
+        "sha256": "7fa26e42ac840c758eb5b676870a54a6d16435e6bcbdee71912d3772a7d65108"
+      },
+      "real_clean_dataset_quality.csv": {
+        "path": "results\\tables\\real_clean_dataset_quality.csv",
+        "size_bytes": 203,
+        "sha256": "8e22aa07c97d6cca6c4bb69dd58bb0543d59a0c4df0df547ad28e0045a5768e9"
+      },
+      "real_cv_error_analysis.csv": {
+        "path": "results\\tables\\real_cv_error_analysis.csv",
+        "size_bytes": 806,
+        "sha256": "9a9ad593b3b99e977df968b2ff440c5b4ef5182991a553f703171d9ed31fa38b"
+      },
+      "real_dataset_consistency_report.csv": {
+        "path": "results\\tables\\real_dataset_consistency_report.csv",
+        "size_bytes": 5586,
+        "sha256": "aba03653ffc26f53575fae0df788ffa0854d1abb012252f20a11e34a29761908"
+      },
+      "real_dataset_quality_report.csv": {
+        "path": "results\\tables\\real_dataset_quality_report.csv",
+        "size_bytes": 233,
+        "sha256": "217f76b967c6b4f90d508db8ae4b95fbd66f26cb307e54faa37abcfcd8a21059"
+      },
+      "real_early_prediction_cv.csv": {
+        "path": "results\\tables\\real_early_prediction_cv.csv",
+        "size_bytes": 237,
+        "sha256": "cd7a98981c3f87e62fb6e09ea2fcb3437774ec5b130e7cf2527fb0e04d6a6a69"
+      },
+      "real_feature_consensus.csv": {
+        "path": "results\\tables\\real_feature_consensus.csv",
+        "size_bytes": 730,
+        "sha256": "13a3acc298dae9144d77e73ddb0536fb1fe5bf479879ba8359e92cfc2af59a3f"
+      },
+      "real_feature_correlation.csv": {
+        "path": "results\\tables\\real_feature_correlation.csv",
+        "size_bytes": 19766,
+        "sha256": "cab95d8919ec4782c344eae77acc2796cac257c4138a3446504feb9fe18c20a2"
+      },
+      "real_feature_extraction_cost.csv": {
+        "path": "results\\tables\\real_feature_extraction_cost.csv",
+        "size_bytes": 386,
+        "sha256": "d4a3c156f7f754fc8c9630bd2e9d757b7d39ee18d9a71718d5516be822850e8b"
+      },
+      "real_feature_importance_decision_tree.csv": {
+        "path": "results\\tables\\real_feature_importance_decision_tree.csv",
+        "size_bytes": 610,
+        "sha256": "8dc60384ceff2c53fbdd97b4c2b21a993f8ca312c87f3d053c426d9e77878498"
+      },
+      "real_feature_importance_lightgbm.csv": {
+        "path": "results\\tables\\real_feature_importance_lightgbm.csv",
+        "size_bytes": 610,
+        "sha256": "8dc60384ceff2c53fbdd97b4c2b21a993f8ca312c87f3d053c426d9e77878498"
+      },
+      "real_feature_importance_logistic_regression.csv": {
+        "path": "results\\tables\\real_feature_importance_logistic_regression.csv",
+        "size_bytes": 610,
+        "sha256": "8dc60384ceff2c53fbdd97b4c2b21a993f8ca312c87f3d053c426d9e77878498"
+      },
+      "real_feature_importance_random_forest.csv": {
+        "path": "results\\tables\\real_feature_importance_random_forest.csv",
+        "size_bytes": 610,
+        "sha256": "8dc60384ceff2c53fbdd97b4c2b21a993f8ca312c87f3d053c426d9e77878498"
+      },
+      "real_feature_inventory.csv": {
+        "path": "results\\tables\\real_feature_inventory.csv",
+        "size_bytes": 3057,
+        "sha256": "49667f15e541c4db567b370b3ea140d46ab43323fa675765dbfdb29f858e49e3"
+      },
+      "real_feature_model_pareto.csv": {
+        "path": "results\\tables\\real_feature_model_pareto.csv",
+        "size_bytes": 1021,
+        "sha256": "9ba4ebb5a22b44dcf534ad92122b463c02fb42e35061ef6e2a4bf2eec5e97e52"
+      },
+      "real_feature_ranking.csv": {
+        "path": "results\\tables\\real_feature_ranking.csv",
+        "size_bytes": 1766,
+        "sha256": "8a74fd419484b4deea79257fdc8db540b6c867574b3428ab9d8c2e32d995a4a9"
+      },
+      "real_feature_reduction_cv.csv": {
+        "path": "results\\tables\\real_feature_reduction_cv.csv",
+        "size_bytes": 5797,
+        "sha256": "e5827b6eb08460853430a06798d83b8e884e2f7728a4c6192d7921d4f6dc983e"
+      },
+      "real_final_baseline_result.csv": {
+        "path": "results\\tables\\real_final_baseline_result.csv",
+        "size_bytes": 206,
+        "sha256": "c3ec739263e5566369edecf829f94e4266ebaa9a75ea355b8ef2d33bc554e755"
+      },
+      "real_flow_quality_report.csv": {
+        "path": "results\\tables\\real_flow_quality_report.csv",
+        "size_bytes": 21777,
+        "sha256": "b77a39ab74e7a56815bc2d94d18da122d6b67c099f670ef796bb424868e5fd04"
+      },
+      "real_ml_feature_schema.csv": {
+        "path": "results\\tables\\real_ml_feature_schema.csv",
+        "size_bytes": 1239,
+        "sha256": "4dd5636b251f7bc8d3807c75d7ed69443d53fc060903a0e73cb7caeb1eace2dc"
+      },
+      "real_model_complexity_cv.csv": {
+        "path": "results\\tables\\real_model_complexity_cv.csv",
+        "size_bytes": 4108,
+        "sha256": "ce951aa19631c9d3c73d9e27c84fa0c48bb1cf301e11db1bb940342c619b75f8"
+      },
+      "real_model_stability.csv": {
+        "path": "results\\tables\\real_model_stability.csv",
+        "size_bytes": 281,
+        "sha256": "127922fe6abe6f36934daedde9dd7f9037ffca76b3f9774decf99ec4adab898e"
+      },
+      "real_optimized_final_test.csv": {
+        "path": "results\\tables\\real_optimized_final_test.csv",
+        "size_bytes": 206,
+        "sha256": "eae64ea35122e1c13208f8715bc2fa6f6215d2362d71c1a78944a4d7d4311349"
+      },
+      "real_selected_candidate.csv": {
+        "path": "results\\tables\\real_selected_candidate.csv",
+        "size_bytes": 352,
+        "sha256": "bd02ac6d64788d1ad6ad216a36c10fd42341a6b5a2a0e9700edddd9229c17387"
+      },
+      "real_split_class_distribution.csv": {
+        "path": "results\\tables\\real_split_class_distribution.csv",
+        "size_bytes": 555,
+        "sha256": "f1ea1ce0611f5997bf65df18239590694445a7a5d63327a7f5f3e3450c7a69db"
+      },
+      "real_split_integrity.csv": {
+        "path": "results\\tables\\real_split_integrity.csv",
+        "size_bytes": 124,
+        "sha256": "f857ef98c83112306b10bbb549caf5f423a46debe5457640a01a72a541ea968f"
+      },
+      "repeated_flow_signatures.csv": {
+        "path": "results\\tables\\repeated_flow_signatures.csv",
+        "size_bytes": 11391,
+        "sha256": "103a35a2d0cf536c143e5a333d7b8b52f7b60e425964534bec73f471a8f179f6"
+      },
+      "research_baseline.csv": {
+        "path": "results\\tables\\research_baseline.csv",
+        "size_bytes": 3426,
+        "sha256": "f2e42f7ca3a8713e28eac7d4d80395eca9f89c570f81f1d5fd91aa542967f9f5"
+      },
+      "research_baseline_per_class.csv": {
+        "path": "results\\tables\\research_baseline_per_class.csv",
+        "size_bytes": 3564,
+        "sha256": "56b65e3e8031913d5e778fe7afd24b1731b2c860c869ecb66351ed0896571e34"
+      },
+      "research_calibration.csv": {
+        "path": "results\\tables\\research_calibration.csv",
+        "size_bytes": 906,
+        "sha256": "723ddbaaf6ba331db21b1c55a08878874cc447c316bae1865bdea3784e54774d"
+      },
+      "research_dataset_inventory.csv": {
+        "path": "results\\tables\\research_dataset_inventory.csv",
+        "size_bytes": 1775,
+        "sha256": "2d49c252e36f6da8d986fa85c0162cd4d33e15cd5750cbd11bd4c28819eb239b"
+      },
+      "research_dataset_quality.csv": {
+        "path": "results\\tables\\research_dataset_quality.csv",
+        "size_bytes": 865,
+        "sha256": "59a91a8a4747f66beb9cb4e22e6d6ae64fe8d5ad2d9d0102abaeffddb0717a33"
+      },
+      "research_early_prediction.csv": {
+        "path": "results\\tables\\research_early_prediction.csv",
+        "size_bytes": 1405,
+        "sha256": "7102c2e41dc84fc843ad0ac9e96c4846ac164b2edd6281d1c0d2fe522d3c09e7"
+      },
+      "research_generalization_scorecard.csv": {
+        "path": "results\\tables\\research_generalization_scorecard.csv",
+        "size_bytes": 3087,
+        "sha256": "995bf23353bcf6253cfb55b76cdb825cc959660776bf2a533ea36990ec942b7c"
+      },
+      "research_latency.csv": {
+        "path": "results\\tables\\research_latency.csv",
+        "size_bytes": 6826,
+        "sha256": "d6f7ebd311392d77e25dd81bb8d86a052ab6ee6919f119925fab7313473f5b01"
+      },
+      "research_model_footprint.csv": {
+        "path": "results\\tables\\research_model_footprint.csv",
+        "size_bytes": 1041,
+        "sha256": "e675997deb4cadc64d51d89d9604c797dd8fed8640c95a6648ff687500e11fe2"
+      },
+      "research_resource_usage.csv": {
+        "path": "results\\tables\\research_resource_usage.csv",
+        "size_bytes": 967,
+        "sha256": "48359d85cdaec0a6c55032ed2dc79535f7eb775e7649f37abea231d7a617913f"
+      },
+      "research_selective_prediction.csv": {
+        "path": "results\\tables\\research_selective_prediction.csv",
+        "size_bytes": 1342,
+        "sha256": "864d43ac26c4c30ea8afeffff05862cb7d90ffa732275ab2f220df3542cd43b4"
+      },
+      "rich_early_prediction.csv": {
+        "path": "results\\tables\\rich_early_prediction.csv",
+        "size_bytes": 268,
+        "sha256": "ca42b3e31bb49f3ca860d964ca006a1a5d8324786281840c70ec746ffd39fe6a"
+      },
+      "rich_feature_consensus.csv": {
+        "path": "results\\tables\\rich_feature_consensus.csv",
+        "size_bytes": 1929,
+        "sha256": "4427ebbc54c132bcd9ea4c6b1f1214610bc29023ee49b550e76a71f766f03250"
+      },
+      "rich_feature_correlation.csv": {
+        "path": "results\\tables\\rich_feature_correlation.csv",
+        "size_bytes": 195731,
+        "sha256": "9de37c113c775bfca26a56fd89ee4bb1ea35b58c14d0a0441abc9782f347dd4d"
+      },
+      "rich_feature_cost.csv": {
+        "path": "results\\tables\\rich_feature_cost.csv",
+        "size_bytes": 416,
+        "sha256": "08c86d8424d16c2a764d8b94e5147d6772a9880d19b3c6846917c16db7b491b4"
+      },
+      "rich_feature_model_stability.csv": {
+        "path": "results\\tables\\rich_feature_model_stability.csv",
+        "size_bytes": 281,
+        "sha256": "624dca2d0356954a6fd09a65d4c90e32bfed0c35c2df2d2b61e79e7bd47c19b1"
+      },
+      "rich_feature_quality.csv": {
+        "path": "results\\tables\\rich_feature_quality.csv",
+        "size_bytes": 7594,
+        "sha256": "8c9bc9f415e3d98cad5c551d4d1a364011b28f6f786b8d3c9b20b5e627c792da"
+      },
+      "rich_feature_ranking.csv": {
+        "path": "results\\tables\\rich_feature_ranking.csv",
+        "size_bytes": 6357,
+        "sha256": "90b9ee7420888337c2d9520bc807d96e49f7440727ebd6b9c0fe4803898e5534"
+      },
+      "rich_feature_reduction_cv.csv": {
+        "path": "results\\tables\\rich_feature_reduction_cv.csv",
+        "size_bytes": 364,
+        "sha256": "b4fd1a6735435564f5df6f934b6ea6df06c476433f7322b620233a5f318bca41"
+      },
+      "rich_feature_schema.csv": {
+        "path": "results\\tables\\rich_feature_schema.csv",
+        "size_bytes": 9187,
+        "sha256": "f8132ef095be313012c6f608c9830576c8ea8dfe9db442d9c8060cb0585ed842"
+      },
+      "rich_final_test.csv": {
+        "path": "results\\tables\\rich_final_test.csv",
+        "size_bytes": 162,
+        "sha256": "a9e4b692f40b6bcad7707f4c54ce329068c3df0a1755c24c031a98a0d5350897"
+      },
+      "rich_model_comparison.csv": {
+        "path": "results\\tables\\rich_model_comparison.csv",
+        "size_bytes": 233,
+        "sha256": "a591e13d79c03d3fc8a723d2926f1108999c2c32762a191931c3995001d6247b"
+      },
+      "risk_coverage.csv": {
+        "path": "results\\tables\\risk_coverage.csv",
+        "size_bytes": 832,
+        "sha256": "2352c18d30296f44c6a0360c041e02b605f847db1f67a098a09f4410e71a96fa"
+      },
+      "selected_features_10.csv": {
+        "path": "results\\tables\\selected_features_10.csv",
+        "size_bytes": 217,
+        "sha256": "e54d7a4f74805f0d0505a205663b437639cdf24b80256d62c678fde596e5d028"
+      },
+      "selected_features_15.csv": {
+        "path": "results\\tables\\selected_features_15.csv",
+        "size_bytes": 330,
+        "sha256": "b066d2735b76812f0b56d72ecde4f551b1b0149d9989073b37b36f22c06bdaf3"
+      },
+      "selected_features_21.csv": {
+        "path": "results\\tables\\selected_features_21.csv",
+        "size_bytes": 410,
+        "sha256": "3393f1f22538d2a26ebc9209539f29785155024cd691c3473719e8bb87d697f0"
+      },
+      "selected_features_3.csv": {
+        "path": "results\\tables\\selected_features_3.csv",
+        "size_bytes": 75,
+        "sha256": "85bb98a39be290e553faf22e017e3e93d42c0bdeff6c48387df135e3dbcf002d"
+      },
+      "selected_features_5.csv": {
+        "path": "results\\tables\\selected_features_5.csv",
+        "size_bytes": 108,
+        "sha256": "bf6b49d1e27be663198bdd990a61c88568f71929a1618538bb5a3b6ab04aca0f"
+      },
+      "statistical_uncertainty.csv": {
+        "path": "results\\tables\\statistical_uncertainty.csv",
+        "size_bytes": 168,
+        "sha256": "08959d3e0ee4017240d419ef4051d7e54f44e2f6856e261a352eb4d084bc7a3d"
+      },
+      "temporal_early_prediction.csv": {
+        "path": "results\\tables\\temporal_early_prediction.csv",
+        "size_bytes": 645,
+        "sha256": "255d4dbe21919a3dd4df11c3fd003aaf5218240d07f0ba886c13b308e28198b4"
+      },
+      "temporal_final_test.csv": {
+        "path": "results\\tables\\temporal_final_test.csv",
+        "size_bytes": 181,
+        "sha256": "15454ce762dcf9d01a27a36cfe66d2df2fd47ca13697f8bfd6b2865b4b390eb9"
+      },
+      "temporal_generalization.csv": {
+        "path": "results\\tables\\temporal_generalization.csv",
+        "size_bytes": 308,
+        "sha256": "7f123814b0973ad09011069f31f97d233afc3ca11624d0018e5b2061785dcde4"
+      },
+      "temporal_inference_cost.csv": {
+        "path": "results\\tables\\temporal_inference_cost.csv",
+        "size_bytes": 205,
+        "sha256": "d60ed07d9b415a2cd461a59f8ed80647e63d394a8cb472df376d38d0e8f3fb78"
+      },
+      "temporal_memory_cost.csv": {
+        "path": "results\\tables\\temporal_memory_cost.csv",
+        "size_bytes": 175,
+        "sha256": "035eb1c8ed46d62653a947c024d1efbe1ea10a3da4bae24c1946229728abab1c"
+      },
+      "traffic_volume_robustness.csv": {
+        "path": "results\\tables\\traffic_volume_robustness.csv",
+        "size_bytes": 377,
+        "sha256": "51e1588fd63d4fd0d500790b7d04b80697d9897711ec995a9c2825c21d55c9b9"
+      },
+      "window_ablation.csv": {
+        "path": "results\\tables\\window_ablation.csv",
+        "size_bytes": 3032,
+        "sha256": "60303c2f0400fa1718849e471d69b8486ba7a6e4b65b4cfc3f9a2df465daa320"
+      }
+    },
+    "figures": {
+      "activity_variant_shift.png": {
+        "path": "results\\figures\\activity_variant_shift.png",
+        "size_bytes": 93857,
+        "sha256": "4279427687a841b1eb4a97a7c794a1c1771d3f765ff2f15fc125fea58d72db50"
+      },
+      "calibration_curve.png": {
+        "path": "results\\figures\\calibration_curve.png",
+        "size_bytes": 170597,
+        "sha256": "149b7a1d0b19a241d610761baea4e35b703d5ddc3119dfdacf193b1ba876ccec"
+      },
+      "class_protocol_distribution.png": {
+        "path": "results\\figures\\class_protocol_distribution.png",
+        "size_bytes": 5677,
+        "sha256": "901ff00af115f8dc03d013d5999a2cdf753f0cab6fdb80248e246c8f510f5598"
+      },
+      "confidence_distribution.png": {
+        "path": "results\\figures\\confidence_distribution.png",
+        "size_bytes": 131212,
+        "sha256": "d25335be813eeace4f6ee873824e84c48a3dde561965f36ecfe25dc5fbfa6d2a"
+      },
+      "coverage_vs_accuracy.png": {
+        "path": "results\\figures\\coverage_vs_accuracy.png",
+        "size_bytes": 227101,
+        "sha256": "f3660ebd8e88982a053d54cdc0f08baebb8f3234cba4675f0a14921cf21aa4f0"
+      },
+      "coverage_vs_error.png": {
+        "path": "results\\figures\\coverage_vs_error.png",
+        "size_bytes": 197163,
+        "sha256": "2cce181ed3e7bdafeded791192c88859ed58235bdee1ab65daf2a671ddb1ab4c"
+      },
+      "early_prediction_coverage_vs_packets.png": {
+        "path": "results\\figures\\early_prediction_coverage_vs_packets.png",
+        "size_bytes": 169011,
+        "sha256": "828e6bce751856e66b9a876965fb6fd9f5316cac48d2df54649177d10ee045be"
+      },
+      "early_prediction_f1_vs_packets.png": {
+        "path": "results\\figures\\early_prediction_f1_vs_packets.png",
+        "size_bytes": 127088,
+        "sha256": "e75fee41574736bdc6d751d173dff8d131faec3f1a43b2714e83ba0d2e684eac"
+      },
+      "early_prediction_latency_vs_packets.png": {
+        "path": "results\\figures\\early_prediction_latency_vs_packets.png",
+        "size_bytes": 241707,
+        "sha256": "94e086076f1f4366ff45fff005ce7297dfe44ebc15a9f765cde76f557a136d00"
+      },
+      "environment_shift.png": {
+        "path": "results\\figures\\environment_shift.png",
+        "size_bytes": 80392,
+        "sha256": "63c8910e5621eccd0197205a4f3e1a0dc6054157a8ce00948ce154ccbc9b5717"
+      },
+      "feature_pareto_frontier.png": {
+        "path": "results\\figures\\feature_pareto_frontier.png",
+        "size_bytes": 126739,
+        "sha256": "6a23570914f22deafd85154abf2362e9d3c537580e27df49bbdf1e0384a3c161"
+      },
+      "feature_vs_f1.png": {
+        "path": "results\\figures\\feature_vs_f1.png",
+        "size_bytes": 145158,
+        "sha256": "01859445839ce27d76378065cd6c31ad878b3c524416001e207b6616deacf77c"
+      },
+      "feature_vs_latency.png": {
+        "path": "results\\figures\\feature_vs_latency.png",
+        "size_bytes": 129775,
+        "sha256": "2ba4aa508822447bea403b48ebb88fcc3653c0f529c2a3b30dbe2ff263da4b6d"
+      },
+      "feature_vs_model_size.png": {
+        "path": "results\\figures\\feature_vs_model_size.png",
+        "size_bytes": 79482,
+        "sha256": "f136e372cb4af91d5fdc696ecad590a19ed2edcb6a5811a081ce23572c333a51"
+      },
+      "generalization_comparison.png": {
+        "path": "results\\figures\\generalization_comparison.png",
+        "size_bytes": 116950,
+        "sha256": "03bc13768efe2f871f95dbb17ff875414a7b81d763b1b5908993292110bbd62c"
+      },
+      "latency_distribution.png": {
+        "path": "results\\figures\\latency_distribution.png",
+        "size_bytes": 155037,
+        "sha256": "31a6e477770ca930014248686fa0b4adf0cd6c0ad8b2954c50581d079fd924bf"
+      },
+      "latency_vs_f1.png": {
+        "path": "results\\figures\\latency_vs_f1.png",
+        "size_bytes": 160685,
+        "sha256": "92c9268c04593383c15c69dd201d42e114f34aecec0d52c7811cfc42d1e33262"
+      },
+      "model_size_vs_f1.png": {
+        "path": "results\\figures\\model_size_vs_f1.png",
+        "size_bytes": 168295,
+        "sha256": "308a1a863988fa4e1a9c4e8be1819666af6dc8ce5b8a6a9f8ced991ede37d20b"
+      },
+      "research_baseline_confusion_matrix.png": {
+        "path": "results\\figures\\research_baseline_confusion_matrix.png",
+        "size_bytes": 512024,
+        "sha256": "8a63b010611414be8ff4c489fa9f83379043aa0896cc72e9e37110d99063ba9b"
+      },
+      "research_baseline_model_comparison.png": {
+        "path": "results\\figures\\research_baseline_model_comparison.png",
+        "size_bytes": 331713,
+        "sha256": "c9c38a2d725811500a6efe798294bc29f91e5fd7adc779954f4b545da5978734"
+      },
+      "resource_usage.png": {
+        "path": "results\\figures\\resource_usage.png",
+        "size_bytes": 158109,
+        "sha256": "2b51f4bc985c9f1b8906913405ed9f0b7809b6ac9f877f57314b6e7af43be815"
+      },
+      "temporal_drift.png": {
+        "path": "results\\figures\\temporal_drift.png",
+        "size_bytes": 147345,
+        "sha256": "82694d1c7e249a1dc53c7c597e62da14dea59697dca82c5d3a9a3281922d77de"
+      },
+      "tunnel_shift.png": {
+        "path": "results\\figures\\tunnel_shift.png",
+        "size_bytes": 90421,
+        "sha256": "facf021d0fb871cd7bd94a41cb6fe0e04d909ea3c6a50e0a474888adbda8c5d5"
+      }
+    }
+  }
+}

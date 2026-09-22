@@ -20,16 +20,18 @@ class LightGBMTrafficClassifier(BaseTrafficClassifier):
     def build_model(self) -> Any:
         try:
             from lightgbm import LGBMClassifier
+            import inspect
             default_params = {
                 "n_estimators": 100,
                 "learning_rate": 0.05,
                 "num_leaves": 31,
-                "objective": "multiclass",
                 "random_state": 42,
                 "verbose": -1,
             }
             default_params.update(self.params)
-            return LGBMClassifier(**default_params)
+            sig_params = set(inspect.signature(LGBMClassifier.__init__).parameters.keys())
+            filtered_params = {k: v for k, v in default_params.items() if k in sig_params}
+            return LGBMClassifier(**filtered_params)
         except ImportError:
             logger.info("LightGBM not installed. Using built-in Gradient Boosted Tree estimator.")
             return _SimpleLightGBM(n_estimators=self.params.get("n_estimators", 100))

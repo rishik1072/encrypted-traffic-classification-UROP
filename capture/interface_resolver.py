@@ -8,13 +8,22 @@ objects or Npcap device names (e.g. '\\Device\\NPF_{GUID}').
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
+_CACHED_INTERFACES: Optional[List[Dict[str, Any]]] = None
+_LAST_IFACE_SCAN_TIME: float = 0.0
 
-def list_scapy_interfaces() -> List[Dict[str, Any]]:
+
+def list_scapy_interfaces(force_refresh: bool = False) -> List[Dict[str, Any]]:
     """Returns detailed metadata for all Scapy/Npcap interfaces available on the system."""
+    global _CACHED_INTERFACES, _LAST_IFACE_SCAN_TIME
+    now = time.time()
+    if not force_refresh and _CACHED_INTERFACES is not None and (now - _LAST_IFACE_SCAN_TIME) < 60.0:
+        return _CACHED_INTERFACES
+
     interfaces: List[Dict[str, Any]] = []
     try:
         import scapy.all  # Crucial: imports arch/windows modules so conf.ifaces is populated
@@ -54,6 +63,8 @@ def list_scapy_interfaces() -> List[Dict[str, Any]]:
     except Exception as e:
         logger.warning("Scapy interface enumeration error: %s", e)
 
+    _CACHED_INTERFACES = interfaces
+    _LAST_IFACE_SCAN_TIME = now
     return interfaces
 
 

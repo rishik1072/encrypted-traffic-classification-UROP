@@ -11,6 +11,18 @@
 | **Phase 5** | Lightweight Optimization | ✅ Complete | Multi-method feature ranking, Trade-off curves, Configuration lock |
 | **Phase 6** | Robustness & Generalization | ✅ Complete | Temporal/Session splits, Traffic volume stress, Calibration (ECE) |
 | **Phase 7** | Packaging & UROP Release | ✅ Complete | Version 1.0.0, Paper draft, Presentation, Reproducibility suite |
+| **Phase 8** | Live-Npcap Validation | ✅ Implemented | Live Npcap contract, 3 evidence classes, fail-closed enforcement |
+
+---
+
+## 🛡️ Operational Evidence Classification Status
+
+| Evidence Class | Operating Mode | Classification Status | Host Machine Verification |
+| :--- | :--- | :--- | :--- |
+| **`REAL_LIVE_NPCAP`** | `LIVE_NPCAP` | **IMPLEMENTATION READY** | Fail-closed verified on host; Live Machine Verification pending physical Npcap driver install |
+| **`REAL_RECORDED_CAPTURE`** | `RECORDED_CAPTURE` | **VERIFIED PASS** | Deterministic playback on real packet flows verified |
+| **`DEMO_SIMULATION`** | `DEMO_MODE` | **VERIFIED PASS** | Isolated demo simulation stream verified |
+
 
 ---
 

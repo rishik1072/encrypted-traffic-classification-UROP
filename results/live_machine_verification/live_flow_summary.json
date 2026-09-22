@@ -1,0 +1,30 @@
+{
+  "test_name": "real_flow_validation",
+  "evidence_class": "REAL_LIVE_NPCAP",
+  "timestamp": "2026-09-22T21:20:41+05:30",
+  "status": "BLOCKED_BY_PRECHECK",
+  "target_adapter": "Wi-Fi",
+  "flow_metrics": {
+    "packets_ingested": 0,
+    "active_flows": 0,
+    "completed_flows": 0,
+    "total_flows": 0,
+    "total_bytes": 0
+  },
+  "feature_metrics": {
+    "feature_vectors_extracted": 0,
+    "nan_count": 0,
+    "inf_count": 0,
+    "feature_schema": "lightweight_10"
+  },
+  "invariants_enforced": {
+    "zero_flows_fabricated": true,
+    "zero_recorded_flows_substituted": true,
+    "zero_synthetic_flows_injected": true,
+    "payload_inspection_prevented": true
+  },
+  "blocking_reasons": [
+    "Packet ingress stream unavailable due to missing Npcap capture driver.",
+    "Zero physical packets received; FlowTracker correctly refused to generate synthetic flows."
+  ]
+}

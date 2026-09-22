@@ -1,0 +1,49 @@
+experiment_id,model,split,traffic_class,support,precision,recall,f1_score
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,validation,File Transfer,8,0.2222,0.25,0.2353
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,validation,Messaging,8,0.4,0.5,0.4444
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,validation,Other,8,0.8,0.5,0.6154
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,validation,Video,8,0.6667,0.5,0.5714
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,validation,VoIP,8,0.1429,0.125,0.1333
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,validation,Web,8,0.1818,0.25,0.2105
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,test,File Transfer,8,0.1667,0.125,0.1429
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,test,Messaging,8,0.2727,0.375,0.3158
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,test,Other,8,0.5455,0.75,0.6316
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,test,Video,8,0.4,0.25,0.3077
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,test,VoIP,8,0.1111,0.125,0.1176
+EXP-R09-LOGISTIC_REGRESSION,logistic_regression,test,Web,8,0.5,0.375,0.4286
+EXP-R09-DECISION_TREE,decision_tree,validation,File Transfer,8,0.7143,0.625,0.6667
+EXP-R09-DECISION_TREE,decision_tree,validation,Messaging,8,0.2727,0.375,0.3158
+EXP-R09-DECISION_TREE,decision_tree,validation,Other,8,0.8,0.5,0.6154
+EXP-R09-DECISION_TREE,decision_tree,validation,Video,8,0.6,0.75,0.6667
+EXP-R09-DECISION_TREE,decision_tree,validation,VoIP,8,0.5455,0.75,0.6316
+EXP-R09-DECISION_TREE,decision_tree,validation,Web,8,0.5,0.25,0.3333
+EXP-R09-DECISION_TREE,decision_tree,test,File Transfer,8,0.8571,0.75,0.8
+EXP-R09-DECISION_TREE,decision_tree,test,Messaging,8,0.6667,0.5,0.5714
+EXP-R09-DECISION_TREE,decision_tree,test,Other,8,0.6667,0.5,0.5714
+EXP-R09-DECISION_TREE,decision_tree,test,Video,8,0.4706,1.0,0.64
+EXP-R09-DECISION_TREE,decision_tree,test,VoIP,8,0.3333,0.375,0.3529
+EXP-R09-DECISION_TREE,decision_tree,test,Web,8,1.0,0.375,0.5455
+EXP-R09-RANDOM_FOREST,random_forest,validation,File Transfer,8,0.6667,0.5,0.5714
+EXP-R09-RANDOM_FOREST,random_forest,validation,Messaging,8,0.4286,0.375,0.4
+EXP-R09-RANDOM_FOREST,random_forest,validation,Other,8,1.0,0.75,0.8571
+EXP-R09-RANDOM_FOREST,random_forest,validation,Video,8,0.25,0.25,0.25
+EXP-R09-RANDOM_FOREST,random_forest,validation,VoIP,8,0.6667,1.0,0.8
+EXP-R09-RANDOM_FOREST,random_forest,validation,Web,8,0.4444,0.5,0.4706
+EXP-R09-RANDOM_FOREST,random_forest,test,File Transfer,8,0.75,0.75,0.75
+EXP-R09-RANDOM_FOREST,random_forest,test,Messaging,8,0.4286,0.375,0.4
+EXP-R09-RANDOM_FOREST,random_forest,test,Other,8,0.8333,0.625,0.7143
+EXP-R09-RANDOM_FOREST,random_forest,test,Video,8,0.5556,0.625,0.5882
+EXP-R09-RANDOM_FOREST,random_forest,test,VoIP,8,0.4545,0.625,0.5263
+EXP-R09-RANDOM_FOREST,random_forest,test,Web,8,0.5714,0.5,0.5333
+EXP-R09-LIGHTGBM,lightgbm,validation,File Transfer,8,0.6667,0.5,0.5714
+EXP-R09-LIGHTGBM,lightgbm,validation,Messaging,8,0.3636,0.5,0.4211
+EXP-R09-LIGHTGBM,lightgbm,validation,Other,8,1.0,0.75,0.8571
+EXP-R09-LIGHTGBM,lightgbm,validation,Video,8,0.2857,0.25,0.2667
+EXP-R09-LIGHTGBM,lightgbm,validation,VoIP,8,0.5385,0.875,0.6667
+EXP-R09-LIGHTGBM,lightgbm,validation,Web,8,0.8,0.5,0.6154
+EXP-R09-LIGHTGBM,lightgbm,test,File Transfer,8,0.75,0.75,0.75
+EXP-R09-LIGHTGBM,lightgbm,test,Messaging,8,0.3333,0.375,0.3529
+EXP-R09-LIGHTGBM,lightgbm,test,Other,8,0.75,0.75,0.75
+EXP-R09-LIGHTGBM,lightgbm,test,Video,8,0.625,0.625,0.625
+EXP-R09-LIGHTGBM,lightgbm,test,VoIP,8,0.2222,0.25,0.2353
+EXP-R09-LIGHTGBM,lightgbm,test,Web,8,0.6667,0.5,0.5714

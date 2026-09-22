@@ -1,0 +1,61 @@
+model,feature_profile,feature_count,stage,execution_phase,repetitions,mean_ms,std_ms,p50_ms,p95_ms,p99_ms,min_ms,max_ms,throughput_fps
+N/A (Extractor),profile_5_features,5,feature_extraction,cold,1,1.383,0.0,1.383,1.383,1.383,1.383,1.383,723.1
+N/A (Extractor),profile_5_features,5,feature_extraction,warm,200,1.498,3.1217,0.3856,7.1524,9.4675,0.0131,26.8049,667.6
+N/A (Extractor),profile_10_features,10,feature_extraction,cold,1,1.383,0.0,1.383,1.383,1.383,1.383,1.383,723.1
+N/A (Extractor),profile_10_features,10,feature_extraction,warm,200,1.498,3.1217,0.3856,7.1524,9.4675,0.0131,26.8049,667.6
+N/A (Extractor),profile_21_features,21,feature_extraction,cold,1,1.383,0.0,1.383,1.383,1.383,1.383,1.383,723.1
+N/A (Extractor),profile_21_features,21,feature_extraction,warm,200,1.498,3.1217,0.3856,7.1524,9.4675,0.0131,26.8049,667.6
+N/A (Preprocessor),profile_5_features,5,preprocessing,cold,1,0.0397,0.0,0.0397,0.0397,0.0397,0.0397,0.0397,25188.9
+N/A (Preprocessor),profile_5_features,5,preprocessing,warm,500,0.0045,0.0016,0.0042,0.0046,0.0145,0.004,0.0191,222222.2
+logistic_regression,profile_5_features,5,inference,cold,1,0.2907,0.0,0.2907,0.2907,0.2907,0.2907,0.2907,3440.0
+logistic_regression,profile_5_features,5,inference,warm,500,0.0901,0.0502,0.0721,0.2096,0.3121,0.0626,0.4345,11098.8
+logistic_regression,profile_5_features,5,end_to_end,cold,1,1.7154,0.0,1.7154,1.7154,1.7154,1.7154,1.7154,583.0
+logistic_regression,profile_5_features,5,end_to_end,warm,500,1.5916,3.1055,0.5092,7.2355,9.5934,0.0839,26.89,628.3
+decision_tree,profile_5_features,5,inference,cold,1,0.2562,0.0,0.2562,0.2562,0.2562,0.2562,0.2562,3903.2
+decision_tree,profile_5_features,5,inference,warm,500,0.077,0.0457,0.0574,0.1749,0.2347,0.0524,0.4011,12987.0
+decision_tree,profile_5_features,5,end_to_end,cold,1,1.6809,0.0,1.6809,1.6809,1.6809,1.6809,1.6809,594.9
+decision_tree,profile_5_features,5,end_to_end,warm,500,1.5786,3.1089,0.4711,7.2141,9.6521,0.0719,26.8778,633.5
+random_forest,profile_5_features,5,inference,cold,1,3.868,0.0,3.868,3.868,3.868,3.868,3.868,258.5
+random_forest,profile_5_features,5,inference,warm,500,5.1489,1.7973,4.3873,9.6011,10.8027,3.4481,11.5755,194.2
+random_forest,profile_5_features,5,end_to_end,cold,1,5.2927,0.0,5.2927,5.2927,5.2927,5.2927,5.2927,188.9
+random_forest,profile_5_features,5,end_to_end,warm,500,6.6505,3.6406,5.2872,12.5577,18.0953,3.6764,34.8627,150.4
+lightgbm,profile_5_features,5,inference,cold,1,0.9009,0.0,0.9009,0.9009,0.9009,0.9009,0.9009,1110.0
+lightgbm,profile_5_features,5,inference,warm,500,0.4193,0.1504,0.3541,0.7176,0.9648,0.2875,1.5166,2384.9
+lightgbm,profile_5_features,5,end_to_end,cold,1,2.3256,0.0,2.3256,2.3256,2.3256,2.3256,2.3256,430.0
+lightgbm,profile_5_features,5,end_to_end,warm,500,1.9209,3.1188,0.8763,7.5031,10.132,0.4769,27.2251,520.6
+N/A (Preprocessor),profile_10_features,10,preprocessing,cold,1,0.0347,0.0,0.0347,0.0347,0.0347,0.0347,0.0347,28818.4
+N/A (Preprocessor),profile_10_features,10,preprocessing,warm,500,0.0041,0.0046,0.0035,0.004,0.0215,0.0032,0.0697,243902.4
+logistic_regression,profile_10_features,10,inference,cold,1,0.4184,0.0,0.4184,0.4184,0.4184,0.4184,0.4184,2390.1
+logistic_regression,profile_10_features,10,inference,warm,500,0.0818,0.0392,0.0695,0.1642,0.2656,0.0625,0.3945,12224.9
+logistic_regression,profile_10_features,10,end_to_end,cold,1,1.8381,0.0,1.8381,1.8381,1.8381,1.8381,1.8381,544.0
+logistic_regression,profile_10_features,10,end_to_end,warm,500,1.583,3.1119,0.4714,7.231,9.5484,0.0856,27.0171,631.7
+decision_tree,profile_10_features,10,inference,cold,1,0.2751,0.0,0.2751,0.2751,0.2751,0.2751,0.2751,3635.0
+decision_tree,profile_10_features,10,inference,warm,500,0.0641,0.0297,0.0579,0.086,0.1982,0.0529,0.4916,15600.6
+decision_tree,profile_10_features,10,end_to_end,cold,1,1.6948,0.0,1.6948,1.6948,1.6948,1.6948,1.6948,590.0
+decision_tree,profile_10_features,10,end_to_end,warm,500,1.5653,3.1121,0.4491,7.2144,9.5481,0.0721,26.8656,638.9
+random_forest,profile_10_features,10,inference,cold,1,3.7653,0.0,3.7653,3.7653,3.7653,3.7653,3.7653,265.6
+random_forest,profile_10_features,10,inference,warm,500,4.6888,1.3106,4.2476,7.8099,9.5337,3.4347,10.2371,213.3
+random_forest,profile_10_features,10,end_to_end,cold,1,5.185,0.0,5.185,5.185,5.185,5.185,5.185,192.9
+random_forest,profile_10_features,10,end_to_end,warm,500,6.19,3.3369,5.1343,11.3575,14.4031,3.7276,34.8385,161.6
+lightgbm,profile_10_features,10,inference,cold,1,0.6729,0.0,0.6729,0.6729,0.6729,0.6729,0.6729,1486.1
+lightgbm,profile_10_features,10,inference,warm,500,0.4334,0.1575,0.352,0.7419,0.9477,0.2906,1.2387,2307.3
+lightgbm,profile_10_features,10,end_to_end,cold,1,2.0926,0.0,2.0926,2.0926,2.0926,2.0926,2.0926,477.9
+lightgbm,profile_10_features,10,end_to_end,warm,500,1.9346,3.1218,0.87,7.7095,9.9364,0.3258,27.1473,516.9
+N/A (Preprocessor),profile_21_features,21,preprocessing,cold,1,0.0379,0.0,0.0379,0.0379,0.0379,0.0379,0.0379,26385.2
+N/A (Preprocessor),profile_21_features,21,preprocessing,warm,500,0.0061,0.0008,0.0059,0.0065,0.0074,0.0057,0.019,163934.4
+logistic_regression,profile_21_features,21,inference,cold,1,0.301,0.0,0.301,0.301,0.301,0.301,0.301,3322.3
+logistic_regression,profile_21_features,21,inference,warm,500,0.0752,0.0313,0.0664,0.119,0.2326,0.0611,0.3633,13297.9
+logistic_regression,profile_21_features,21,end_to_end,cold,1,1.7239,0.0,1.7239,1.7239,1.7239,1.7239,1.7239,580.1
+logistic_regression,profile_21_features,21,end_to_end,warm,500,1.5784,3.1111,0.4669,7.3409,9.6107,0.0829,26.8841,633.6
+decision_tree,profile_21_features,21,inference,cold,1,0.4699,0.0,0.4699,0.4699,0.4699,0.4699,0.4699,2128.1
+decision_tree,profile_21_features,21,inference,warm,500,0.0633,0.0267,0.0566,0.0874,0.2127,0.0522,0.2962,15797.8
+decision_tree,profile_21_features,21,end_to_end,cold,1,1.8928,0.0,1.8928,1.8928,1.8928,1.8928,1.8928,528.3
+decision_tree,profile_21_features,21,end_to_end,warm,500,1.5665,3.1092,0.4537,7.2141,9.531,0.0749,26.8703,638.4
+random_forest,profile_21_features,21,inference,cold,1,7.8214,0.0,7.8214,7.8214,7.8214,7.8214,7.8214,127.9
+random_forest,profile_21_features,21,inference,warm,500,4.778,1.3712,4.2988,8.0624,9.7979,3.5217,10.4225,209.3
+random_forest,profile_21_features,21,end_to_end,cold,1,9.2443,0.0,9.2443,9.2443,9.2443,9.2443,9.2443,108.2
+random_forest,profile_21_features,21,end_to_end,warm,500,6.2811,3.3917,5.0835,11.7418,18.9232,3.5717,35.1468,159.2
+lightgbm,profile_21_features,21,inference,cold,1,0.8795,0.0,0.8795,0.8795,0.8795,0.8795,0.8795,1137.0
+lightgbm,profile_21_features,21,inference,warm,500,0.4229,0.1451,0.3538,0.7128,0.9081,0.2946,1.1966,2364.6
+lightgbm,profile_21_features,21,end_to_end,cold,1,2.3024,0.0,2.3024,2.3024,2.3024,2.3024,2.3024,434.3
+lightgbm,profile_21_features,21,end_to_end,warm,500,1.9261,3.0924,0.8913,7.504,9.8612,0.3438,27.1949,519.2

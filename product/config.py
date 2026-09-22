@@ -19,6 +19,53 @@ from product.version import APP_NAME, __version__
 logger = logging.getLogger(__name__)
 
 
+def validate_config_schema(cfg: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Validates a product configuration dictionary against required schemas and security invariants.
+
+    Returns:
+        Dict with keys 'valid' (bool), 'errors' (List[str]), 'warnings' (List[str]), 'status' ('PASS' | 'FAIL').
+    """
+    errors: List[str] = []
+    warnings: List[str] = []
+
+    # 1. Port range checks
+    dash_port = cfg.get("dashboard_port", 8501)
+    if not isinstance(dash_port, int) or not (1024 <= dash_port <= 65535):
+        errors.append(f"Invalid dashboard_port: {dash_port} (must be integer between 1024 and 65535)")
+
+    local_api = cfg.get("local_api", {})
+    if isinstance(local_api, dict):
+        api_port = local_api.get("port", 8080)
+        if not isinstance(api_port, int) or not (1024 <= api_port <= 65535):
+            errors.append(f"Invalid local_api.port: {api_port} (must be integer between 1024 and 65535)")
+        api_host = local_api.get("host", "127.0.0.1")
+        if api_host not in ("127.0.0.1", "localhost", "::1"):
+            errors.append(f"Security violation: local_api.host '{api_host}' must be 127.0.0.1 or localhost")
+    else:
+        errors.append("local_api section must be a dictionary")
+
+    # 2. Privacy & Security Invariants
+    if cfg.get("save_raw_packets") is True:
+        errors.append("Security violation: save_raw_packets must be False (zero-payload invariant)")
+
+    if cfg.get("local_only") is False:
+        errors.append("Security violation: local_only must be True (no external telemetry)")
+
+    # 3. Minimum packets threshold
+    min_pkts = cfg.get("minimum_packets", 5)
+    if not isinstance(min_pkts, int) or min_pkts < 1:
+        errors.append(f"Invalid minimum_packets: {min_pkts} (must be positive integer >= 1)")
+
+    return {
+        "valid": len(errors) == 0,
+        "errors": errors,
+        "warnings": warnings,
+        "status": "PASS" if len(errors) == 0 else "FAIL",
+        "message": "Configuration schema and security invariants verified" if len(errors) == 0 else f"{len(errors)} configuration validation error(s)",
+    }
+
+
 class ProductConfig:
     """
     Manages product configuration loaded from config/product.yaml.
@@ -31,6 +78,10 @@ class ProductConfig:
         self.config_path = Path(config_path or self.DEFAULT_CONFIG_PATH)
         self._raw_config: Dict[str, Any] = {}
         self.load()
+
+    def validate(self) -> Dict[str, Any]:
+        """Validates current loaded configuration against schema and privacy rules."""
+        return validate_config_schema(self._raw_config)
 
     def load(self) -> None:
         """Loads configuration from YAML with built-in safe defaults."""

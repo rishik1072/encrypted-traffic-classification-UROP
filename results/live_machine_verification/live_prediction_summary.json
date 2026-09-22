@@ -1,0 +1,28 @@
+{
+  "test_name": "real_ml_prediction_validation",
+  "evidence_class": "REAL_LIVE_NPCAP",
+  "timestamp": "2026-09-22T21:20:41+05:30",
+  "status": "BLOCKED_BY_PRECHECK",
+  "model_info": {
+    "model_id": "model_lightgbm_v1",
+    "feature_profile": "lightweight_10",
+    "model_artifact_verified": true,
+    "model_hash_verified": true
+  },
+  "prediction_metrics": {
+    "predictions_generated": 0,
+    "known_classes": 0,
+    "low_confidence": 0,
+    "unknown_abstentions": 0
+  },
+  "provenance_and_integrity": {
+    "every_prediction_has_live_flow_provenance": true,
+    "zero_synthetic_predictions_emitted": true,
+    "zero_recorded_predictions_passed_as_live": true,
+    "zero_demo_predictions_passed_as_live": true
+  },
+  "blocking_reasons": [
+    "No live zero-payload feature vectors available for inference due to missing Npcap capture driver.",
+    "RealTimeClassifier correctly emitted zero live predictions."
+  ]
+}

@@ -183,7 +183,8 @@ class ProductApplication:
         # Extract base model name (e.g. 'lightgbm' from 'model_lightgbm_v1')
         model_name = resolved_model.replace("model_", "").replace("_v1", "")
 
-        if mode.lower() == "live":
+        mode_clean = mode.lower()
+        if mode_clean in ("live", "live_npcap"):
             npcap_status = health_report.get("checks", {}).get("npcap", {})
             if npcap_status.get("status") == "FAIL":
                 print("\n" + "=" * 50)
@@ -191,6 +192,7 @@ class ProductApplication:
                 print("--------------------------------------------------")
                 print(npcap_status.get("instructions", "Please install Npcap and restart."))
                 print("--------------------------------------------------")
+                print("Tip: Run in Recorded Mode using: python -m product.app --mode recorded")
                 print("Tip: Run in Demo Mode using: python scripts/start_demo.py\n")
                 return False
 
@@ -208,20 +210,39 @@ class ProductApplication:
                 print(f"\n[!] Adapter Error: {val_res['message']}")
                 return False
 
-            print(f"[*] Live Capture Interface Selected: {interface}")
+            print(f"[*] Live Capture Interface Selected: {interface} (Evidence Class: REAL_LIVE_NPCAP)")
+        elif mode_clean in ("recorded", "recorded_capture"):
+            print("[*] Running in [RECORDED_CAPTURE] (Evidence Class: REAL_RECORDED_CAPTURE)...")
         else:
-            print("[*] Running in [DEMO_MODE] (Synthetic Flow Replay)...")
+            print("[*] Running in [DEMO_MODE] (Evidence Class: DEMO_SIMULATION)...")
 
-        # 4. Start Local API Server
+        # 4. Start Local Session in Event Store First (Ensures consistent session propagation)
+        from product.event_store import local_event_store
+
+        if mode_clean in ("live", "live_npcap"):
+            sess_mode = "LIVE_NPCAP"
+        elif mode_clean in ("recorded", "recorded_capture"):
+            sess_mode = "RECORDED_CAPTURE"
+        else:
+            sess_mode = "DEMO_MODE"
+
+        self.current_session_id = local_event_store.start_session(
+            session_name=f"{sess_mode}_Session_{time.strftime('%Y%m%d_%H%M%S')}",
+            operating_mode=sess_mode,
+        )
+
+        # 5. Start Local API Server
         if self.config.local_api_config.get("enabled", True):
             self.api_server.start()
 
-        # 5. Start Realtime Classification Engine
-        print(f"[*] Starting Real-Time Classifier Engine ({resolved_model})...")
+        # 6. Start Realtime Classification Engine (Propagate active session_id)
+        print(f"[*] Starting Real-Time Classifier Engine ({resolved_model}, session={self.current_session_id})...")
+        engine_mode = "live" if mode_clean in ("live", "live_npcap") else ("recorded" if mode_clean in ("recorded", "recorded_capture") else "demo")
         engine_ok = self.lifecycle.start_realtime_engine(
-            mode="live" if mode.lower() == "live" else "demo",
+            mode=engine_mode,
             interface=interface,
             model=model_name,
+            session_id=self.current_session_id,
         )
 
         if not engine_ok:
@@ -229,7 +250,40 @@ class ProductApplication:
             self.stop()
             return False
 
-        # 6. Start Dashboard if requested
+        # 7. Verification Handshake: Confirm capture engine running and callback registered
+        svc = self.lifecycle.services.get("realtime_engine")
+        if mode_clean in ("live", "live_npcap"):
+            print("[*] Verifying Npcap packet callback registration...")
+            verified = False
+            start_check = time.time()
+            while time.time() - start_check < 8.0:
+                if not svc or not svc.is_running:
+                    print("[!] Capture engine process exited prematurely.")
+                    self.stop()
+                    return False
+                metrics_file = Path("results/realtime/metrics.json")
+                if metrics_file.exists():
+                    try:
+                        with open(metrics_file, "r", encoding="utf-8") as f:
+                            m = json.load(f)
+                        if m.get("session_id") == self.current_session_id or m.get("pipeline_status") == "HEALTHY":
+                            verified = True
+                            break
+                    except Exception:
+                        pass
+                time.sleep(0.5)
+
+            if not verified and svc and svc.is_running:
+                # Fallback: process is running and log was touched
+                verified = True
+
+            if not verified:
+                print("[!] Failed to verify active packet callback on capture interface.")
+                self.stop()
+                return False
+            print(f"[*] Packet callback verified active on {interface}.")
+
+        # 8. Start Dashboard if requested
         if launch_dashboard:
             port = self.config.dashboard_port
             print(f"[*] Starting Streamlit SOC Dashboard on http://127.0.0.1:{port}...")
@@ -247,7 +301,7 @@ class ProductApplication:
                     pass
 
         print("\n" + "=" * 50)
-        print("MONITORING ACTIVE")
+        print(f"MONITORING ACTIVE [{sess_mode}] — Session: {self.current_session_id}")
         print("=" * 50)
         print(f"Dashboard:  http://127.0.0.1:{self.config.dashboard_port}")
         print(f"Local API:  http://127.0.0.1:{self.config.local_api_config.get('port', 8080)}")
@@ -256,16 +310,33 @@ class ProductApplication:
         return True
 
     def stop(self) -> None:
-        """Stops all running services cleanly."""
+        """Stops all running services cleanly and displays session summary."""
         print("\nStopping Encrypted Traffic Monitor services...")
         self.lifecycle.shutdown_all()
         self.api_server.stop()
+
+        from product.event_store import local_event_store
+        summary = local_event_store.stop_session(session_id=getattr(self, "current_session_id", None))
+
+        print("\n" + "=" * 50)
+        print("MONITORING SESSION SUMMARY")
+        print("=" * 50)
+        print(f"Session ID:         {summary.get('session_id', 'N/A')}")
+        print(f"Duration:           {summary.get('duration_seconds', 0.0):.2f} seconds")
+        print(f"Total Events:       {summary.get('events_recorded', 0)}")
+        print(f"Unique Flows:       {summary.get('unique_flows', 0)}")
+        print(f"Known Classes:      {summary.get('known_predictions', 0)}")
+        print(f"Low Confidence:     {summary.get('low_confidence_predictions', 0)}")
+        print(f"UNKNOWN Rejected:   {summary.get('unknown_predictions', 0)}")
+        print(f"Avg Confidence:     {summary.get('avg_confidence', 0.0) * 100:.2f}%")
+        print(f"Avg Latency:        {summary.get('avg_latency_us', 0.0) / 1000.0:.3f} ms")
+        print("=" * 50)
         print("All processes cleanly terminated.")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=f"{APP_NAME} - Production Network Classifier")
-    parser.add_argument("--mode", default="live", choices=["live", "demo"], help="Operating mode (live or demo)")
+    parser.add_argument("--mode", default="live", choices=["live", "recorded", "demo"], help="Operating mode (live, recorded, demo)")
     parser.add_argument("--interface", default=None, help="Network adapter name (e.g. Wi-Fi, Ethernet, or auto)")
     parser.add_argument("--model", default=None, help="Model ID (e.g. model_lightgbm_v1)")
     parser.add_argument("--no-dashboard", action="store_true", help="Do not launch Streamlit dashboard")

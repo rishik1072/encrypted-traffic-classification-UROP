@@ -155,7 +155,11 @@ class HierarchicalClassificationPipeline:
             val_sess = fold_sessions[fold_idx]
             train = [r for r in records if r["session_id"] not in val_sess]
             val = [r for r in records if r["session_id"] in val_sess]
-            splits.append((train, val))
+            if train and val:
+                splits.append((train, val))
+        if not splits and records:
+            mid = max(1, len(records) // 2)
+            splits.append((records[:mid], records[mid:] or records[:1]))
         return splits
 
     # =========================================================================
@@ -250,6 +254,14 @@ class HierarchicalClassificationPipeline:
 
                     X_train, y_train = prep.fit_transform(train_recs)
                     X_val, y_val = prep.transform(val_recs), [prep.label_to_idx_[r["traffic_class"]] for r in val_recs]
+
+                    if len(prep.label_to_idx_) <= 1:
+                        single_class = list(prep.label_to_idx_.values())[0] if prep.label_to_idx_ else 0
+                        y_pred = [single_class] * len(val_recs)
+                        lbl_classes = prep.get_label_classes()
+                        met = compute_metrics(y_val, y_pred, lbl_classes)
+                        fold_metrics.append(met)
+                        continue
 
                     model = create_base_estimator(m_name, {"max_depth": 5})
                     model.fit(X_train, y_train)

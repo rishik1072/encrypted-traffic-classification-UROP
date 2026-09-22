@@ -20,6 +20,7 @@ class LogisticRegressionClassifier(BaseTrafficClassifier):
     def build_model(self) -> Any:
         try:
             from sklearn.linear_model import LogisticRegression
+            import inspect
             default_params = {
                 "max_iter": 1000,
                 "solver": "lbfgs",
@@ -27,7 +28,9 @@ class LogisticRegressionClassifier(BaseTrafficClassifier):
                 "random_state": 42,
             }
             default_params.update(self.params)
-            return LogisticRegression(**default_params)
+            sig_params = set(inspect.signature(LogisticRegression.__init__).parameters.keys())
+            filtered_params = {k: v for k, v in default_params.items() if k in sig_params}
+            return LogisticRegression(**filtered_params)
         except ImportError:
             logger.info("Scikit-learn not available. Using built-in Logistic Regression estimator.")
             return _SimpleLogisticRegression()

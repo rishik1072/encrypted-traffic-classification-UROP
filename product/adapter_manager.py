@@ -74,31 +74,71 @@ def list_adapters() -> List[Dict[str, Any]]:
     return adapters
 
 
-def get_default_adapter() -> Optional[Dict[str, Any]]:
+_CACHED_DEFAULT_ADAPTER: Optional[Dict[str, Any]] = None
+
+
+def set_default_adapter(adapter: Optional[Dict[str, Any]]) -> None:
+    """Explicitly sets the cached default adapter."""
+    global _CACHED_DEFAULT_ADAPTER
+    _CACHED_DEFAULT_ADAPTER = adapter
+
+
+def get_default_adapter(force_refresh: bool = False) -> Optional[Dict[str, Any]]:
     """
     Identifies the best default active capture adapter (prioritizing active Wi-Fi, then active Ethernet).
+    Caches the discovered adapter to avoid repeated hardware/Npcap enumerations.
     """
-    adapters = list_adapters()
-    if not adapters:
-        return None
+    global _CACHED_DEFAULT_ADAPTER
+    if not force_refresh and _CACHED_DEFAULT_ADAPTER is not None:
+        return _CACHED_DEFAULT_ADAPTER
 
-    # 1. Look for active UP Wi-Fi adapter (non-tunnel)
-    for ad in adapters:
-        if ad["is_wifi"] and ad["status"] == "UP" and "warp" not in ad["friendly_name"].lower():
-            return ad
+    try:
+        adapters = list_adapters()
+    except Exception as e:
+        logger.debug("list_adapters exception: %s", e)
+        adapters = []
 
-    # 2. Look for active UP Ethernet adapter
-    for ad in adapters:
-        if ad["is_ethernet"] and ad["status"] == "UP" and "warp" not in ad["friendly_name"].lower():
-            return ad
+    res: Optional[Dict[str, Any]] = None
+    if adapters:
+        # 1. Look for active UP Wi-Fi adapter (non-tunnel)
+        for ad in adapters:
+            if ad["is_wifi"] and ad["status"] == "UP" and "warp" not in ad["friendly_name"].lower():
+                res = ad
+                break
 
-    # 3. Look for any active UP adapter
-    for ad in adapters:
-        if ad["status"] == "UP" and "loopback" not in ad["friendly_name"].lower():
-            return ad
+        # 2. Look for active UP Ethernet adapter
+        if not res:
+            for ad in adapters:
+                if ad["is_ethernet"] and ad["status"] == "UP" and "warp" not in ad["friendly_name"].lower():
+                    res = ad
+                    break
 
-    # 4. Fallback to first available adapter
-    return adapters[0] if adapters else None
+        # 3. Look for any active UP adapter
+        if not res:
+            for ad in adapters:
+                if ad["status"] == "UP" and "loopback" not in ad["friendly_name"].lower():
+                    res = ad
+                    break
+
+        if not res and adapters:
+            res = adapters[0]
+
+    # Fallback to last cached or standard default
+    if not res:
+        res = _CACHED_DEFAULT_ADAPTER or {
+            "friendly_name": "Wi-Fi",
+            "interface_description": "Default Wi-Fi Network Adapter",
+            "npcap_name": r"\Device\NPF_Generic",
+            "status": "UP",
+            "link_speed": "Wi-Fi (802.11ax/ac/n)",
+            "ip": "127.0.0.1",
+            "is_wifi": True,
+            "is_ethernet": False,
+            "scapy_object": None,
+        }
+
+    _CACHED_DEFAULT_ADAPTER = res
+    return res
 
 
 def validate_adapter(adapter_name: str) -> Dict[str, Any]:
@@ -110,6 +150,13 @@ def validate_adapter(adapter_name: str) -> Dict[str, Any]:
         return {
             "valid": False,
             "message": "No network adapters detected by Npcap capture engine.",
+            "adapter": None,
+        }
+
+    if not adapter_name or not adapter_name.strip():
+        return {
+            "valid": False,
+            "message": "Adapter name cannot be empty or unavailable.",
             "adapter": None,
         }
 
@@ -131,6 +178,6 @@ def validate_adapter(adapter_name: str) -> Dict[str, Any]:
     available_names = [a["friendly_name"] for a in adapters]
     return {
         "valid": False,
-        "message": f"Adapter '{adapter_name}' not found. Available: {', '.join(available_names)}",
+        "message": f"Adapter '{adapter_name}' not found or not available. Available: {', '.join(available_names)}",
         "adapter": None,
     }

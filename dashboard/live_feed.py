@@ -69,8 +69,15 @@ def normalize_api_record(
     rec_mode = str(record.get("operating_mode", "")).upper()
     target_mode_norm = target_mode.upper()
 
-    if "LIVE" in target_mode_norm and "DEMO" in rec_mode:
-        return None, False, f"wrong operating mode: {rec_mode} in LIVE_MODE"
+    if target_mode_norm in ("LIVE_NPCAP", "LIVE_MODE"):
+        if rec_mode not in ("LIVE_NPCAP", "LIVE_MODE"):
+            return None, False, f"rejected non-live record (mode={rec_mode}) in LIVE_NPCAP: wrong operating mode"
+    elif target_mode_norm == "RECORDED_CAPTURE":
+        if rec_mode != "RECORDED_CAPTURE":
+            return None, False, f"rejected non-recorded capture record (mode={rec_mode}) in RECORDED_CAPTURE: wrong operating mode"
+    elif "DEMO" in target_mode_norm:
+        if rec_mode in ("LIVE_NPCAP", "LIVE_MODE", "RECORDED_CAPTURE"):
+            return None, False, f"rejected live/recorded record in DEMO_MODE: wrong operating mode"
 
     # Extract raw fields without assuming CSV positions
     raw_ts = record.get("timestamp")
@@ -78,8 +85,10 @@ def normalize_api_record(
     session_id_hash = str(record.get("session_id_hash", "0000000000000000")).strip()
     model_id = str(record.get("model_id", "model_lightgbm_v1")).strip()
     feature_profile = str(record.get("feature_profile", "lightweight_10")).strip()
-    predicted_family = str(record.get("predicted_family", "")).strip()
-    predicted_class = str(record.get("predicted_class", "")).strip()
+    raw_fam = record.get("predicted_family")
+    predicted_family = str(raw_fam).strip() if raw_fam is not None else ""
+    raw_class = record.get("predicted_class") or record.get("prediction")
+    predicted_class = str(raw_class).strip() if raw_class is not None else ""
 
     # Confidence parsing: composed_confidence -> confidence -> 0.0
     raw_comp_conf = record.get("composed_confidence")
@@ -93,30 +102,57 @@ def normalize_api_record(
     fam_conf_val, _ = parse_confidence(raw_fam_conf)
     fine_conf_val, _ = parse_confidence(raw_fine_conf)
 
+    valid_fine_classes = {"Web", "Video", "Messaging", "VoIP", "File Transfer", "Other"}
+    valid_families = {"Bulk_Streaming", "Interactive", "Other"}
+
     # State
     raw_state = str(record.get("prediction_state", "")).strip()
     if raw_state in VALID_PREDICTION_STATES:
         state = raw_state
-    elif comp_conf_val is not None and comp_conf_val >= 0.70:
+    elif predicted_class in valid_fine_classes and comp_conf_val is not None and comp_conf_val >= 0.70:
         state = "KNOWN_CLASS"
     elif comp_conf_val is not None and comp_conf_val >= 0.35:
         state = "LOW_CONFIDENCE"
     else:
         state = "UNKNOWN"
 
-    # Infer family if missing
-    if not predicted_family or predicted_family in ("—", "None", "null", "nan", ""):
+    # Infer family if missing for valid fine class
+    if (not predicted_family or predicted_family in ("—", "None", "null", "nan", "")) and predicted_class in valid_fine_classes:
         if predicted_class in ["Web", "Messaging", "VoIP"]:
             predicted_family = "Interactive"
         elif predicted_class in ["Video", "File Transfer"]:
             predicted_family = "Bulk_Streaming"
         elif predicted_class == "Other":
             predicted_family = "Other"
-        else:
-            predicted_family = "—"
 
-    if not predicted_class or predicted_class in ("None", "null", "nan"):
-        predicted_class = "—"
+    # State-specific validation and abstention formatting
+    if state in ("KNOWN", "KNOWN_CLASS"):
+        if not predicted_class or predicted_class in ("—", "None", "null", "nan", "UNKNOWN", "INSUFFICIENT_EVIDENCE") or predicted_class not in valid_fine_classes:
+            return None, False, f"rejected known-class record: invalid or missing fine-grained predicted_class '{predicted_class}'"
+        if not predicted_family or predicted_family in ("—", "None", "null", "nan", "UNKNOWN", "INSUFFICIENT_EVIDENCE") or predicted_family not in valid_families:
+            return None, False, f"rejected known-class record: invalid or missing predicted_family '{predicted_family}'"
+        if comp_conf_val is None or not comp_conf_valid:
+            return None, False, f"rejected known-class record: invalid confidence '{raw_comp_conf}'"
+    elif state == "INSUFFICIENT_EVIDENCE":
+        if not predicted_class or predicted_class in ("—", "None", "null", "nan", ""):
+            predicted_class = "INSUFFICIENT_EVIDENCE"
+        if not predicted_family or predicted_family in ("—", "None", "null", "nan", ""):
+            predicted_family = "INSUFFICIENT_EVIDENCE"
+    elif state == "UNKNOWN":
+        if not predicted_class or predicted_class in ("—", "None", "null", "nan", ""):
+            predicted_class = "UNKNOWN"
+        if not predicted_family or predicted_family in ("—", "None", "null", "nan", ""):
+            predicted_family = "UNKNOWN"
+    elif state == "LOW_CONFIDENCE":
+        if not predicted_class or predicted_class in ("—", "None", "null", "nan", ""):
+            predicted_class = "LOW_CONFIDENCE"
+        if not predicted_family or predicted_family in ("—", "None", "null", "nan", ""):
+            predicted_family = "LOW_CONFIDENCE"
+    else:
+        if not predicted_class or predicted_class in ("None", "null", "nan"):
+            predicted_class = "—"
+        if not predicted_family or predicted_family in ("None", "null", "nan"):
+            predicted_family = "—"
 
     # Latency parsing
     latency_us = safe_float(record.get("latency_us"), default=0.0) or 0.0
@@ -161,7 +197,7 @@ def load_live_predictions(
     Returns:
         (normalized_canonical_records_list, metadata_dict)
     """
-    req_url = f"{api_url}?limit={limit}"
+    req_url = f"{api_url}?limit={limit}&mode={mode}"
     source = "LOCAL_API"
     http_status: Optional[int] = None
     connected = False
@@ -219,8 +255,8 @@ def load_live_predictions(
         error = f"Unexpected feed error: {str(e)}"
         connected = False
 
-    # Fallback to CSV if API is completely offline (e.g. offline research viewing)
-    if not connected:
+    # Strict isolation: NEVER fall back to CSV in LIVE_NPCAP / LIVE_MODE (prevents synthetic/demo leak)
+    if not connected and mode not in ("LIVE_NPCAP", "LIVE_MODE"):
         fallback_csv = Path("results/realtime/predictions.csv")
         if fallback_csv.exists():
             try:
@@ -236,7 +272,6 @@ def load_live_predictions(
                     else:
                         dropped_count += 1
                 source = "CSV_FALLBACK"
-                # If CSV has records, consider feed degraded rather than dead while preserving original error
                 if canonical_records:
                     if error:
                         error = f"{error} (Loaded {normalized_count} records from CSV cache)"
@@ -244,6 +279,10 @@ def load_live_predictions(
                         error = f"Local API offline; loaded {normalized_count} records from CSV cache."
             except Exception:
                 pass
+    elif not connected and mode in ("LIVE_NPCAP", "LIVE_MODE"):
+        source = "LOCAL_API_UNAVAILABLE"
+        if not error:
+            error = "Local API unavailable. Live monitoring requires active Npcap capture and API on 127.0.0.1:8080. (No CSV/demo fallback allowed)"
 
     event_count = len(canonical_records)
     last_update = datetime.now().strftime("%H:%M:%S")

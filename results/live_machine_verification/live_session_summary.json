@@ -1,0 +1,21 @@
+{
+  "test_name": "event_store_and_session_verification",
+  "database_path": "data/local/events/event_store.db",
+  "timestamp": "2026-09-22T21:20:41+05:30",
+  "session_status": {
+    "active_session_id": null,
+    "total_live_events_stored": 0,
+    "total_live_flows_stored": 0
+  },
+  "database_integrity": {
+    "sqlite_schema_verified": true,
+    "evidence_class_column_present": true,
+    "payload_bytes_stored": 0,
+    "raw_packets_stored": 0,
+    "unhashed_ips_stored": 0
+  },
+  "session_csv_export": {
+    "status": "READY",
+    "export_target": "data/local/events/exported_events.csv"
+  }
+}

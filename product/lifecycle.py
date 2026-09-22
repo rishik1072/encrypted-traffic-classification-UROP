@@ -176,6 +176,11 @@ class ServiceProcess:
         except subprocess.TimeoutExpired:
             logger.warning("Service %s did not terminate in %.1fs. Forcing kill...", self.name, timeout)
             try:
+                if sys.platform == "win32" and self.pid:
+                    try:
+                        subprocess.run(["taskkill", "/F", "/T", "/PID", str(self.pid)], capture_output=True, timeout=3.0)
+                    except Exception:
+                        pass
                 self.process.kill()
                 self.process.wait(timeout=2.0)
             except Exception as e:
@@ -239,6 +244,7 @@ class ProductLifecycleManager:
         mode: str = "live",
         interface: Optional[str] = None,
         model: str = "lightgbm",
+        session_id: Optional[str] = None,
     ) -> bool:
         """Starts the realtime classification backend."""
         log_dir = get_log_dir()
@@ -269,6 +275,9 @@ class ProductLifecycleManager:
         if interface and mode == "live":
             cmd.extend(["--interface", interface])
 
+        if session_id:
+            cmd.extend(["--session-id", session_id])
+
         svc = self.register_service(
             "realtime_engine",
             cmd,
@@ -279,7 +288,7 @@ class ProductLifecycleManager:
         ok = svc.start()
         log_packaged_runtime_event(
             "ENGINE_STARTED" if ok else "ENGINE_START_FAILED",
-            {"engine_pid": svc.pid, "mode": mode, "model": model},
+            {"engine_pid": svc.pid, "mode": mode, "model": model, "session_id": session_id},
         )
         return ok
 

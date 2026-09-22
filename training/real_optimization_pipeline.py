@@ -809,9 +809,10 @@ The held-out test set from this baseline must not be used for subsequent feature
                     acc_list.append(m["accuracy"])
 
                 # Latency test on representative fold with fitted model
+                feat_dim = len(last_selected_features) if last_selected_features else k_int
                 lat_res = benchmark_model_latency(
                     model=clf,
-                    sample_features=[[0.0] * k_int],
+                    sample_features=[[0.0] * feat_dim],
                     warmup_runs=20,
                     benchmark_runs=100,
                 )
@@ -1125,7 +1126,7 @@ The held-out test set from this baseline must not be used for subsequent feature
             probs = clf.predict_proba(x_val)
 
             for p_idx, y_true, p_pred in zip(range(len(y_val)), y_val, preds):
-                conf = float(max(probs[p_idx])) if probs else 1.0
+                conf = float(max(probs[p_idx])) if (probs is not None and len(probs) > 0) else 1.0
                 confidences.append(conf)
                 accuracies.append(1 if y_true == p_pred else 0)
 

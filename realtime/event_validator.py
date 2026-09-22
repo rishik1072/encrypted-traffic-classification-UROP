@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 logger = logging.getLogger("realtime.event_validator")
 
 VALID_PREDICTION_STATES = {
+    "KNOWN",
     "KNOWN_CLASS",
     "LOW_CONFIDENCE",
     "UNKNOWN",
@@ -155,13 +156,13 @@ def validate_traffic_prediction_event(
                 errors.append(f"{c_name} must be float in [0.0, 1.0] or None, got: {c_val}")
 
     # 3. State-Specific Constraints
-    if state == "KNOWN_CLASS":
-        if not pred_family or pred_family in ("None", "UNKNOWN", "—"):
-            errors.append(f"KNOWN_CLASS requires valid predicted_family, got: {pred_family}")
-        if not pred_class or pred_class in ("None", "UNKNOWN", "—"):
-            errors.append(f"KNOWN_CLASS requires valid predicted_class, got: {pred_class}")
+    if state in ("KNOWN", "KNOWN_CLASS"):
+        if not pred_family or pred_family in ("None", "UNKNOWN", "—") or pred_family not in VALID_TRAFFIC_FAMILIES:
+            errors.append(f"{state} requires valid predicted_family, got: '{pred_family}'")
+        if not pred_class or pred_class in ("None", "UNKNOWN", "—") or pred_class not in VALID_TRAFFIC_CLASSES:
+            errors.append(f"{state} requires valid fine-grained predicted_class from {sorted(VALID_TRAFFIC_CLASSES)}, got: '{pred_class}'")
         if composed_conf is None or not _is_valid_confidence(composed_conf):
-            errors.append(f"KNOWN_CLASS requires valid composed_confidence float, got: {composed_conf}")
+            errors.append(f"{state} requires valid composed_confidence float, got: {composed_conf}")
 
     elif state == "LOW_CONFIDENCE":
         if composed_conf is None or not _is_valid_confidence(composed_conf):
@@ -171,12 +172,12 @@ def validate_traffic_prediction_event(
         if pred_family and pred_family not in ("UNKNOWN", "Other", None):
             # If genuine UNKNOWN state, family should be None, "UNKNOWN", or "Other" (if model explicitly predicted Other)
             pass
-        if pred_class and pred_class not in ("—", "None", None, "Other"):
+        if pred_class and pred_class not in ("UNKNOWN", "—", "None", None, "Other"):
             # UNKNOWN should not fabricate specific fine class
             errors.append(f"UNKNOWN state should not assert definitive fine class: '{pred_class}'")
 
     elif state == "INSUFFICIENT_EVIDENCE":
-        if pred_class and pred_class not in ("—", "None", None):
+        if pred_class and pred_class not in ("INSUFFICIENT_EVIDENCE", "—", "None", None):
             errors.append(f"INSUFFICIENT_EVIDENCE cannot claim definitive class '{pred_class}'")
 
     is_valid = len(errors) == 0

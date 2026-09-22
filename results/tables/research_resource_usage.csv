@@ -1,0 +1,13 @@
+model,feature_profile,feature_count,working_set_mb,peak_working_set_mb,heap_allocated_mb,cpu_time_per_1k_flows_ms,cpu_utilization_pct
+logistic_regression,profile_5_features,5,285.76,358.46,0.087,78.12,106.7
+decision_tree,profile_5_features,5,285.79,358.46,0.03,62.5,85.2
+random_forest,profile_5_features,5,285.85,358.46,0.135,3937.5,96.3
+lightgbm,profile_5_features,5,288.19,358.46,2.352,343.75,96.2
+logistic_regression,profile_10_features,10,288.19,358.46,0.093,78.12,99.9
+decision_tree,profile_10_features,10,288.19,358.46,0.034,62.5,101.9
+random_forest,profile_10_features,10,288.19,358.46,0.138,3656.25,96.6
+lightgbm,profile_10_features,10,289.34,358.46,2.356,328.12,96.5
+logistic_regression,profile_21_features,21,289.37,358.46,0.113,78.12,113.3
+decision_tree,profile_21_features,21,289.37,358.46,0.043,46.88,79.8
+random_forest,profile_21_features,21,289.37,358.46,0.149,3593.75,97.4
+lightgbm,profile_21_features,21,289.66,358.46,2.368,343.75,102.9

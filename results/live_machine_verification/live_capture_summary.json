@@ -1,0 +1,35 @@
+{
+  "test_name": "live_capture_diagnostic",
+  "command": "python -m scripts.live_capture_test --duration 15",
+  "timestamp": "2026-09-22T21:20:41+05:30",
+  "duration_seconds_requested": 15.0,
+  "exit_code": 1,
+  "overall_status": "FAILED",
+  "evidence_class": "REAL_LIVE_NPCAP",
+  "target_interface": "Wi-Fi",
+  "prerequisites": {
+    "windows_os": "PASS",
+    "npcap_driver": "FAIL",
+    "administrator_privileges": "FAIL",
+    "network_adapter": "PASS"
+  },
+  "capture_metrics": {
+    "packets_captured": 0,
+    "bytes_captured": 0,
+    "first_packet_timestamp": null,
+    "last_packet_timestamp": null,
+    "protocol_counts": {}
+  },
+  "invariants_enforced": {
+    "zero_packet_is_failure": true,
+    "synthetic_fallback_prevented": true,
+    "recorded_replay_prevented": true,
+    "demo_mode_isolated": true,
+    "fail_closed_code": 1
+  },
+  "blocking_reasons": [
+    "Npcap packet capture driver was NOT detected on this host workstation (wpcap.dll and npcap.sys are absent).",
+    "Administrative privileges are absent (running as Standard User)."
+  ],
+  "remediation": "Install official Npcap v1.80 installer with 'WinPcap API-compatible Mode' checked, then launch from elevated Administrator PowerShell."
+}

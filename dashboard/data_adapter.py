@@ -122,7 +122,7 @@ def normalize_prediction_record(
             raw_comp_conf = record.get("confidence")
         raw_fam_conf = record.get("family_confidence")
         raw_fine_conf = record.get("fine_confidence")
-        raw_class = record.get("predicted_class")
+        raw_class = record.get("predicted_class") or record.get("prediction")
         raw_fam = record.get("predicted_family")
         raw_state = record.get("prediction_state")
         pkts = _safe_int(record.get("packets_observed"), _safe_int(record.get("packet_count"), 0))
@@ -374,6 +374,23 @@ def fetch_subsystem_status(
             status_report["engine_status"] = "RUNNING"
         else:
             status_report["engine_status"] = "STOPPED"
+
+    try:
+        metrics_req = urllib.request.Request(f"{api_base_url}/metrics", headers={"Accept": "application/json"})
+        with urllib.request.urlopen(metrics_req, timeout=timeout) as resp:
+            if getattr(resp, "status", 200) == 200:
+                status_report["details"]["metrics"] = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        pass
+
+    try:
+        alerts_req = urllib.request.Request(f"{api_base_url}/alerts?limit=20", headers={"Accept": "application/json"})
+        with urllib.request.urlopen(alerts_req, timeout=timeout) as resp:
+            if getattr(resp, "status", 200) == 200:
+                alerts_data = json.loads(resp.read().decode("utf-8"))
+                status_report["details"]["alerts"] = alerts_data.get("alerts", [])
+    except Exception:
+        pass
 
     return status_report
 

@@ -1,0 +1,14 @@
+study_type,experiment_id,configuration,feature_count,val_macro_f1,val_accuracy,test_macro_f1,test_accuracy,test_balanced_accuracy,p95_inference_latency_ms,model_size_kb,notes
+family_ablation,EXP-R10-FAMILY,A. Packet-size only,30,0.3233,0.3542,0.2949,0.3125,0.3125,31.3204,10.16,"Packet size moments (overall, fwd, bwd)"
+family_ablation,EXP-R10-FAMILY,B. Timing only,30,0.3094,0.3333,0.3438,0.3333,0.3333,28.8145,10.16,"Inter-arrival time moments (overall, fwd, bwd)"
+family_ablation,EXP-R10-FAMILY,C. Counts/bytes only,12,0.3368,0.3333,0.3375,0.3333,0.3333,31.421,10.16,Packet and byte volume counters & rates
+family_ablation,EXP-R10-FAMILY,D. Direction only,3,0.4803,0.5,0.4241,0.4167,0.4167,27.1489,10.16,"Packet ratio, byte ratio, direction switches"
+family_ablation,EXP-R10-FAMILY,E. Burst only,8,0.4075,0.4167,0.21,0.2292,0.2292,30.1535,10.16,"Burst counts, sizes, durations, density"
+family_ablation,EXP-R10-FAMILY,F. All feature families,84,0.3741,0.375,0.2931,0.2917,0.2917,28.9173,10.16,Combined zero-payload feature set (84 features)
+count_tradeoff,EXP-R10-COUNT,K=3 features,3,0.7572,0.7708,0.6708,0.6667,0.6667,28.3218,10.16,Selected lightweight profile
+count_tradeoff,EXP-R10-COUNT,K=5 features,5,0.3324,0.3333,0.4073,0.4167,0.4167,30.0427,10.16,Candidate subset
+count_tradeoff,EXP-R10-COUNT,K=10 features,10,0.2531,0.2708,0.3444,0.375,0.375,30.2879,10.16,Candidate subset
+count_tradeoff,EXP-R10-COUNT,K=15 features,15,0.3365,0.3542,0.3591,0.375,0.375,31.1082,10.16,Candidate subset
+count_tradeoff,EXP-R10-COUNT,K=20 features,20,0.3422,0.3542,0.3689,0.375,0.375,29.5728,10.16,Candidate subset
+count_tradeoff,EXP-R10-COUNT,K=30 features,30,0.3489,0.3542,0.3775,0.375,0.375,31.1914,10.16,Candidate subset
+count_tradeoff,EXP-R10-COUNT,K=84 features,84,0.3435,0.3333,0.2857,0.2917,0.2917,31.1557,10.16,Candidate subset

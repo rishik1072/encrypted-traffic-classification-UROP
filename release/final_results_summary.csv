@@ -1,9 +1,0 @@
-evaluation_regime,model,feature_profile,feature_count,macro_f1,accuracy,latency_ms,sample_count,ece,notes
-Random Split (Baseline),LightGBM,baseline,21,0.9500,0.9500,0.5000,12,0.1170,Group-aware train/val/test baseline
-Random Split (Lightweight),LightGBM,lightweight_10,10,0.9500,0.9500,0.4800,12,0.1170,Selected Pareto-optimal locked model
-Capture Split (Unseen PCAPs),LightGBM,lightweight_10,10,0.9000,0.9000,0.5100,12,N/A,PCAP file-level isolation
-Session Split (Unseen Sessions),LightGBM,lightweight_10,10,0.8800,0.8800,0.5100,12,N/A,User session-level isolation
-Temporal Split (Past -> Future),LightGBM,lightweight_10,10,0.8400,0.8500,0.5200,12,N/A,Chronological train/test split
-Early Prediction (N=5 pkts),LightGBM,lightweight_10,10,0.8800,0.8900,0.4800,12,N/A,100% flow coverage by packet 5
-Traffic Load Stress (100 Mbps),LightGBM,lightweight_10,10,0.9100,0.9200,0.8000,12,N/A,High-throughput load test
-Final Held-Out Test,LightGBM,lightweight_10,10,0.9500,0.9500,0.5000,5,N/A,Single evaluation on held-out test split

@@ -1,0 +1,14 @@
+category,experiment_id,model_or_method,feature_profile,primary_metric,measured_value,secondary_metric,secondary_value,latency_p95_ms,footprint_kb,status,authoritative_source
+1. In-Domain Baseline,EXP-R09,Logistic Regression,baseline_21_zero_payload,Test Macro-F1,0.324,Test Accuracy,0.3333,0.1487,2.0,VERIFIED_REAL,results/tables/research_baseline.csv
+1. In-Domain Baseline,EXP-R09,Decision Tree,baseline_21_zero_payload,Test Macro-F1,0.5802,Test Accuracy,0.5833,0.1893,9.58,VERIFIED_REAL,results/tables/research_baseline.csv
+1. In-Domain Baseline,EXP-R09,Random Forest,baseline_21_zero_payload,Test Macro-F1,0.5873,Test Accuracy,0.5833,31.7871,881.98,VERIFIED_REAL,results/tables/research_baseline.csv
+1. In-Domain Baseline,EXP-R09,Lightgbm,baseline_21_zero_payload,Test Macro-F1,0.5474,Test Accuracy,0.5417,1.7393,689.33,VERIFIED_REAL,results/tables/research_baseline.csv
+2. Feature Study,EXP-R10,Top-3 Features (K=3),top_3_features,Test Macro-F1,0.6708,Val Macro-F1,0.7572,28.3218,10.16,VERIFIED_REAL,results/tables/feature_count_tradeoff_research.csv
+2. Feature Study,EXP-R10,Direction Only (3 features),direction_only,Test Macro-F1,0.4241,Val Macro-F1,0.4803,27.1489,10.16,VERIFIED_REAL,results/tables/feature_family_ablation_research.csv
+3. Generalization,EXP-R11,Unseen Environment (Eth + Cell),canonical_21,Test Macro-F1,0.9325,Test Accuracy,0.9333,18.1,881.98,VERIFIED_REAL,results/tables/research_generalization_scorecard.csv
+3. Generalization,EXP-R11,Direct -> Tunneled (WARP Shift),canonical_21,Test Macro-F1,0.3407,F1 Delta vs Baseline,-0.2594,17.87,881.98,VERIFIED_REAL,results/tables/research_generalization_scorecard.csv
+4. Early Prediction,EXP-R12,Early Triage (3 Packets),early_3_packets,Test Macro-F1,0.6111,Flow Coverage,0.9167,79.94,881.98,VERIFIED_REAL,results/tables/research_early_prediction.csv
+4. Early Prediction,EXP-R12,Full Flow (Retrospective),full_flow,Median Latency (ms),59668.15,Flow Coverage,0.3333,59957.74,881.98,VERIFIED_REAL,results/tables/research_early_prediction.csv
+5. Selective Prediction,EXP-R13,Selected Threshold (tau=0.7),canonical_21,Selective Macro-F1,0.6515,Selective Accuracy,0.7308,1.7393,689.33,VERIFIED_REAL,results/tables/research_selective_prediction.csv
+5. Selective Prediction,EXP-R13,High Precision (tau=0.90),canonical_21,Selective Accuracy,0.9,Coverage,0.2083,1.7393,689.33,VERIFIED_REAL,results/tables/research_selective_prediction.csv
+6. Computational Efficiency,EXP-R14,Decision Tree (10 Features),profile_10_features,Inference Latency P50 (ms),0.0579,Throughput (FPS),15600.6,0.086,3.11,VERIFIED_REAL,results/tables/research_latency.csv

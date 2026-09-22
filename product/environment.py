@@ -93,7 +93,7 @@ def check_npcap() -> Dict[str, Any]:
 
     # Check Scapy import
     try:
-        import scapy.all  # noqa: F401
+        import scapy  # noqa: F401
         details["scapy_loaded"] = True
     except Exception as e:
         logger.debug("Scapy import check note: %s", e)
@@ -113,10 +113,29 @@ def check_npcap() -> Dict[str, Any]:
     sys_root = Path(os.environ.get("SystemRoot", r"C:\Windows"))
     npcap_dir = sys_root / "System32" / "Npcap"
     npcap_dll = npcap_dir / "wpcap.dll"
+    npcap_packet_dll = npcap_dir / "Packet.dll"
     sys32_dll = sys_root / "System32" / "wpcap.dll"
+    sys32_packet_dll = sys_root / "System32" / "Packet.dll"
     driver_sys = sys_root / "System32" / "drivers" / "npcap.sys"
 
-    if driver_sys.exists():
+    details["npcap_packet_dll"] = npcap_packet_dll.exists() or sys32_packet_dll.exists()
+    details["npcap_service_registered"] = False
+
+    try:
+        import winreg
+        try:
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Services\npcap"):
+                details["npcap_service_registered"] = True
+        except OSError:
+            try:
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Npcap"):
+                    details["npcap_service_registered"] = True
+            except OSError:
+                pass
+    except Exception:
+        pass
+
+    if driver_sys.exists() or details["npcap_service_registered"]:
         details["npcap_sys_driver"] = True
     if npcap_dll.exists():
         details["npcap_wpcap_dll"] = True
@@ -133,6 +152,11 @@ def check_npcap() -> Dict[str, Any]:
     elif has_dll and details["scapy_loaded"]:
         status = "WARNING"
         message = "Packet capture DLL detected, but npcap.sys driver service could not be directly verified."
+        instructions = (
+            "Packet capture DLLs are present. If live capture fails:\n"
+            "1. Run application as Administrator, or\n"
+            "2. Reinstall Npcap with 'WinPcap API-compatible Mode' enabled."
+        )
     elif not has_dll and not has_driver:
         status = "FAIL"
         message = "Npcap packet capture driver was NOT detected on this system."

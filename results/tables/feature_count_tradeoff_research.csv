@@ -1,0 +1,8 @@
+feature_count_k,label,val_macro_f1,val_accuracy,val_balanced_accuracy,test_macro_f1,test_accuracy,test_balanced_accuracy,mean_inference_latency_ms,p95_inference_latency_ms,feature_extraction_latency_ms,model_size_kb,is_selected_lightweight_profile,top_features_list
+3,Top-3,0.7572,0.7708,0.7708,0.6738,0.6667,0.6667,22.7793,32.1543,0.01485,10.16,YES,"[""packet_ratio"", ""total_packets"", ""fwd_packet_count""]"
+5,Top-5,0.3567,0.375,0.375,0.3741,0.375,0.375,20.4209,31.1886,0.01675,10.16,NO,"[""packet_ratio"", ""total_packets"", ""fwd_packet_count"", ""fwd_iat_std"", ""iat_median""]"
+10,Top-10,0.3037,0.3333,0.3333,0.3857,0.375,0.375,18.6671,30.2437,0.0215,10.16,NO,"[""packet_ratio"", ""total_packets"", ""fwd_packet_count"", ""fwd_iat_std"", ""iat_median""]"
+15,Top-15,0.3481,0.3542,0.3542,0.4199,0.4167,0.4167,20.3831,32.2217,0.02625,10.16,NO,"[""packet_ratio"", ""total_packets"", ""fwd_packet_count"", ""fwd_iat_std"", ""iat_median""]"
+20,Top-20,0.355,0.375,0.375,0.3327,0.3333,0.3333,16.9644,28.4249,0.031,10.16,NO,"[""packet_ratio"", ""total_packets"", ""fwd_packet_count"", ""fwd_iat_std"", ""iat_median""]"
+30,Top-30,0.3521,0.3542,0.3542,0.3127,0.3125,0.3125,17.2454,29.5667,0.0405,10.16,NO,"[""packet_ratio"", ""total_packets"", ""fwd_packet_count"", ""fwd_iat_std"", ""iat_median""]"
+84,All (84),0.355,0.3542,0.3542,0.2985,0.2917,0.2917,18.4865,30.9336,0.0918,10.16,NO,"[""packet_ratio"", ""total_packets"", ""fwd_packet_count"", ""fwd_iat_std"", ""iat_median""]"

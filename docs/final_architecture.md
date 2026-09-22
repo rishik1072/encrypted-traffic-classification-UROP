@@ -84,3 +84,16 @@ The pipeline processes encrypted network traffic strictly through statistical, t
 | `training/` | Splitting, cross-validation, feature ranking, Pareto selection, calibration. | Strict train/validation isolation; single held-out test evaluation. |
 | `realtime/` | Non-blocking async classification worker, event bus, metrics telemetry. | Buffers stream events and logs anonymized classifications to CSV/JSONL. |
 | `dashboard/` | SOC-style monitoring console with KPI cards, flow feeds, and trade-off tabs. | Displays statistical telemetry without revealing sensitive packet payloads. |
+
+---
+
+## 4. Operating Modes & Strict Evidence Classes
+
+The system enforces three distinct evidence classes to ensure scientific validity and eliminate synthetic/replay contamination:
+
+| Evidence Class | Operating Mode | Ingestion Source | Fallback Policy | Banner |
+| :--- | :--- | :--- | :--- | :--- |
+| **`REAL_LIVE_NPCAP`** | `LIVE_NPCAP` | Physical NIC directly via Npcap driver | **Fails closed.** Zero-packet capture is failure. No synthetic fallback, no recorded replay, no CSV replay. | `🟢 EVIDENCE CLASS: REAL_LIVE_NPCAP` |
+| **`REAL_RECORDED_CAPTURE`** | `RECORDED_CAPTURE` | Genuine offline recorded flows (`flows_real_clean.csv`) | Replay allowed for deterministic parity testing; never labeled or served as live. | `🔵 EVIDENCE CLASS: REAL_RECORDED_CAPTURE` |
+| **`DEMO_SIMULATION`** | `DEMO_MODE` | Simulated synthetic flow generator | Isolated demo replay stream with explicit simulation labeling. | `🟠 EVIDENCE CLASS: DEMO_SIMULATION` |
+

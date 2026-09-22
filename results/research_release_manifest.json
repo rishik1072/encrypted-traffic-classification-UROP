@@ -1,0 +1,165 @@
+{
+  "release_manifest_version": "1.0.0",
+  "project_name": "encrypted-traffic-classification-UROP",
+  "project_version": "1.0.0",
+  "release_title": "Practical Zero-Payload Encrypted Traffic Classification: Final Research Release",
+  "release_date": "2026-09-22",
+  "codebase_version": "0dea637199",
+  "reproduction_command": "python scripts/reproduce_research.py --all",
+  "benchmark_environment": {
+    "operating_system": "Microsoft Windows 11 Enterprise (10.0.26200 x64)",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12500H (16 logical processors @ 2.50 GHz)",
+    "ram": "16 GB Physical RAM (Host process working set: 289.60 MB, peak: 362.89 MB)",
+    "python_version": "3.14.7 AMD64",
+    "software_dependencies": {
+      "python": "3.14.7",
+      "pytest": "9.1.1",
+      "scikit-learn": "1.6.1",
+      "lightgbm": "4.6.0",
+      "pandas": "2.2.3",
+      "numpy": "2.2.3",
+      "scapy": "2.6.1",
+      "joblib": "1.4.2",
+      "streamlit": "1.42.2",
+      "fastapi": "0.115.0",
+      "uvicorn": "0.30.6",
+      "psutil": "6.0.0",
+      "pyyaml": "6.0.2"
+    }
+  },
+  "dataset": {
+    "dataset_identifier": "dataset_v2",
+    "dataset_version": "2.0.0",
+    "dataset_origin": "REAL_DATA",
+    "total_flows": 301,
+    "total_sessions": 150,
+    "traffic_classes": [
+      "Web",
+      "Video",
+      "Messaging",
+      "VoIP",
+      "File Transfer",
+      "Other"
+    ],
+    "split_strategy": "group_aware_stratified_session_split (70% Train, 15% Val, 15% Test)",
+    "random_seed": 42,
+    "primary_features_file": "data/processed/features/features_real_clean_v2.csv",
+    "primary_flows_file": "data/processed/flows/flows_real_clean.csv",
+    "dataset_sha256": "cd3193ecdd2ecb4859ba6b23bb75153571e205930f05fa2dc7323fcfc1a2c16d"
+  },
+  "feature_system": {
+    "canonical_feature_count": 84,
+    "feature_families_count": 7,
+    "feature_families": [
+      "packet_size",
+      "timing",
+      "counts_bytes",
+      "direction",
+      "burst",
+      "tcp",
+      "ssl"
+    ],
+    "baseline_feature_profile": "baseline_21_zero_payload",
+    "lightweight_feature_profile": "profile_10_features",
+    "ultra_lightweight_profile": "top_3_features",
+    "feature_schema_sha256": "9178786dc46dba8800c66b551c3ebcf78034f357f53405bf6b2ed70b40d88101"
+  },
+  "models": {
+    "lightgbm": {
+      "model_id": "model_lightgbm_v1",
+      "file_path": "results/models/lightgbm.joblib",
+      "sha256": "a5a65da6d74e9b3e61e654ac6a81066aaf2b247996b8364d6d71d826023c08cd",
+      "calibration": "Platt_Scaling_Sigmoid"
+    },
+    "decision_tree": {
+      "model_id": "model_decision_tree_v1",
+      "file_path": "results/models/decision_tree.joblib",
+      "sha256": "31a7f1f2d84b25681005442c70d38c54a061d661499f4a2500b4afa72f4b7a80",
+      "calibration": "Empirical_Histogram_Binning"
+    },
+    "random_forest": {
+      "model_id": "model_random_forest_v1",
+      "file_path": "results/models/random_forest.joblib",
+      "sha256": "9440e23ce67f94cef07ef0d779568e50faba23b4ada61ac91573bf77dd4d6ad9",
+      "calibration": "Platt_Scaling_Sigmoid"
+    },
+    "logistic_regression": {
+      "model_id": "model_logistic_regression_v1",
+      "file_path": "results/models/logistic_regression.joblib",
+      "sha256": "b7fd88252cca3fbd114551023fde33e2de00df9f82446b91a458f179a1bb2472",
+      "calibration": "Softmax_Logits"
+    },
+    "preprocessor": {
+      "preprocessor_id": "preprocessor_v1",
+      "file_path": "results/models/preprocessor.joblib",
+      "sha256": "a4b16727401d19417572f97d7b66656adf2f9d1964a53bf5eefcca8c35351e21"
+    }
+  },
+  "experiment_ids": [
+    "EXP-R09",
+    "EXP-R10",
+    "EXP-R11",
+    "EXP-R12",
+    "EXP-R13",
+    "EXP-R14",
+    "EXP-R15"
+  ],
+  "authoritative_result_artifacts": {
+    "dataset_summary": "results/final/dataset_summary.csv",
+    "baseline_results": "results/final/baseline_results.csv",
+    "feature_ablation": "results/final/feature_ablation.csv",
+    "model_comparison": "results/final/model_comparison.csv",
+    "generalization": "results/final/generalization.csv",
+    "early_prediction": "results/final/early_prediction.csv",
+    "selective_prediction": "results/final/selective_prediction.csv",
+    "calibration": "results/final/calibration.csv",
+    "latency": "results/final/latency.csv",
+    "resource_usage": "results/final/resource_usage.csv",
+    "final_metrics": "results/final/final_metrics.csv",
+    "final_results_report": "results/final/FINAL_RESULTS.md"
+  },
+  "headline_findings": {
+    "in_domain_baseline": {
+      "random_forest_macro_f1": 0.5873,
+      "decision_tree_macro_f1": 0.5802,
+      "decision_tree_accuracy": 0.5833,
+      "decision_tree_inference_latency_ms": 0.0579,
+      "decision_tree_model_size_kb": 3.11
+    },
+    "feature_discovery": {
+      "highest_density_family": "directionality",
+      "top_3_features_macro_f1": 0.6708,
+      "all_84_features_macro_f1": 0.2931
+    },
+    "generalization": {
+      "unseen_physical_media_macro_f1": 0.9325,
+      "unseen_network_impairment_macro_f1": 0.9030,
+      "direct_to_wireguard_macro_f1": 0.3407,
+      "direct_to_wireguard_f1_delta": -0.2594
+    },
+    "early_prediction": {
+      "triage_horizon_packets": 3,
+      "triage_macro_f1": 0.6111,
+      "triage_coverage_pct": 91.67,
+      "triage_total_latency_ms": 79.94,
+      "physical_wire_delay_dominance_pct": 99.8
+    },
+    "selective_classification": {
+      "selected_threshold_tau": 0.70,
+      "selective_macro_f1": 0.6515,
+      "selective_accuracy": 0.7308,
+      "error_rate_reduction": "45.83% -> 26.92%",
+      "coverage_pct": 54.17,
+      "expected_calibration_error": 0.1996,
+      "brier_score": 0.6061
+    },
+    "realtime_pipeline": {
+      "decision_latency_ms": 0.072,
+      "predictions_per_second": 81.78,
+      "payload_persistence": false,
+      "tls_decryption": false,
+      "localhost_only": true
+    }
+  },
+  "release_readiness_status": "READY"
+}

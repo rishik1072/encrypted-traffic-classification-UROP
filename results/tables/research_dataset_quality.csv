@@ -1,0 +1,4 @@
+dataset_id,origin_classification,total_records,duplicate_flows,duplicate_captures,duplicated_sessions,missing_labels,impossible_timestamps,malformed_flow_ids,contradictory_metadata,class_imbalance_ratio,background_artifacts,data_leakage_detected,train_test_group_overlap,audit_verdict
+dataset_v1,SYNTHETIC_FIXTURE,11,0,0,0,0,0,0,None (clean synthetic fixtures),2.0,None (pure synthetic traffic),False,0,VALID (SYNTHETIC ONLY - FORBIDDEN FOR REAL CLAIMS)
+dataset_real_v1,REAL_DATA,121,0,0,61,0,0,0,None detected in clean split,1.05,"Low (controlled Wi-Fi capture, non-target OS traffic labeled as Other)",False,0,VALID (REAL - SMALL SAMPLE SIZE N=48)
+dataset_v2,REAL_DATA,301,0,0,151,0,0,0,None detected (harmonized v2 manifest),1.02,"Managed (WARP WireGuard encapsulation, impairment matrix documented)",False,0,VALID (AUTHORITATIVE REAL BENCHMARK - 301 FLOWS)

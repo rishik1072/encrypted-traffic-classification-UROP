@@ -144,7 +144,18 @@ def run_product_health_check(
     if not fs_ok:
         fail_count += 1
 
-    # 6. Model Registry & Checksum Verification
+    # 6. Configuration Schema Validation Check
+    cfg_res = product_config.validate()
+    results["configuration"] = {
+        "status": cfg_res["status"],
+        "message": cfg_res["message"],
+        "errors": cfg_res.get("errors", []),
+        "warnings": cfg_res.get("warnings", []),
+    }
+    if cfg_res["status"] == "FAIL":
+        fail_count += 1
+
+    # 7. Model Registry & Checksum Verification
     model_ok = False
     model_msg = ""
     default_model_id = "unknown"
@@ -185,7 +196,7 @@ def run_product_health_check(
     if not model_ok:
         fail_count += 1
 
-    # 7. Feature Schema Hash Verification
+    # 8. Feature Schema Hash Verification
     schema_hash = get_feature_schema_hash(CANONICAL_NUMERICAL_FEATURES)
     schema_ok = schema_hash == CANONICAL_SCHEMA_HASH
     results["feature_schema"] = {
@@ -197,13 +208,18 @@ def run_product_health_check(
     if not schema_ok:
         fail_count += 1
 
-    # 8. Security & Privacy Boundary Check
+    # 9. Security & Privacy Boundary Check
     sec_res = validate_security_boundary()
     results["security"] = sec_res
     if sec_res["status"] == "FAIL":
         fail_count += 1
 
-    # 9. Dashboard Port Availability Check
+    # 10. Local API Port Availability Check
+    api_port_val = product_config.local_api_config.get("port", 8080)
+    api_port_res = check_port_availability(port=api_port_val)
+    results["api_port"] = api_port_res
+
+    # 11. Dashboard Port Availability Check
     port_res = check_port_availability(port=product_config.dashboard_port)
     results["dashboard_port"] = port_res
 
@@ -241,3 +257,8 @@ def print_health_report(report: Optional[Dict[str, Any]] = None) -> None:
         print(f"[{status:7s}] {name:16s} : {msg}")
 
     print("=" * 50 + "\n")
+
+
+if __name__ == "__main__":
+    print_health_report()
+

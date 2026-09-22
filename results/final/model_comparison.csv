@@ -1,0 +1,5 @@
+model,test_accuracy,test_macro_f1,test_balanced_accuracy,val_macro_f1,training_time_s,median_inference_latency_ms,p95_inference_latency_ms,model_size_kb,is_selected_winner
+logistic_regression,0.3333,0.324,0.3333,0.3684,0.1038,0.0842,0.1487,2.0,NO
+decision_tree,0.5833,0.5802,0.5833,0.5382,0.0623,0.0694,0.1893,9.58,NO
+random_forest,0.5833,0.5873,0.5833,0.5984,0.2108,17.2884,31.7871,881.98,YES
+lightgbm,0.5417,0.5474,0.5417,0.5664,0.1405,1.452,1.7393,689.33,NO

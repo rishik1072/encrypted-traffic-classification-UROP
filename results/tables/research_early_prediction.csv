@@ -1,0 +1,8 @@
+observation_point,packet_horizon,is_full_flow,coverage,accuracy,macro_precision,macro_recall,macro_f1,balanced_accuracy,average_confidence,median_latency_ms,p95_latency_ms,median_observation_delay_ms,p95_observation_delay_ms,feature_extraction_latency_ms,inference_latency_ms,decision_threshold,val_macro_f1,val_coverage,total_test_flows,flows_meeting_horizon,flows_classified,model
+3 packets,3,False,0.9167,0.6364,0.6667,0.6667,0.6111,0.6667,0.4838,84.33,459.38,64.04,443.39,0.0073,20.0047,0.3,0.3,0.7917,12,12,11,random_forest
+5 packets,5,False,1.0,0.4167,0.3389,0.4167,0.3643,0.4167,0.5175,347.52,697.73,331.38,681.54,0.0093,18.774,0.0,0.2119,1.0,12,12,12,random_forest
+10 packets,10,False,0.4167,0.8,0.5,0.5,0.5,0.6667,0.6918,1328.92,2710.78,1312.08,2695.05,0.0114,19.5485,0.45,0.3056,0.5,12,12,5,random_forest
+20 packets,20,False,0.5833,0.4286,0.3333,0.25,0.2778,0.3,0.5129,3954.37,4416.43,3938.44,4399.94,0.0231,16.2564,0.4,0.4685,0.6667,12,12,7,random_forest
+30 packets,30,False,1.0,0.3333,0.25,0.3333,0.2778,0.3333,0.4025,4892.58,8465.04,4877.01,8447.62,0.0245,15.8875,0.0,0.3745,1.0,12,12,12,random_forest
+50 packets,50,False,0.5,0.5,0.3,0.3,0.3,0.375,0.4621,9281.47,13765.54,9265.8,13749.67,0.0386,15.8154,0.4,0.5786,0.5,12,12,6,random_forest
+full flow,full,True,0.3333,0.0,0.0,0.0,0.0,0.0,0.4308,59666.52,59956.42,59650.29,59940.36,0.3587,15.893,0.4,0.2111,0.7083,12,12,4,random_forest

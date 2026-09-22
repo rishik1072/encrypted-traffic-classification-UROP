@@ -1,0 +1,87 @@
+{
+  "manifest_version": "1.0.0",
+  "verification_suite": "FINAL_PHYSICAL_LIVE_NPCAP_VERIFICATION",
+  "timestamp": "2026-09-22T21:20:41+05:30",
+  "final_verdict": "LIVE MACHINE VERIFICATION FAILED",
+  "live_machine_verified": false,
+  "implementation_status": "IMPLEMENTATION READY",
+  "mandatory_precheck_matrix": {
+    "1_windows_os": {
+      "requirement": "Windows 10 or 11 (64-bit)",
+      "result": "PASS",
+      "details": "Microsoft Windows 11 Home Single Language (Version 10.0.26200, AMD64)"
+    },
+    "2_npcap_installed": {
+      "requirement": "Npcap packet capture driver installed",
+      "result": "FAIL",
+      "details": "Npcap driver not detected; npcap.sys and wpcap.dll absent from System32"
+    },
+    "3_winpcap_compatibility": {
+      "requirement": "WinPcap API-compatible mode enabled",
+      "result": "FAIL",
+      "details": "WinPcap API compatibility not found"
+    },
+    "4_admin_privileges": {
+      "requirement": "Administrator execution privileges",
+      "result": "FAIL",
+      "details": "Process executed under Standard User (Elevation absent)"
+    },
+    "5_physical_adapter": {
+      "requirement": "Physical Wi-Fi or Ethernet adapter detected",
+      "result": "PASS",
+      "details": "Wi-Fi (Intel(R) Wi-Fi 6 AX201 160MHz) identified"
+    },
+    "6_adapter_up": {
+      "requirement": "Adapter link state is UP with IP assigned",
+      "result": "PASS",
+      "details": "Wi-Fi adapter is UP and operational"
+    },
+    "7_production_model": {
+      "requirement": "Trained production model artifact present",
+      "result": "PASS",
+      "details": "results/models/lightgbm.joblib and preprocessor.joblib present"
+    },
+    "8_model_hash": {
+      "requirement": "Model artifact SHA-256 hash verified against registry",
+      "result": "PASS",
+      "details": "Model integrity confirmed"
+    },
+    "9_feature_schema": {
+      "requirement": "Canonical 21/10 zero-payload feature schema hash matches",
+      "result": "PASS",
+      "details": "Schema hash 9178786dc4... verified"
+    },
+    "10_ports_available": {
+      "requirement": "Local REST API (8080) and Dashboard (8501) ports available",
+      "result": "PASS",
+      "details": "Both localhost ports available for binding"
+    }
+  },
+  "operational_chain_verification": {
+    "physical_nic": "PASS",
+    "npcap_driver": "FAIL",
+    "actual_packets_captured": "FAIL (0 packets; driver missing)",
+    "actual_flows_created": "BLOCKED",
+    "actual_zero_payload_features": "BLOCKED",
+    "actual_ml_inference": "BLOCKED",
+    "actual_live_api_event": "BLOCKED",
+    "actual_sqlite_event": "BLOCKED",
+    "actual_dashboard_row": "BLOCKED"
+  },
+  "invariants_confirmed": {
+    "zero_synthetic_fallback_in_live_mode": true,
+    "zero_recorded_replay_in_live_mode": true,
+    "zero_demo_events_in_live_mode": true,
+    "strict_fail_closed_exit_code_1": true,
+    "no_fabricated_evidence": true
+  },
+  "exact_blocking_reasons": [
+    "Prerequisite 2 & 3 FAILED: Npcap packet capture driver was not detected on this system (wpcap.dll, npcap.sys absent).",
+    "Prerequisite 4 FAILED: Process running as Standard User without administrative elevation."
+  ],
+  "required_actions_for_verification": [
+    "Download and install Npcap v1.80 from https://npcap.com/#download with 'Install Npcap in WinPcap API-compatible Mode' checked.",
+    "Open an elevated PowerShell prompt ('Run as administrator').",
+    "Execute 'python scripts/live_capture_test.py --interface \"Wi-Fi\" --duration 15' to sniff actual physical wire traffic."
+  ]
+}

@@ -111,6 +111,14 @@ class Flow:
     def total_packets(self) -> int:
         return len(self.packet_records)
 
+    @property
+    def fwd_packets(self) -> int:
+        return sum(1 for r in self.packet_records if r[2] == Direction.FORWARD)
+
+    @property
+    def bwd_packets(self) -> int:
+        return sum(1 for r in self.packet_records if r[2] == Direction.BACKWARD)
+
     def is_expired(self, current_time: float, idle_timeout: float, active_timeout: float) -> bool:
         """Checks whether the flow has exceeded idle or active expiration thresholds."""
         idle_time = current_time - self.last_seen

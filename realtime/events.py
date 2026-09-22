@@ -26,6 +26,7 @@ class FlowLifecycleState(str, enum.Enum):
 class PredictionState(str, enum.Enum):
     INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
     LOW_CONFIDENCE = "LOW_CONFIDENCE"
+    KNOWN = "KNOWN"
     KNOWN_CLASS = "KNOWN_CLASS"
     UNKNOWN = "UNKNOWN"
     FLOW_COMPLETED = "FLOW_COMPLETED"
@@ -33,9 +34,26 @@ class PredictionState(str, enum.Enum):
 
 
 class OperatingMode(str, enum.Enum):
-    RESEARCH_MODE = "RESEARCH_MODE"
-    LIVE_MODE = "LIVE_MODE"
+    LIVE_NPCAP = "LIVE_NPCAP"
+    RECORDED_CAPTURE = "RECORDED_CAPTURE"
     DEMO_MODE = "DEMO_MODE"
+    RESEARCH_MODE = "RESEARCH_MODE"
+
+    # Backward-compatible aliases
+    LIVE_MODE = "LIVE_NPCAP"
+    DEMO_SIMULATION = "DEMO_MODE"
+    REAL_LIVE_NPCAP = "LIVE_NPCAP"
+    REAL_RECORDED_CAPTURE = "RECORDED_CAPTURE"
+
+
+EVIDENCE_CLASS_MAP = {
+    OperatingMode.LIVE_NPCAP.value: "REAL_LIVE_NPCAP",
+    "LIVE_MODE": "REAL_LIVE_NPCAP",
+    OperatingMode.RECORDED_CAPTURE.value: "REAL_RECORDED_CAPTURE",
+    OperatingMode.DEMO_MODE.value: "DEMO_SIMULATION",
+    "DEMO_SIMULATION": "DEMO_SIMULATION",
+    OperatingMode.RESEARCH_MODE.value: "RESEARCH_BENCHMARK",
+}
 
 
 @dataclass
@@ -88,13 +106,15 @@ class TrafficPredictionEvent:
     latency_us: float = 0.0
     event_id: str = ""
     prediction_version: str = "1.0.0"
-    operating_mode: str = OperatingMode.LIVE_MODE.value
+    operating_mode: str = OperatingMode.LIVE_NPCAP.value
     probabilities: Dict[str, float] = field(default_factory=dict)
     protocol: str = "TCP"
     source_port: int = 0
     destination_port: int = 443
     byte_count: int = 0
     confidence: Optional[float] = None
+    session_id: Optional[str] = None
+    fine_classification_reason: Optional[str] = None
 
     def __post_init__(self):
         # Sync confidence alias with composed_confidence
@@ -103,43 +123,66 @@ class TrafficPredictionEvent:
         elif self.composed_confidence is not None and self.confidence is None:
             self.confidence = self.composed_confidence
 
+    @property
+    def evidence_class(self) -> str:
+        return EVIDENCE_CLASS_MAP.get(self.operating_mode, "UNKNOWN_EVIDENCE")
 
     def to_canonical_dict(self) -> Dict[str, Any]:
         """
         Returns the exact canonical 14-field dictionary matching production CSV specification:
-        timestamp,flow_id,session_id_hash,model_id,feature_profile,predicted_family,
-        predicted_class,family_confidence,fine_confidence,composed_confidence,
-        prediction_state,packets_observed,elapsed_seconds,latency_us
+        timestamp,flow_id,session_id_hash,model_id,feature_profile,predicted_family,predicted_class,family_confidence,fine_confidence,composed_confidence,prediction_state,packets_observed,elapsed_seconds,latency_us
         """
         return {
-            "timestamp": round(self.timestamp, 4),
+            "timestamp": self.timestamp,
+            "flow_id": self.flow_id,
+            "session_id_hash": self.session_id_hash,
+            "model_id": self.model_id,
+            "feature_profile": self.feature_profile,
+            "predicted_family": self.predicted_family or "",
+            "predicted_class": self.predicted_class or "",
+            "family_confidence": self.family_confidence if self.family_confidence is not None else "",
+            "fine_confidence": self.fine_confidence if self.fine_confidence is not None else "",
+            "composed_confidence": self.composed_confidence if self.composed_confidence is not None else "",
+            "prediction_state": self.prediction_state,
+            "packets_observed": self.packets_observed,
+            "elapsed_seconds": self.elapsed_seconds,
+            "latency_us": self.latency_us,
+        }
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Returns comprehensive event dictionary including network and security attributes."""
+        import time
+        eid = self.event_id
+        if not eid or eid == "EVT-000000":
+            eid = f"EVT-{int(time.time() * 1000)}-{time.perf_counter_ns() % 10000:04d}"
+        return {
+            "timestamp": self.timestamp,
+            "session_id": self.session_id,
             "flow_id": self.flow_id,
             "session_id_hash": self.session_id_hash,
             "model_id": self.model_id,
             "feature_profile": self.feature_profile,
             "predicted_family": self.predicted_family,
             "predicted_class": self.predicted_class,
-            "family_confidence": round(self.family_confidence, 4) if self.family_confidence is not None else None,
-            "fine_confidence": round(self.fine_confidence, 4) if self.fine_confidence is not None else None,
-            "composed_confidence": round(self.composed_confidence, 4) if self.composed_confidence is not None else None,
+            "prediction": self.predicted_class,
+            "family_confidence": self.family_confidence,
+            "fine_confidence": self.fine_confidence,
+            "composed_confidence": self.composed_confidence,
+            "confidence": self.composed_confidence if self.composed_confidence is not None else self.confidence,
             "prediction_state": self.prediction_state,
             "packets_observed": self.packets_observed,
-            "elapsed_seconds": round(self.elapsed_seconds, 4),
-            "latency_us": round(self.latency_us, 2),
+            "elapsed_seconds": self.elapsed_seconds,
+            "latency_us": self.latency_us,
+            "event_id": eid,
+            "prediction_version": self.prediction_version,
+            "operating_mode": self.operating_mode,
+            "evidence_class": self.evidence_class,
+            "protocol": self.protocol,
+            "source_port": self.source_port,
+            "destination_port": self.destination_port,
+            "byte_count": self.byte_count,
+            "fine_classification_reason": self.fine_classification_reason,
         }
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Full dictionary representation including transport and telemetry metadata."""
-        base = self.to_canonical_dict()
-        base["event_id"] = self.event_id or f"EVT-{int(self.timestamp * 1000) % 1000000:06d}"
-        base["confidence"] = base["composed_confidence"]
-        base["prediction_version"] = self.prediction_version
-        base["operating_mode"] = self.operating_mode
-        base["protocol"] = self.protocol
-        base["source_port"] = self.source_port
-        base["destination_port"] = self.destination_port
-        base["byte_count"] = self.byte_count
-        return base
 
 
 class EventBus:

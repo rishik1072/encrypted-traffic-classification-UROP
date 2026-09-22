@@ -20,6 +20,7 @@ class RandomForestTrafficClassifier(BaseTrafficClassifier):
     def build_model(self) -> Any:
         try:
             from sklearn.ensemble import RandomForestClassifier as SklearnRandomForest
+            import inspect
             default_params = {
                 "n_estimators": 100,
                 "max_depth": 15,
@@ -28,7 +29,9 @@ class RandomForestTrafficClassifier(BaseTrafficClassifier):
                 "random_state": 42,
             }
             default_params.update(self.params)
-            return SklearnRandomForest(**default_params)
+            sig_params = set(inspect.signature(SklearnRandomForest.__init__).parameters.keys())
+            filtered_params = {k: v for k, v in default_params.items() if k in sig_params}
+            return SklearnRandomForest(**filtered_params)
         except ImportError:
             logger.info("Scikit-learn not available. Using built-in Random Forest ensemble.")
             return _SimpleRandomForest(n_estimators=self.params.get("n_estimators", 10))

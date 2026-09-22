@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-09-22T21:21:00+05:30",
+  "operating_system": {
+    "system": "Windows",
+    "release": "11",
+    "version": "10.0.26200",
+    "edition": "Microsoft Windows 11 Home Single Language",
+    "architecture": "AMD64",
+    "is_64bit": true,
+    "is_windows": true
+  },
+  "hardware": {
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12500H",
+    "physical_cores": 12,
+    "logical_processors": 16,
+    "ram_total_gb": 15.69
+  },
+  "runtime": {
+    "python_version": "3.14.7",
+    "python_implementation": "CPython",
+    "python_is_64bit": true
+  },
+  "privileges": {
+    "is_administrator": false,
+    "elevation_level": "Standard User"
+  },
+  "driver_subsystem": {
+    "npcap_detected": false,
+    "npcap_status": "FAIL",
+    "npcap_sys_driver_present": false,
+    "npcap_wpcap_dll_present": false,
+    "system32_wpcap_dll_present": false,
+    "winpcap_compat_mode": false,
+    "npcap_service_registered": false,
+    "can_capture_live_packets": false
+  },
+  "network_adapters": {
+    "total_detected": 40,
+    "active_count": 6,
+    "default_adapter": "Wi-Fi",
+    "default_adapter_status": "UP"
+  },
+  "model_subsystem": {
+    "production_model_id": "model_lightgbm_v1",
+    "model_artifact_present": true,
+    "preprocessor_present": true,
+    "model_hash_verified": true,
+    "feature_schema_hash": "9178786dc46dba8800c66b551c3ebcf78034f357f53405bf6b2ed70b40d88101",
+    "feature_count": 21
+  },
+  "ports": {
+    "rest_api_port_8080_available": true,
+    "dashboard_port_8501_available": true
+  }
+}

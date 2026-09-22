@@ -12,6 +12,7 @@ import csv
 import logging
 import os
 import time
+import json
 from collections import deque
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -44,6 +45,25 @@ class SystemMetricsSnapshot:
     low_confidence_count: int = 0
     unknown_count: int = 0
     insufficient_evidence_count: int = 0
+    session_id: Optional[str] = None
+    live_packets_received: int = 0
+    packets_forwarded_to_flow_tracker: int = 0
+    flows_created: int = 0
+    flows_updated: int = 0
+    flows_eligible_for_prediction: int = 0
+    feature_vectors_created: int = 0
+    predictions_created: int = 0
+    events_stored: int = 0
+
+    @property
+    def packets_per_second(self) -> float:
+        """Alias for packets_per_sec to satisfy API and telemetry contract."""
+        return self.packets_per_sec
+
+    @property
+    def bytes_per_second(self) -> float:
+        """Throughput converted to bytes per second."""
+        return (self.throughput_mbps * 1_000_000.0) / 8.0
 
     @property
     def known_class_rate(self) -> float:
@@ -63,12 +83,16 @@ class SystemMetricsSnapshot:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "timestamp": round(self.timestamp, 4),
+            "session_id": self.session_id,
+            "pipeline_status": "HEALTHY",
             "active_flows": self.active_flows,
             "completed_flows": self.completed_flows,
             "expired_flows": self.expired_flows,
             "total_packets": self.total_packets,
             "total_bytes": self.total_bytes,
+            "packets_per_second": round(self.packets_per_sec, 2),
             "packets_per_sec": round(self.packets_per_sec, 2),
+            "bytes_per_second": round(self.bytes_per_second, 2),
             "throughput_mbps": round(self.throughput_mbps, 4),
             "predictions_per_sec": round(self.predictions_per_sec, 2),
             "avg_latency_ms": round(self.avg_latency_ms, 4),
@@ -82,6 +106,14 @@ class SystemMetricsSnapshot:
             "known_class_rate": round(self.known_class_rate, 4),
             "low_confidence_rate": round(self.low_confidence_rate, 4),
             "unknown_rate": round(self.unknown_rate, 4),
+            "live_packets_received": self.live_packets_received,
+            "packets_forwarded_to_flow_tracker": self.packets_forwarded_to_flow_tracker,
+            "flows_created": self.flows_created,
+            "flows_updated": self.flows_updated,
+            "flows_eligible_for_prediction": self.flows_eligible_for_prediction,
+            "feature_vectors_created": self.feature_vectors_created,
+            "predictions_created": self.predictions_created,
+            "events_stored": self.events_stored,
         }
 
 
@@ -94,9 +126,13 @@ class MetricsCollector:
         self,
         window_seconds: float = 5.0,
         metrics_csv_path: str | Path = "results/realtime/live_metrics.csv",
+        metrics_json_path: str | Path = "results/realtime/metrics.json",
+        session_id: Optional[str] = None,
     ) -> None:
         self.window_seconds = window_seconds
         self.metrics_csv_path = Path(metrics_csv_path)
+        self.metrics_json_path = Path(metrics_json_path)
+        self.session_id = session_id
         self.start_time = time.time()
         self.last_snapshot_time = time.time()
 
@@ -107,6 +143,16 @@ class MetricsCollector:
         self.completed_flows = 0
         self.expired_flows = 0
         self.dropped_packets = 0
+
+        # Diagnostic counters
+        self.live_packets_received = 0
+        self.packets_forwarded_to_flow_tracker = 0
+        self.flows_created = 0
+        self.flows_updated = 0
+        self.flows_eligible_for_prediction = 0
+        self.feature_vectors_created = 0
+        self.predictions_created = 0
+        self.events_stored = 0
 
         # State counters
         self.known_class_count = 0
@@ -234,6 +280,7 @@ class MetricsCollector:
 
         snap = SystemMetricsSnapshot(
             timestamp=now,
+            session_id=self.session_id,
             active_flows=active_flows_count,
             completed_flows=self.completed_flows,
             expired_flows=self.expired_flows,
@@ -254,7 +301,18 @@ class MetricsCollector:
             low_confidence_count=self.low_confidence_count,
             unknown_count=self.unknown_count,
             insufficient_evidence_count=self.insufficient_evidence_count,
+            live_packets_received=self.live_packets_received,
+            packets_forwarded_to_flow_tracker=self.packets_forwarded_to_flow_tracker,
+            flows_created=self.flows_created,
+            flows_updated=self.flows_updated,
+            flows_eligible_for_prediction=self.flows_eligible_for_prediction,
+            feature_vectors_created=self.feature_vectors_created,
+            predictions_created=self.predictions_created,
+            events_stored=self.events_stored,
         )
+
+        if persist:
+            self.export_metrics_json(snap)
 
         if persist and (now - self.last_snapshot_time) >= 1.0:
             self.last_snapshot_time = now
@@ -266,3 +324,16 @@ class MetricsCollector:
                 logger.error("Failed to append metrics snapshot: %s", e)
 
         return snap
+
+    def export_metrics_json(self, snap: SystemMetricsSnapshot) -> None:
+        """Atomically writes current telemetry metrics snapshot to results/realtime/metrics.json."""
+        try:
+            self.metrics_json_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp_path = self.metrics_json_path.with_name(f"{self.metrics_json_path.name}.tmp")
+            data = snap.to_dict()
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+            tmp_path.replace(self.metrics_json_path)
+        except Exception as e:
+            logger.debug("Failed to write metrics.json: %s", e)
+

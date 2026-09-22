@@ -1,0 +1,13 @@
+model,feature_profile,feature_count,working_set_mb,peak_working_set_mb,heap_allocated_mb,cpu_time_per_1k_flows_ms,cpu_utilization_pct,serialized_disk_kb,training_time_sec,test_accuracy,test_macro_f1
+logistic_regression,profile_5_features,5,286.82,362.89,0.087,125.0,110.0,0.79,0.025,0.1429,0.1911
+decision_tree,profile_5_features,5,286.86,362.89,0.03,62.5,96.6,3.37,0.0046,0.3878,0.3556
+random_forest,profile_5_features,5,286.91,362.89,0.136,4859.38,96.0,201.21,0.5375,0.2857,0.2485
+lightgbm,profile_5_features,5,288.93,362.89,2.352,390.62,92.5,223.9,0.0565,0.3878,0.3309
+logistic_regression,profile_10_features,10,289.6,362.89,0.092,62.5,77.3,1.0,0.0234,0.3673,0.3131
+decision_tree,profile_10_features,10,289.6,362.89,0.034,62.5,87.8,3.11,0.0041,0.6531,0.5827
+random_forest,profile_10_features,10,289.62,362.89,0.141,4828.12,96.2,175.41,0.612,0.4694,0.3986
+lightgbm,profile_10_features,10,290.12,362.89,2.356,390.62,98.2,225.64,0.0799,0.6735,0.5485
+logistic_regression,profile_21_features,21,290.19,362.89,0.114,78.12,92.6,1.47,0.0293,0.5102,0.4366
+decision_tree,profile_21_features,21,290.19,362.89,0.043,78.12,111.7,2.58,0.0041,0.6735,0.6633
+random_forest,profile_21_features,21,290.19,362.89,0.15,4671.88,94.8,163.38,0.5564,0.6327,0.5829
+lightgbm,profile_21_features,21,290.32,362.89,2.368,406.25,97.3,233.64,0.0958,0.6735,0.6423

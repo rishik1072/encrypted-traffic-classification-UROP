@@ -1,0 +1,51 @@
+{
+  "test_name": "live_api_endpoint_verification",
+  "api_base_url": "http://127.0.0.1:8080",
+  "timestamp": "2026-09-22T21:20:41+05:30",
+  "status": "VERIFIED_FAIL_CLOSED",
+  "endpoints": {
+    "/status": {
+      "http_status": 200,
+      "mode": "LIVE_NPCAP",
+      "evidence_class": "REAL_LIVE_NPCAP",
+      "npcap_detected": false,
+      "live_machine_verified": false,
+      "implementation_status": "IMPLEMENTATION READY",
+      "privacy": "LOCAL ONLY",
+      "zero_payload": "PASS",
+      "save_raw_packets": false
+    },
+    "/predictions?mode=LIVE_NPCAP": {
+      "http_status": 200,
+      "count": 0,
+      "mode": "LIVE_NPCAP",
+      "evidence_class": "REAL_LIVE_NPCAP",
+      "source": "EVENT_STORE",
+      "csv_fallback_used": false,
+      "demo_rows_returned": 0,
+      "recorded_rows_returned": 0
+    },
+    "/events?mode=LIVE_NPCAP": {
+      "http_status": 200,
+      "count": 0,
+      "mode": "LIVE_NPCAP",
+      "evidence_class": "REAL_LIVE_NPCAP"
+    },
+    "/metrics": {
+      "http_status": 200,
+      "pipeline_status": "HEALTHY",
+      "active_flows": 0,
+      "dropped_packets": 0
+    },
+    "/alerts": {
+      "http_status": 200,
+      "alerts_count": 0
+    }
+  },
+  "invariants_verified": {
+    "no_demo_records_returned_in_live_mode": true,
+    "no_recorded_records_returned_in_live_mode": true,
+    "no_silent_csv_fallback_in_live_mode": true,
+    "localhost_binding_only": true
+  }
+}

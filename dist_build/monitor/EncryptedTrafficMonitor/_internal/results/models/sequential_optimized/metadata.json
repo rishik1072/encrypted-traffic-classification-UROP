@@ -1,9 +1,0 @@
-{
-  "model_name": "decision_tree",
-  "representation": "sequence_aggregated_2s_1s",
-  "feature_count": 193,
-  "train_samples": 289,
-  "test_samples": 12,
-  "test_macro_f1": 0.0606,
-  "test_accuracy": 0.1667
-}

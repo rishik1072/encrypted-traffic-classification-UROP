@@ -21,6 +21,7 @@ class DecisionTreeTrafficClassifier(BaseTrafficClassifier):
     def build_model(self) -> Any:
         try:
             from sklearn.tree import DecisionTreeClassifier as SklearnDecisionTree
+            import inspect
             default_params = {
                 "max_depth": 12,
                 "min_samples_split": 5,
@@ -28,7 +29,9 @@ class DecisionTreeTrafficClassifier(BaseTrafficClassifier):
                 "random_state": 42,
             }
             default_params.update(self.params)
-            return SklearnDecisionTree(**default_params)
+            sig_params = set(inspect.signature(SklearnDecisionTree.__init__).parameters.keys())
+            filtered_params = {k: v for k, v in default_params.items() if k in sig_params}
+            return SklearnDecisionTree(**filtered_params)
         except ImportError:
             logger.info("Scikit-learn not available. Using built-in Decision Tree estimator.")
             return _SimpleDecisionTree(max_depth=self.params.get("max_depth", 12))
