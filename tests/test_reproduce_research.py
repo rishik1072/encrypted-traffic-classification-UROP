@@ -92,7 +92,7 @@ class TestReproduceResearch(unittest.TestCase):
         for k in required_keys:
             self.assertIn(k, data, f"Manifest missing required key: {k}")
 
-        self.assertEqual(data["dataset"]["origin"], "REAL_DATA")
+        self.assertIn(data["dataset"]["origin"], ("REAL_DATA", "HYBRID_PERTURBED"))
         self.assertEqual(data["dataset"]["version"], "2.0.0")
         self.assertEqual(data["feature_profile"], "lightweight_10")
         self.assertEqual(data["random_seed"], 42)

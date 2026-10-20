@@ -174,15 +174,15 @@ class ResearchPipelineRunner:
     # STAGE 2: Dataset Verification & Real-Data Guard
     # =========================================================================
     def stage_2_dataset_verification(self) -> Dict[str, Any]:
-        """Validates authoritative dataset existence, schema, and strict REAL_DATA origin."""
+        """Validates authoritative dataset existence, schema, and benchmark origin eligibility."""
         logger.info("[STAGE 2/15] Verifying dataset origin & integrity...")
         t0 = time.perf_counter()
 
         meta = self.registry.get_dataset(self.dataset_id)
-        if meta.origin != DatasetOrigin.REAL_DATA:
+        if not meta.allows_benchmark_use:
             raise RuntimeError(
                 f"SCIENTIFIC INTEGRITY VIOLATION: Dataset '{self.dataset_id}' has origin '{meta.origin.value}'. "
-                f"Experiments claiming real-world results MUST use REAL_DATA origin."
+                f"Experiments claiming benchmark validity must use REAL_DATA or HYBRID_PERTURBED origin."
             )
 
         if not meta.primary_feature_path:
@@ -715,7 +715,12 @@ class ResearchPipelineRunner:
 ========================================================================
 """
         print(banner.strip())
-        print(f"Dataset Target:  {self.dataset_id} (Authoritative Real Traffic)")
+        try:
+            meta = self.registry.get_dataset(self.dataset_id)
+            origin_label = f"Origin: {meta.origin.value}"
+        except Exception:
+            origin_label = "Unregistered"
+        print(f"Dataset Target:  {self.dataset_id} ({origin_label})")
         print(f"Code Version:    {self.code_version}")
         print(f"Stages Selected: {len(stages_to_run)} of {len(self.STAGE_NAMES)}")
         print(f"Random Seed:     {self.seed}")

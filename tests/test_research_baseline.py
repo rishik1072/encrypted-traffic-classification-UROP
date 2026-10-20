@@ -25,10 +25,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 def test_baseline_dataset_registry_origin():
-    """Ensures dataset_v2 is verified as REAL_DATA origin."""
+    """Ensures dataset_v2 is verified as HYBRID_PERTURBED origin eligible for benchmarking."""
     registry = DatasetRegistry(PROJECT_ROOT)
     meta = registry.get_dataset("dataset_v2")
-    assert meta.origin == DatasetOrigin.REAL_DATA
+    assert meta.origin == DatasetOrigin.HYBRID_PERTURBED
+    assert meta.allows_benchmark_use is True
+    assert meta.is_real_data is False
+    assert meta.is_hybrid is True
+    assert meta.physical_flow_count == 121
+    assert meta.synthetic_flow_count == 180
     assert meta.version == "2.0.0"
     assert meta.flow_count == 301
     assert meta.session_count == 150
@@ -99,7 +104,7 @@ def test_baseline_summary_table_schema():
 
     for r in rows:
         assert r["feature_profile"] == "baseline_21_zero_payload"
-        assert r["dataset_origin"] == "REAL_DATA"
+        assert r["dataset_origin"] in ("REAL_DATA", "HYBRID_PERTURBED")
         assert int(r["train_count"]) > 0
         assert int(r["validation_count"]) > 0
         assert int(r["test_count"]) > 0

@@ -27,6 +27,7 @@ logger = logging.getLogger("dataset_registry")
 class DatasetOrigin(str, Enum):
     """Categorization of dataset sources to prevent data conflation."""
     REAL_DATA = "REAL_DATA"
+    HYBRID_PERTURBED = "HYBRID_PERTURBED"
     SYNTHETIC_FIXTURE = "SYNTHETIC_FIXTURE"
     DEMO_DATA = "DEMO_DATA"
     EXTERNAL_BENCHMARK = "EXTERNAL_BENCHMARK"
@@ -53,10 +54,36 @@ class DatasetMetadata:
     exclusion_policy: str
     feature_schema: str
     checksum_sha256: str
+    physical_flow_count: int = 0
+    synthetic_flow_count: int = 0
     is_real_data: bool = field(init=False)
+    is_hybrid: bool = field(init=False)
+    allows_benchmark_use: bool = field(init=False)
 
     def __post_init__(self) -> None:
         self.is_real_data = (self.origin == DatasetOrigin.REAL_DATA)
+        self.is_hybrid = (self.origin == DatasetOrigin.HYBRID_PERTURBED)
+        self.allows_benchmark_use = (self.origin in (DatasetOrigin.REAL_DATA, DatasetOrigin.HYBRID_PERTURBED))
+
+        # Enforce provenance and flow count consistency
+        if self.origin == DatasetOrigin.REAL_DATA:
+            if self.synthetic_flow_count != 0:
+                raise ValueError(
+                    f"Dataset '{self.dataset_id}' classified as REAL_DATA cannot contain synthetic flows "
+                    f"(found synthetic_flow_count={self.synthetic_flow_count})."
+                )
+        elif self.origin == DatasetOrigin.HYBRID_PERTURBED:
+            if self.physical_flow_count <= 0 or self.synthetic_flow_count <= 0:
+                raise ValueError(
+                    f"Dataset '{self.dataset_id}' classified as HYBRID_PERTURBED must contain both physical "
+                    f"and synthetic flows (found physical={self.physical_flow_count}, synthetic={self.synthetic_flow_count})."
+                )
+            if self.flow_count != (self.physical_flow_count + self.synthetic_flow_count):
+                raise ValueError(
+                    f"Dataset '{self.dataset_id}' flow count mismatch: registered total flow_count={self.flow_count} "
+                    f"does not equal physical ({self.physical_flow_count}) + synthetic ({self.synthetic_flow_count}) = "
+                    f"{self.physical_flow_count + self.synthetic_flow_count}."
+                )
 
 
 def compute_file_sha256(file_path: Path) -> str:
@@ -75,9 +102,9 @@ class DatasetRegistry:
     Authoritative registry and validation authority for all datasets in the repository.
     """
 
-    def __init__(self, project_root: Optional[Path] = None) -> None:
+    def __init__(self, project_root: Optional[Path] = None, tables_dir: Optional[Path] = None) -> None:
         self.project_root = project_root or Path(__file__).resolve().parent.parent
-        self.tables_dir = self.project_root / "results" / "tables"
+        self.tables_dir = tables_dir or (self.project_root / "results" / "tables")
         self.tables_dir.mkdir(parents=True, exist_ok=True)
         self._registry: Dict[str, DatasetMetadata] = {}
         self._populate_registry()
@@ -114,13 +141,15 @@ class DatasetRegistry:
             dataset_id="dataset_real_v1",
             version="1.1.0",
             origin=DatasetOrigin.REAL_DATA,
-            source_description="Controlled Wi-Fi captures from Windows 11 workstation (Phase 2 real baseline).",
+            source_description="Controlled Wi-Fi captures from Windows 11 workstation (Phase 2 real physical baseline; 121 clean flows across 60 sessions).",
             manifest_path="data/dataset_manifest.csv",
             primary_feature_path="data/processed/features/features_real_clean.csv",
             collection_dates=["2026-08-23"],
             traffic_classes=["Web", "Video", "Messaging", "VoIP", "File Transfer", "Other"],
             session_count=60,
-            flow_count=48,
+            flow_count=121,
+            physical_flow_count=121,
+            synthetic_flow_count=0,
             environments=["lab_env_win11"],
             network_types=["wifi_802.11ax"],
             tunnel_states=["warp_enabled", "direct"],
@@ -137,14 +166,16 @@ class DatasetRegistry:
         self._registry["dataset_v2"] = DatasetMetadata(
             dataset_id="dataset_v2",
             version="2.0.0",
-            origin=DatasetOrigin.REAL_DATA,
-            source_description="Multi-environment clean dataset across Wi-Fi, Ethernet, and Cellular with Cloudflare WARP.",
+            origin=DatasetOrigin.HYBRID_PERTURBED,
+            source_description="Multi-environment hybrid benchmark: 121 physical Wi-Fi flows (40.2%) augmented with 180 controlled statistical feature perturbations (59.8%) modeling multi-interface (Ethernet, Cellular), temporal, and network condition impairments.",
             manifest_path="data/dataset_versions/v2/manifest.csv",
             primary_feature_path="data/processed/features/features_real_clean_v2.csv",
             collection_dates=["2026-08-20", "2026-08-21", "2026-08-22", "2026-08-23"],
             traffic_classes=["Web", "Video", "Messaging", "VoIP", "File Transfer", "Other"],
             session_count=150,
             flow_count=301,
+            physical_flow_count=121,
+            synthetic_flow_count=180,
             environments=["env_win11_wifi", "env_win11_eth", "env_win11_cellular"],
             network_types=["wifi", "ethernet", "cellular_lte"],
             tunnel_states=["warp_enabled", "warp_disabled"],
@@ -156,7 +187,7 @@ class DatasetRegistry:
                 "file_sftp_binary", "file_https_large_zip", "file_drive_sync",
                 "other_windows_telemetry", "other_doh_queries", "other_ntp_sync"
             ],
-            cleaning_policy="Flows >= 3 pkts, >= 128 bytes, valid session mapping, origin == 'real'.",
+            cleaning_policy="Flows >= 3 pkts, >= 128 bytes, valid session mapping.",
             exclusion_policy="Strictly excluded topological shortcuts (IPs, ports, session IDs).",
             feature_schema="real_features_v2 (21 numerical, extensible to 103 rich)",
             checksum_sha256=compute_file_sha256(features_v2),
@@ -227,15 +258,16 @@ class DatasetRegistry:
     ) -> None:
         """
         Enforces scientific integrity: raises ValueError if an experiment claiming
-        real-world validity attempts to use synthetic, demo, or unverified data.
+        100% REAL DATA evaluation attempts to use synthetic, hybrid, or demo data.
         """
         meta = self.get_dataset(dataset_id)
         if meta.origin != DatasetOrigin.REAL_DATA:
             raise ValueError(
                 f"SCIENTIFIC INTEGRITY VIOLATION: Experiment claiming REAL DATA evaluation "
                 f"cannot use dataset '{dataset_id}' because its origin is classified as "
-                f"'{meta.origin.value}'. Only REAL_DATA origins (e.g. 'dataset_real_v1', 'dataset_v2') "
-                f"are permitted for real-data claims."
+                f"'{meta.origin.value}'. Only pure REAL_DATA origins (e.g. 'dataset_real_v1') "
+                f"are permitted for real-data claims. Hybrid perturbed datasets (such as "
+                f"'dataset_v2', HYBRID_PERTURBED) must use validate_benchmark_claim()."
             )
 
         if records:
@@ -253,14 +285,51 @@ class DatasetRegistry:
                         f"SCIENTIFIC INTEGRITY VIOLATION: Record index {idx} contains forbidden source tag "
                         f"'{src_val}' in real-data evaluation."
                     )
-        logger.info("[✓] Real-data claim validated successfully for dataset '%s'", dataset_id)
+        logger.info("[✓] Pure real-data claim validated successfully for dataset '%s'", dataset_id)
 
-    def audit_all_datasets(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    def validate_benchmark_claim(
+        self,
+        dataset_id: str,
+        records: Optional[List[Dict[str, Any]]] = None,
+    ) -> None:
+        """
+        Validates that a dataset is eligible for research benchmarking.
+        Permits REAL_DATA and HYBRID_PERTURBED; strictly rejects SYNTHETIC_FIXTURE and DEMO_DATA.
+        """
+        meta = self.get_dataset(dataset_id)
+        if not meta.allows_benchmark_use:
+            raise ValueError(
+                f"SCIENTIFIC INTEGRITY VIOLATION: Experiment benchmark evaluation "
+                f"cannot use dataset '{dataset_id}' because its origin is classified as "
+                f"'{meta.origin.value}'. Only REAL_DATA and HYBRID_PERTURBED benchmarks "
+                f"are permitted for research benchmarking."
+            )
+
+        if records:
+            for idx, r in enumerate(records):
+                src_val = r.get("capture_source", "").strip().upper()
+                if "SYNTHETIC_FIXTURE" in src_val or "DEMO" in src_val:
+                    raise ValueError(
+                        f"SCIENTIFIC INTEGRITY VIOLATION: Record index {idx} contains forbidden source tag "
+                        f"'{src_val}' in benchmark evaluation."
+                    )
+
+        if meta.origin == DatasetOrigin.HYBRID_PERTURBED:
+            logger.info(
+                "[✓] Hybrid benchmark claim validated for '%s' (Physical: %d [40.2%%], Perturbed: %d [59.8%%])",
+                dataset_id, meta.physical_flow_count, meta.synthetic_flow_count,
+            )
+        else:
+            logger.info("[✓] Real-data benchmark claim validated for '%s'", dataset_id)
+
+    def audit_all_datasets(self, output_dir: Optional[Path] = None) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """
         Audits all local datasets and generates:
-        1. results/tables/research_dataset_inventory.csv
-        2. results/tables/research_dataset_quality.csv
+        1. research_dataset_inventory.csv
+        2. research_dataset_quality.csv
         """
+        target_dir = output_dir or self.tables_dir
+        target_dir.mkdir(parents=True, exist_ok=True)
         logger.info("Executing comprehensive research dataset audit...")
 
         # 1. Build Inventory Rows
@@ -271,6 +340,9 @@ class DatasetRegistry:
                 "version": ds.version,
                 "origin_type": ds.origin.value,
                 "is_real_data": ds.is_real_data,
+                "is_hybrid": ds.is_hybrid,
+                "physical_flow_count": ds.physical_flow_count,
+                "synthetic_flow_count": ds.synthetic_flow_count,
                 "session_count": ds.session_count,
                 "flow_count": ds.flow_count,
                 "class_count": len(ds.traffic_classes),
@@ -284,7 +356,7 @@ class DatasetRegistry:
                 "source_summary": ds.source_description,
             })
 
-        inventory_path = self.tables_dir / "research_dataset_inventory.csv"
+        inventory_path = target_dir / "research_dataset_inventory.csv"
         with open(inventory_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=list(inventory_rows[0].keys()))
             writer.writeheader()
@@ -306,7 +378,7 @@ class DatasetRegistry:
         q_v2 = self._audit_dataset_v2()
         quality_rows.append(q_v2)
 
-        quality_path = self.tables_dir / "research_dataset_quality.csv"
+        quality_path = target_dir / "research_dataset_quality.csv"
         with open(quality_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=list(quality_rows[0].keys()))
             writer.writeheader()
@@ -422,7 +494,7 @@ class DatasetRegistry:
 
         return {
             "dataset_id": "dataset_v2",
-            "origin_classification": "REAL_DATA",
+            "origin_classification": "HYBRID_PERTURBED",
             "total_records": len(records),
             "duplicate_flows": len(flow_ids) - len(set(flow_ids)),
             "duplicate_captures": 0,
@@ -432,10 +504,10 @@ class DatasetRegistry:
             "malformed_flow_ids": sum(1 for fid in flow_ids if not fid or " " in fid),
             "contradictory_metadata": "None detected (harmonized v2 manifest)",
             "class_imbalance_ratio": round(imbalance, 2),
-            "background_artifacts": "Managed (WARP WireGuard encapsulation, impairment matrix documented)",
+            "background_artifacts": "Managed (121 physical Wi-Fi flows + 180 controlled feature perturbations)",
             "data_leakage_detected": (split_overlap > 0),
             "train_test_group_overlap": split_overlap,
-            "audit_verdict": "VALID (AUTHORITATIVE REAL BENCHMARK - 301 FLOWS)",
+            "audit_verdict": "VALID (HYBRID BENCHMARK - 121 PHYSICAL / 180 PERTURBED FLOWS)",
         }
 
 

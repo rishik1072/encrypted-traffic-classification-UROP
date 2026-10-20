@@ -4,7 +4,7 @@
 
 Machine learning models are fundamentally constrained by the quality and realism of their training data. In network security and traffic analysis, researchers frequently face a dilemma: public datasets (e.g., ISCX-VPN-2016, USTC-TFC-2016) often lack modern protocol versions (e.g., TLS 1.3, QUIC, WireGuard), contain outdated cipher suites, or exhibit severe topological leakage where individual IP addresses uniquely correlate with target classes. Conversely, synthetic packet generators (such as Scapy-generated fixtures) lack physical network dynamics.
 
-To establish an empirical benchmark free of synthetic artifacts and topological shortcuts, we developed **`dataset_v2`**, an authoritative, multi-environment dataset collected from real network interfaces on an operational Windows 11 workstation.
+To establish an empirical benchmark free of topological shortcuts and evaluate model robustness under diverse network dynamics, we developed **`dataset_v2`**, a multi-environment hybrid benchmark combining 121 physical Wi-Fi flows (40.2%) captured from an operational Windows 11 workstation with 180 controlled statistical feature perturbations (59.8%) modeling alternative physical interfaces and network impairments.
 
 ---
 
@@ -16,8 +16,8 @@ Table 5.1 summarizes the composition of `dataset_v2` alongside the cataloged leg
 
 | Dataset Identifier | Version | Data Origin | Flow Count | Session Count | Classes | Physical Environments | Encapsulation States | Checksum (SHA-256 Prefix) | Role in Study |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- | :--- | :---: | :--- |
-| **`dataset_v2`** | **2.0.0** | **REAL_DATA** | **301** | **150** | **6** | Wi-Fi (802.11ax), Gigabit Ethernet, Cellular LTE | Direct unencapsulated (36), WireGuard/WARP tunneled (265) | `cd3193ecdd2e...` | **Primary Empirical Benchmark** |
-| `dataset_real_v1` | 1.1.0 | REAL_DATA | 48 | 60 | 6 | Wi-Fi (802.11ax) | Direct, WARP enabled | `6cf742c5519d...` | Historical exploratory baseline |
+| **`dataset_v2`** | **2.0.0** | **HYBRID_PERTURBED** | **301** (121 real + 180 pert.) | **150** | **6** | Wi-Fi (physical), Gigabit Ethernet (pert.), Cellular LTE (pert.) | Direct unencapsulated (36 pert.), WireGuard/WARP tunneled (121 real + 144 pert.) | `cd3193ecdd2e...` | **Primary Empirical Benchmark** |
+| `dataset_real_v1` | 1.1.0 | REAL_DATA | 121 | 60 | 6 | Wi-Fi (802.11ax physical) | WARP enabled, direct | `6cf742c5519d...` | Authoritative physical baseline |
 | `dataset_v1` | 1.0.0 | SYNTHETIC | 12 | 12 | 6 | Loopback fixture | Direct unencapsulated | `2b9090acff8b...` | Reference synthetic fixture (audit only) |
 | `demo_data` | 1.0.0 | DEMO_DATA | 20 | 6 | 6 | Virtual tap | Simulated loopback | N/A | Real-time UI demonstration only |
 
@@ -36,18 +36,17 @@ Table 5.1 summarizes the composition of `dataset_v2` alongside the cataloged leg
 
 ---
 
-## 5.4 Multi-Environment Capture Testbed
+## 5.4 Multi-Environment Testbed and Perturbation Model
 
-Data collection was executed on a physical workstation running Microsoft Windows 11 Enterprise x64, equipped with multiple dedicated network interfaces:
+Physical baseline data collection was executed on a workstation running Microsoft Windows 11 Enterprise x64:
 
-- **Wi-Fi Environment (`env_win11_wifi`):** 802.11ax (Wi-Fi 6) wireless connection to a local enterprise access point, introducing wireless contention, variable signal attenuation, and physical-layer frame aggregation.
-- **Gigabit Ethernet (`env_win11_eth`):** Dedicated 1 Gbps full-duplex wired connection to a managed network switch, providing high-bandwidth, minimal-jitter baseline transmission.
-- **Cellular LTE (`env_win11_cellular`):** Tethered 4G/LTE cellular connection, introducing carrier-grade NAT (CGNAT), dynamic cellular scheduling latency, and variable mobile network bufferbloat.
+- **Physical Wi-Fi Environment (`env_win11_wifi`):** 802.11ax (Wi-Fi 6) wireless connection to an enterprise access point, recorded via Scapy/Npcap ring buffer on 2026-08-23 under Cloudflare WARP tunneling (121 physical flows, 60 sessions).
+- **Simulated Gigabit Ethernet (`env_win11_eth`):** 60 flows (30 sessions) generated via bounded numerical feature perturbations of physical prototypes, modeling reduced inter-packet jitter and higher sustained burst densities.
+- **Simulated Cellular LTE (`env_win11_cellular`):** 60 flows (30 sessions) generated via feature perturbations modeling carrier-grade NAT buffering, mobile scheduling variance, and increased latency tail quantiles.
 
 ### Tunneling Encapsulation: Direct vs. WireGuard (WARP)
-To evaluate the impact of modern cryptographic tunneling, traffic was captured under two distinct encapsulation states:
-- **Direct Traffic (`warp_disabled`, 36 flows):** Direct client-to-server TLS 1.2/1.3, QUIC, or UDP traffic.
-- **Tunneled Traffic (`warp_enabled`, 265 flows):** Traffic routed through Cloudflare WARP, a production WireGuard UDP VPN tunnel. Under WireGuard, all inner transport segments are wrapped in outer UDP datagrams with standardized 32-byte headers, encrypted with ChaCha20-Poly1305, and constrained to a fixed 1280-byte MTU with standardized padding blocks.
+- **Tunneled Traffic (`warp_enabled`, 265 flows):** All 121 physical flows plus 144 perturbed flows. Inner transport segments are encapsulated in WireGuard UDP datagrams targeting Cloudflare edge nodes.
+- **Direct Traffic (`warp_disabled`, 36 flows):** Modeled via statistical feature scaling of prototypes to evaluate unencapsulated direct transport.
 
 ---
 

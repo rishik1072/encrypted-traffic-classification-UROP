@@ -221,8 +221,8 @@ class SelectivePredictionStudy:
     ]:
         """Loads authoritative real features and partitions with zero session leakage."""
         meta = self.registry.get_dataset(self.dataset_id)
-        if meta.origin != DatasetOrigin.REAL_DATA:
-            raise ValueError(f"Dataset {self.dataset_id} is not REAL_DATA.")
+        if not meta.allows_benchmark_use:
+            raise ValueError(f"Dataset {self.dataset_id} is not eligible for benchmarking.")
 
         feature_path = self.project_root / meta.primary_feature_path
         records: List[Dict[str, Any]] = []
@@ -231,7 +231,7 @@ class SelectivePredictionStudy:
             for row in reader:
                 records.append(dict(row))
 
-        self.registry.validate_real_data_claim(self.dataset_id, records)
+        self.registry.validate_benchmark_claim(self.dataset_id, records)
 
         # Stratified session partition: 70% Train, 15% Val, 15% Test
         class_sessions: Dict[str, List[str]] = defaultdict(list)

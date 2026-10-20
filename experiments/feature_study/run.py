@@ -14,7 +14,7 @@ Conducts two comprehensive scientific investigations:
    Evaluates top-K subsets (K in [3, 5, 10, 15, 20, 30, 84]) ranked strictly
    on the Train split to avoid data snooping.
 
-Enforces group-aware session splitting on authoritative REAL traffic (dataset_v2),
+Enforces group-aware session splitting on hybrid benchmark traffic (dataset_v2),
 validation-based profile selection, and locked test evaluation.
 """
 
@@ -159,7 +159,7 @@ class FeatureStudyPipeline:
             for r in reader:
                 records.append(dict(r))
 
-        self.registry.validate_real_data_claim("dataset_v2", records)
+        self.registry.validate_benchmark_claim("dataset_v2", records)
 
         # Partition by session_id stratified across classes
         class_sessions: Dict[str, List[str]] = defaultdict(list)
