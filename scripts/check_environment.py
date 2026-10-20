@@ -37,6 +37,7 @@ OPTIONAL_ML_PACKAGES = [
     "sklearn",
     "lightgbm",
     "streamlit",
+    "click",
     "scapy",
     "psutil",
 ]

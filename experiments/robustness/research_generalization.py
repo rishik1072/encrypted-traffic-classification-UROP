@@ -91,7 +91,7 @@ class ResearchGeneralizationBenchmark:
             for r in reader:
                 records.append(dict(r))
 
-        self.registry.validate_real_data_claim("dataset_v2", records)
+        self.registry.validate_benchmark_claim("dataset_v2", records)
         logger.info("Loaded %d records for generalization benchmark", len(records))
         return records
 

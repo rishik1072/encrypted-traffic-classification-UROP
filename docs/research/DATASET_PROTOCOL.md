@@ -28,41 +28,45 @@ Every dataset artifact utilized in this repository must belong to exactly one of
                           │   DATASET ORIGIN TAXONOMY   │
                           └───────────┬────────────┘
                                       │
-         ┌────────────────────────────┼────────────────────────────┐
-         ▼                            ▼                            ▼
-┌──────────────────┐         ┌──────────────────┐         ┌──────────────────┐
-│    REAL_DATA     │         │SYNTHETIC_FIXTURE │         │    DEMO_DATA     │
-│ (Empirical Base) │         │ (Unit / CI Test) │         │ (Interactive UI) │
-└────────┬─────────┘         └────────┬─────────┘         └────────┬─────────┘
-         │                            │                            │
-         │ Controlled Captures        │ Scapy Handshakes           │ Replayed Logs
-         │ Real Hardware              │ Deterministic Seeds        │ Synthetic Streams
-         │ WIREGUARD / WARP Tunnels   │ Toy Linear Separability    │ Zero Research Use
-         │ Multi-Environment          │ Strict CI Gating Only      │
-         ▼                            ▼                            ▼
-  ALLOWED FOR REAL             STRICTLY FORBIDDEN           STRICTLY FORBIDDEN
-  RESEARCH CLAIMS              FOR REAL RESEARCH            FOR REAL RESEARCH
-                               CLAIMS                       CLAIMS
+         ┌───────────────────┬────────┴──────────┬───────────────────┐
+         ▼                   ▼                   ▼                   ▼
+┌──────────────────┐┌──────────────────┐┌──────────────────┐┌──────────────────┐
+│    REAL_DATA     ││ HYBRID_PERTURBED ││SYNTHETIC_FIXTURE ││    DEMO_DATA     │
+│ (Empirical Base) ││ (Hybrid Benchmark││ (Unit / CI Test) ││ (Interactive UI) │
+└────────┬─────────┘└────────┬─────────┘└────────┬─────────┘└────────┬─────────┘
+         │                   │                   │                   │
+         │ Physical Captures │ 121 Real Wi-Fi    │ Scapy Handshakes  │ Replayed Logs
+         │ Real Hardware     │ + 180 Perturbations│ Deterministic Seeds│ Synthetic Streams
+         │ WARP Encapsulated │ Interface/Impair  │ Linear Toy Setup  │ Zero Research Use
+         ▼                   ▼                   ▼                   ▼
+  ALLOWED FOR PURE    ALLOWED FOR HYBRID  STRICTLY FORBIDDEN  STRICTLY FORBIDDEN
+  REAL-DATA CLAIMS    BENCHMARK EVALUATION FOR RESEARCH CLAIMS FOR RESEARCH CLAIMS
 ```
 
 ### 1. `REAL_DATA`
-- **Definition:** Network traffic captured from physical or virtual network interfaces executing real application workloads under realistic user interactions.
-- **Permitted Use:** Authoritative benchmark training, hyperparameter validation, model ranking, Pareto frontier analysis, and final held-out test evaluations.
-- **Registered Versions:** `dataset_real_v1` (Wi-Fi baseline), `dataset_v2` (Multi-environment benchmark).
+- **Definition:** Network traffic captured directly from physical network interfaces executing real application workloads under realistic user interactions.
+- **Permitted Use:** Authoritative physical baseline training, hyperparameter validation, model ranking, Pareto frontier analysis, and final held-out test evaluations.
+- **Registered Versions:** `dataset_real_v1` (Physical Wi-Fi baseline; 121 clean flows across 60 sessions).
 
-### 2. `SYNTHETIC_FIXTURE`
+### 2. `HYBRID_PERTURBED`
+- **Definition:** Physical base traffic augmented with controlled statistical feature perturbations to model alternative interfaces, temporal drift, and network impairments.
+- **Permitted Use:** Algorithmic sensitivity profiling, feature robustness stress tests, and machine learning benchmark comparisons. Must be explicitly labeled as hybrid.
+- **Forbidden Use:** Any claim asserting that simulated domains (e.g. Ethernet, Cellular LTE, unencapsulated traffic) were physically captured.
+- **Registered Versions:** `dataset_v2` (121 physical base flows + 180 synthetic feature perturbations).
+
+### 3. `SYNTHETIC_FIXTURE`
 - **Definition:** Deterministic packets synthesized via Scapy scripts for testing interface contracts, pipeline integrity, and corner cases.
 - **Permitted Use:** Fast unit tests (`test_*.py`), continuous integration, and pipeline validation.
 - **Forbidden Use:** Any scientific claim regarding real-world accuracy, generalization, latency, or model comparison.
 - **Registered Versions:** `dataset_v1` (12 sample PCAPs).
 
-### 3. `DEMO_DATA`
+### 4. `DEMO_DATA`
 - **Definition:** Looped packet streams, serialized JSONL events, or synthetic replay logs designed to drive the Streamlit SOC Dashboard in demonstration mode without requiring network administrator privileges.
 - **Permitted Use:** UI verification, layout testing, presentation demos.
 - **Forbidden Use:** Model training, evaluation, or benchmarking.
 - **Registered Versions:** `demo_data`.
 
-### 4. `EXTERNAL_BENCHMARK`
+### 5. `EXTERNAL_BENCHMARK`
 - **Definition:** Standard public reference datasets (e.g., ISCX-VPN-2016, USTC-TFC-2016).
 - **Permitted Use:** Macro-level comparative literature review and cross-dataset validation.
 - **Registered Versions:** `external_benchmarks`.
@@ -72,18 +76,17 @@ Every dataset artifact utilized in this repository must belong to exactly one of
 ## 3. Real-Data Collection Protocol
 
 ### A. Controlled Hardware & Network Environments
-Data collection for `dataset_real_v1` and `dataset_v2` was performed across three distinct physical access environments:
+Physical data collection for `dataset_real_v1` (which forms the 121-flow base of `dataset_v2`) was performed on an operational Windows 11 endpoint:
 
-| Environment ID | Access Medium | Interface | MTU | Network Topology |
+| Environment ID | Access Medium | Interface | MTU | Provenance |
 | :--- | :--- | :--- | :--- | :--- |
-| `env_win11_wifi` | Wi-Fi 6 (802.11ax) | Intel Wi-Fi 6 AX201 160MHz | 1500 | Home/Office AP $\rightarrow$ Commercial ISP Fiber |
-| `env_win11_eth` | Gigabit Ethernet (802.3) | Realtek PCIe GbE Family | 1500 | Managed Switch $\rightarrow$ Campus Gateway |
-| `env_win11_cellular` | LTE / 5G Mobile Hotspot | USB Tethered Interface | 1420 | Mobile Carrier APN $\rightarrow$ Commercial Mobile Core |
+| `env_win11_wifi` | Wi-Fi 6 (802.11ax) | Intel Wi-Fi 6 AX201 160MHz | 1500 | **Physical Network Capture** (2026-08-23) |
+| `env_win11_eth` | Gigabit Ethernet (802.3) | Realtek PCIe GbE Family | 1500 | **Synthetic Feature Perturbation** (scaled mean IAT, burst) |
+| `env_win11_cellular` | LTE / 5G Mobile Hotspot | USB Tethered Interface | 1420 | **Synthetic Feature Perturbation** (scaled variance, IAT) |
 
 ### B. Tunneling Configuration & Encapsulation
-To represent modern privacy-preserving transport protocols, traffic sessions were recorded under two explicit tunnel states:
-1. **`warp_enabled` (WireGuard / Cloudflare WARP):** All client Layer-3 packets are encapsulated into ChaCha20-Poly1305 encrypted UDP datagrams targeting Cloudflare edge servers. Transport headers are normalized, packet lengths are padded, and internal port/IP information is completely concealed from intermediate observers.
-2. **`warp_disabled` (Direct Transport):** Standard native TLS 1.3 / QUIC connections directly negotiating with destination servers.
+- **`warp_enabled` (WireGuard / Cloudflare WARP):** Physical capture state for all 121 base flows. All client Layer-3 packets were encapsulated into ChaCha20-Poly1305 encrypted UDP datagrams targeting Cloudflare edge servers.
+- **`warp_disabled` (Direct Transport):** Simulated in `dataset_v2` (36 flows) via feature perturbation.
 
 ### C. Traffic Class Definitions & Activity Scripts
 Traffic was generated using controlled user activity automation to prevent label ambiguity:

@@ -288,8 +288,8 @@ class ComputationalEfficiencyBenchmark:
     ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, List[Flow]]:
         """Loads authoritative dataset_v2 features and reconstructs real flows for extraction profiling."""
         meta = self.registry.get_dataset(self.dataset_id)
-        if meta.origin != DatasetOrigin.REAL_DATA:
-            raise ValueError(f"Dataset {self.dataset_id} is not REAL_DATA.")
+        if not meta.allows_benchmark_use:
+            raise ValueError(f"Dataset {self.dataset_id} is not eligible for benchmarking.")
 
         feat_path = self.project_root / meta.primary_feature_path
         df_feats = pd.read_csv(feat_path)

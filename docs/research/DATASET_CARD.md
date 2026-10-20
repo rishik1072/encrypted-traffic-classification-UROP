@@ -31,8 +31,8 @@ The repository contains five cataloged dataset definitions (audited in [`results
 | Dataset ID | Version | Origin Category | Real Data? | Sessions | Flows | Classes | Environments | Tunnels | Primary Feature Path | Checksum (SHA-256) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **`dataset_v1`** | 1.0.0 | `SYNTHETIC_FIXTURE` | **No** | 12 | 12 | 6 | `lab_env_a`, `lab_env_b` | `direct_unencapsulated` | `data/processed/features/features_cleaned.csv` | `2b9090acff8bfb22...` |
-| **`dataset_real_v1`** | 1.1.0 | `REAL_DATA` | **Yes** | 60 | 48 | 6 | `lab_env_win11` | `warp_enabled`, `direct` | `data/processed/features/features_real_clean.csv` | `6cf742c5519d88a1...` |
-| **`dataset_v2`** | 2.0.0 | `REAL_DATA` | **Yes** | 150 | 301 | 6 | `env_win11_wifi`, `env_win11_eth`, `env_win11_cellular` | `warp_enabled`, `warp_disabled` | `data/processed/features/features_real_clean_v2.csv` | `cd3193ecdd2ecb48...` |
+| **`dataset_real_v1`** | 1.1.0 | `REAL_DATA` | **Yes** | 60 | 121 (48 clean base) | 6 | `lab_env_win11` (Wi-Fi 6) | `warp_enabled`, `direct` | `data/processed/features/features_real_clean.csv` | `6cf742c5519d88a1...` |
+| **`dataset_v2`** | 2.0.0 | `HYBRID_PERTURBED` | **Hybrid (40.2% Real, 59.8% Perturbed)** | 150 | 301 | 6 | `env_win11_wifi` (real), `env_win11_eth` (pert.), `env_win11_cellular` (pert.) | `warp_enabled` (real+pert.), `warp_disabled` (pert.) | `data/processed/features/features_real_clean_v2.csv` | `cd3193ecdd2ecb48...` |
 | **`demo_data`** | 1.0.0 | `DEMO_DATA` | **No** | 6 | 20 | 6 | `demo_virtual_tap` | `warp_simulated` | `data/local/sample_packet_stream.jsonl` | `N/A` |
 | **`external_benchmarks`**| ref | `EXTERNAL_BENCHMARK`| **No** | 0 | 0 | 4 | `unb_crc_lab`, `ustc_network` | `openvpn_tun`, `ipsec` | `data/external/README.md` | `N/A` |
 
@@ -41,6 +41,11 @@ The repository contains five cataloged dataset definitions (audited in [`results
 ## 3. Dataset Composition & Class Distribution
 
 ### Authoritative Benchmark: `dataset_v2` (301 Flows across 150 Sessions)
+
+> [!IMPORTANT]
+> **Hybrid Benchmark Disclosure:** `dataset_v2` is a hybrid semi-synthetic benchmark:
+> - **121 flows across 60 sessions (40.2%)** are genuine physical network captures recorded from an Intel Wi-Fi 6 interface under Cloudflare WARP tunneling on 2026-08-23 (`day_4`). Full packet-level time series exist in `flows_real_clean.csv`.
+> - **180 flows across 90 sessions (59.8%)** are calibrated statistical feature perturbations generated via `capture/expand_dataset_v2.py`. These perturbed rows simulate Ethernet, Cellular LTE, unencapsulated traffic (`warp_disabled`), historical collection days (`day_1`–`day_3`), and network impairments (`LOW_BANDWIDTH`, `HIGH_LATENCY`, `PACKET_LOSS`) by applying bounded scaling factors to physical feature prototypes. Zero raw PCAPs or packet-level flow sequences exist for these 180 rows.
 
 ```
 Traffic Class Breakdown in dataset_v2:
@@ -59,10 +64,11 @@ Traffic Class Breakdown in dataset_v2:
 ```
 
 ### Access Environments & Network Impairment Breakdown
-- **Physical Access:** Wi-Fi 6 (90 sessions), Gigabit Ethernet (30 sessions), LTE Cellular (30 sessions).
-- **Network Conditions:** Normal (102 sessions), Low Bandwidth (24 sessions), High Latency (18 sessions), Packet Loss (6 sessions).
-- **Tunnel States:** Cloudflare WARP / WireGuard enabled (132 sessions), Direct unencapsulated (18 sessions).
-- **Capture Days:** Day 1 (24 sessions), Day 2 (24 sessions), Day 3 (24 sessions), Day 4 (78 sessions).
+- **Physical Access:** Wi-Fi 6 (60 physical base sessions + 30 perturbed sessions = 90 total sessions).
+- **Perturbed Interface Environments:** Gigabit Ethernet (30 perturbed sessions), LTE Cellular (30 perturbed sessions).
+- **Network Conditions:** Normal (102 sessions: 60 physical + 42 perturbed), Low Bandwidth (24 perturbed sessions), High Latency (18 perturbed sessions), Packet Loss (6 perturbed sessions).
+- **Tunnel States:** Cloudflare WARP / WireGuard enabled (132 sessions: 60 physical + 72 perturbed), Direct unencapsulated (18 perturbed sessions).
+- **Capture Days:** Day 1 (24 perturbed), Day 2 (24 perturbed), Day 3 (24 perturbed), Day 4 (60 physical + 18 perturbed = 78 total).
 
 ---
 
@@ -101,9 +107,9 @@ Traffic Class Breakdown in dataset_v2:
 
 As verified in [`results/tables/research_dataset_quality.csv`](file:///c:/UROP%20project/encrypted-traffic-classification-UROP/results/tables/research_dataset_quality.csv):
 
-| Quality Check | `dataset_v1` (Synthetic) | `dataset_real_v1` (Real Baseline) | `dataset_v2` (Real Benchmark) |
+| Quality Check | `dataset_v1` (Synthetic) | `dataset_real_v1` (Real Baseline) | `dataset_v2` (Hybrid Benchmark) |
 | :--- | :--- | :--- | :--- |
-| **Total Flow Records** | 11 | 121 (48 clean) | 301 |
+| **Total Flow Records** | 11 | 121 (48 clean base) | 301 (121 real + 180 pert.) |
 | **Duplicate Flow Signatures** | 0 | 0 | 0 |
 | **Duplicate Captures** | 0 | 0 | 0 |
 | **Missing Labels** | 0 | 0 | 0 |
@@ -112,15 +118,16 @@ As verified in [`results/tables/research_dataset_quality.csv`](file:///c:/UROP%2
 | **Contradictory Metadata** | 0 | 0 | 0 |
 | **Class Imbalance Ratio** | 2.00 | 1.05 | **1.02 (Balanced)** |
 | **Split Group Overlap (Leakage)** | 0 | 0 (0 sessions overlap) | 0 (0 sessions overlap) |
-| **Audit Status** | `SYNTHETIC_ONLY` | `VALID (REAL)` | `AUTHORITATIVE (REAL)` |
+| **Audit Status** | `SYNTHETIC_ONLY` | `VALID (REAL - 121 FLOWS)` | `VALID (HYBRID BENCHMARK)` |
 
 ---
 
 ## 7. Known Limitations & Research Boundaries
 
 1. **WireGuard / WARP Feature Space Compression:** Encapsulation normalizes MTU to 1420 bytes, applies packet padding, and coalesces ACKs. Packet length distributions overlap substantially between Web and Messaging. Timing dynamics (IAT variance and burst rates) become the primary discriminators.
-2. **Held-Out Test Sample Size:** In the current `dataset_v2` split, the held-out test partition comprises 12 flows across 6 sessions (2 per class). While strictly leakage-free, statistical power is constrained; future phases should scale the test partition to $N \ge 100$ independent sessions.
-3. **Single Platform Capture:** Captures originated from Windows 11 endpoints; cross-OS generalization (e.g., Linux/macOS/Android TCP stack dynamics) remains an open research question.
+2. **Hybrid Perturbation Nature of `dataset_v2`:** While the 121 base flows represent genuine physical captures, the 180 expanded flows simulate alternative interfaces (Ethernet, Cellular LTE) and network conditions via bounded numerical perturbations. They lack underlying packet sequences (PCAPs) and evaluate algorithmic sensitivity to feature shifts rather than physical layer artifacts.
+3. **Held-Out Test Sample Size:** In the physical `dataset_real_v1` split, the held-out test partition comprises 12 flows across 6 sessions (2 per class). While strictly leakage-free, statistical power is constrained; future work should collect larger real-world test sets ($N \ge 100$ independent sessions).
+4. **Single Platform Capture:** Physical captures originated from a Windows 11 endpoint; cross-OS generalization (e.g., Linux/macOS/Android TCP stack dynamics) remains an open research question.
 
 ---
 

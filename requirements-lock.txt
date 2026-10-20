@@ -1,6 +1,12 @@
 # requirements-lock.txt
-# Frozen dependency specification for Real-Time Encrypted Traffic Classification
+# Pinned Direct-Dependency Specification for Real-Time Encrypted Traffic Classification
 # Tested Environment: Windows 11, Python 3.11 - 3.14
+#
+# NOTE ON REPRODUCIBILITY:
+# This specification pins all direct runtime, visualization, telemetry, and testing
+# dependencies for reproducible deployments. Transitive sub-dependencies (e.g., altair,
+# protobuf, tornado) are resolved by pip according to the declared constraints of the
+# pinned packages. On Python 3.14, ensure compatible pre-built binary wheels are available.
 
 # Core Machine Learning & Scientific Computing
 numpy==1.26.4
@@ -12,6 +18,7 @@ joblib==1.4.0
 
 # Visualization & Dashboard
 streamlit==1.33.0
+click==8.5.0
 plotly==5.20.0
 matplotlib==3.8.4
 seaborn==0.13.2

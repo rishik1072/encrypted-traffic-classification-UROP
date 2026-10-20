@@ -130,3 +130,33 @@ def test_feature_study_figures_validity():
         fig_path = PROJECT_ROOT / "results" / "figures" / fname
         assert fig_path.exists(), f"Missing figure: {fig_path}"
         assert fig_path.stat().st_size > 10000, f"Figure {fname} appears truncated or empty"
+
+
+def test_feature_study_pipeline_hybrid_benchmark_acceptance():
+    """Verifies that FeatureStudyPipeline accepts dataset_v2 as a hybrid benchmark
+
+    without classifying it as pure real data.
+    """
+    from experiments.feature_study.run import FeatureStudyPipeline
+    from training.dataset_registry import DatasetOrigin
+
+    data_path = "data/processed/features/features_real_rich_clean_v2.csv"
+    pipeline = FeatureStudyPipeline(data_path=data_path, seed=42)
+
+    # 1. Confirm dataset_v2 is HYBRID_PERTURBED in the pipeline registry
+    meta = pipeline.registry.get_dataset("dataset_v2")
+    assert meta.origin == DatasetOrigin.HYBRID_PERTURBED
+    assert meta.is_real_data is False
+    assert meta.is_hybrid is True
+    assert meta.allows_benchmark_use is True
+
+    # 2. validate_real_data_claim strictly rejects dataset_v2
+    with pytest.raises(ValueError, match="SCIENTIFIC INTEGRITY VIOLATION"):
+        pipeline.registry.validate_real_data_claim("dataset_v2")
+
+    # 3. pipeline.load_and_split() succeeds via validate_benchmark_claim
+    train_recs, val_recs, test_recs = pipeline.load_and_split()
+    assert len(train_recs) > 0
+    assert len(val_recs) > 0
+    assert len(test_recs) > 0
+    assert len(train_recs) + len(val_recs) + len(test_recs) == meta.flow_count

@@ -249,7 +249,7 @@ def generate_dataset_v2(
     # Provenance metadata
     provenance = {
         "dataset_version": "dataset_v2",
-        "parent_dataset": "dataset_v1",
+        "parent_dataset": "dataset_real_v1",
         "created_at": "2026-08-23",
         "total_sessions": len(unique_sessions),
         "total_flows": len(v2_records),

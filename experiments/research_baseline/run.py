@@ -269,10 +269,10 @@ class ResearchBaselineExperiment:
         self.git_rev = get_git_revision(self.project_root)
 
     def load_and_validate_dataset(self) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-        """Loads features from dataset_v2 and enforces real-data integrity verification."""
+        """Loads features from dataset_v2 and enforces benchmark integrity verification."""
         meta = self.registry.get_dataset(self.dataset_id)
-        if meta.origin != DatasetOrigin.REAL_DATA:
-            raise ValueError(f"Scientific integrity violation: {self.dataset_id} is not REAL_DATA.")
+        if not meta.allows_benchmark_use:
+            raise ValueError(f"Scientific integrity violation: {self.dataset_id} is not eligible for benchmarking.")
 
         feature_path = self.project_root / meta.primary_feature_path
         if not feature_path.exists():
@@ -284,9 +284,9 @@ class ResearchBaselineExperiment:
             for row in reader:
                 records.append(dict(row))
 
-        # Enforce registry real-data claim
-        self.registry.validate_real_data_claim(self.dataset_id, records)
-        logger.info("Loaded and verified %d real flows from %s", len(records), self.dataset_id)
+        # Enforce registry benchmark claim
+        self.registry.validate_benchmark_claim(self.dataset_id, records)
+        logger.info("Loaded and verified %d records from %s (Origin: %s)", len(records), self.dataset_id, meta.origin.value)
         return records, asdict_meta(meta)
 
     def split_data_group_aware(

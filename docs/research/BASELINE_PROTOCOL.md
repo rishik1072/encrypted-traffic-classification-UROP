@@ -3,7 +3,7 @@
 **Experiment Identifier:** `EXP-R09`  
 **Repository:** Real-Time Encrypted Traffic Classification Using Lightweight Machine Learning Models  
 **Status:** ACTIVE / REPRODUCIBLE  
-**Dataset Lineage:** `dataset_v2` (Multi-Environment Clean Real Traffic Benchmark)  
+**Dataset Lineage:** `dataset_v2` (Multi-Environment Hybrid Benchmark: 121 physical base flows + 180 controlled statistical feature perturbations)
 **Execution Entry Point:** `python -m experiments.research_baseline.run`  
 **Date:** September 2026  
 
@@ -25,20 +25,20 @@ In modern encrypted networking environments (e.g., Cloudflare WARP / WireGuard t
 
 ## 2. Authoritative Dataset Specification
 
-The baseline benchmark strictly uses `dataset_v2`, validated via `DatasetRegistry.validate_real_data_claim("dataset_v2", records)`.
+The baseline benchmark uses `dataset_v2`, validated via `DatasetRegistry.validate_benchmark_claim("dataset_v2", records)`.
 
 | Attribute | Specification |
 | :--- | :--- |
 | **Dataset Version** | `2.0.0` |
-| **Origin Category** | `REAL_DATA` (Physical network captures from actual endpoints) |
+| **Origin Category** | `HYBRID_PERTURBED` (121 physical Wi-Fi flows [40.2%] augmented with 180 controlled statistical feature perturbations [59.8%]) |
 | **Primary Data Path** | `data/processed/features/features_real_clean_v2.csv` |
 | **Total Captured Flows** | 301 bidirectional flows |
 | **Unique Sessions** | 150 independent user sessions (25 sessions per class) |
 | **Canonical Classes ($C=6$)** | `Web` (50), `Video` (50), `Messaging` (50), `VoIP` (50), `File Transfer` (50), `Other` (51) |
-| **Physical Environments** | Windows 11 Workstation across 3 network interfaces: Wi-Fi (802.11ax), Ethernet (GbE), Cellular LTE |
+| **Access Environments** | Windows 11 Workstation across 3 network interfaces: physical Wi-Fi (802.11ax, 60 sessions), synthetic Ethernet (30 sessions), synthetic Cellular LTE (30 sessions) |
 | **Encapsulation State** | Cloudflare WARP tunnel (WireGuard / UDP 443/52783) and direct TLS traffic |
 | **Inclusion Criteria** | Bidirectional flows with $\ge 3$ packets and $\ge 128$ total bytes |
-| **Integrity Guard** | `DatasetRegistry.validate_real_data_claim()` asserts zero synthetic or demo record contamination |
+| **Integrity Guard** | `DatasetRegistry.validate_benchmark_claim()` asserts benchmark eligibility and rejects synthetic fixtures and demo replays |
 
 ---
 

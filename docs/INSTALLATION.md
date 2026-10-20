@@ -42,12 +42,14 @@ pip install -r requirements.txt
 Core dependencies verified by validation suite:
 - `numpy`
 - `pandas`
-- `scipy`
 - `scikit-learn`
 - `lightgbm`
 - `joblib`
 - `scapy`
 - `streamlit`
+- `click`
+- `psutil`
+- `pyyaml`
 
 ---
 
@@ -78,7 +80,7 @@ The validator executes 9 comprehensive checks:
 [TEST 1/9] Verifying Clean Installation & Filesystem Layout...
   -> PASS: All runtime directories, config files, and write permissions verified.
 [TEST 2/9] Verifying Runtime Dependency Availability...
-  -> PASS: All 8 core dependencies available.
+  -> PASS: All 10 core dependencies available.
 [TEST 3/9] Verifying Model Registry & Cryptographic Hash Integrity...
   -> PASS: Registered model weights & preprocessor verified; dry-run inference succeeded.
 [TEST 4/9] Verifying Network Adapter Detection & Capture Readiness...
