@@ -165,6 +165,23 @@ class TestProductHardening(unittest.TestCase):
         for csv_path in csv_files:
             self.assertGreater(csv_path.stat().st_size, 0, f"Table {csv_path.name} is empty")
 
+    def test_installation_validation_scorecard_fails_on_missing_prerequisite(self) -> None:
+        """Verifies that scorecard accurately fails closed when a core dependency or config is missing."""
+        orig_exists = Path.exists
+
+        def mock_exists(self_path: Any = None, *args: Any, **kwargs: Any) -> bool:
+            if self_path is not None and "config.yaml" in str(self_path):
+                return False
+            if self_path is not None:
+                return orig_exists(self_path)
+            return True
+
+        with patch.object(Path, "exists", autospec=True, side_effect=mock_exists):
+            scorecard = run_installation_validation(verbose=False)
+            self.assertEqual(scorecard["overall_status"], "FAIL")
+            self.assertLess(scorecard["tests_passed"], scorecard["total_tests"])
+            self.assertEqual(scorecard["results"]["test_1_clean_installation"]["status"], "FAIL")
+
 
 if __name__ == "__main__":
     unittest.main()
