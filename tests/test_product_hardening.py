@@ -183,5 +183,26 @@ class TestProductHardening(unittest.TestCase):
             self.assertEqual(scorecard["results"]["test_1_clean_installation"]["status"], "FAIL")
 
 
+    def test_dependency_validation_diagnoses_transitive_failures(self) -> None:
+        """Verifies that dependency validation isolates broken transitive dependencies instead of masking them."""
+        import builtins
+        orig_import = builtins.__import__
+
+        def mock_import(name: str, *args: Any, **kwargs: Any) -> Any:
+            if name == "streamlit":
+                err = ModuleNotFoundError("No module named 'click'")
+                err.name = "click"
+                raise err
+            return orig_import(name, *args, **kwargs)
+
+        with patch("builtins.__import__", side_effect=mock_import):
+            scorecard = run_installation_validation(verbose=False)
+            t2 = scorecard["results"]["test_2_dependencies"]
+            self.assertEqual(t2["status"], "FAIL")
+            self.assertTrue(any("streamlit" in m and "transitive dependency" in m for m in t2["missing"]))
+            self.assertEqual(t2["packages"]["streamlit"]["status"], "BROKEN_DEPENDENCY")
+            self.assertEqual(t2["packages"]["streamlit"]["missing_submodule"], "click")
+
+
 if __name__ == "__main__":
     unittest.main()

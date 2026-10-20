@@ -25,6 +25,11 @@ import time
 from typing import Any, Dict, List, Optional
 import urllib.request
 
+# Ensure repository root is on Python path for standalone validation runs
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 logger = logging.getLogger("product.validate")
 
 
@@ -97,22 +102,42 @@ def run_installation_validation(verbose: bool = True) -> Dict[str, Any]:
     required_pkgs = [
         ("scapy", "Packet Capture & Protocol Inspection"),
         ("streamlit", "SOC Dashboard Framework"),
+        ("click", "Dashboard CLI & Terminal UI Engine"),
         ("lightgbm", "Gradient Boosted Tree Inference"),
         ("sklearn", "Scikit-Learn Machine Learning Baseline"),
         ("joblib", "Model Serialization Engine"),
         ("yaml", "YAML Configuration Parser"),
         ("pandas", "DataFrame Analytics"),
         ("numpy", "Numerical Array Operations"),
+        ("psutil", "Process & Network Interface Telemetry"),
     ]
 
     for pkg, purpose in required_pkgs:
         try:
             mod = __import__(pkg)
-            v = getattr(mod, "__version__", "installed")
+            # Retrieve version via importlib.metadata to avoid deprecation warnings
+            try:
+                import importlib.metadata
+                dist_name = "scikit-learn" if pkg == "sklearn" else ("pyyaml" if pkg == "yaml" else pkg)
+                v = importlib.metadata.version(dist_name)
+            except Exception:
+                v = getattr(mod, "__version__", "installed")
             dep_status[pkg] = {"status": "AVAILABLE", "version": v, "purpose": purpose}
-        except ImportError:
-            dep_status[pkg] = {"status": "MISSING", "version": None, "purpose": purpose}
-            missing_deps.append(pkg)
+        except ImportError as exc:
+            missing_module = getattr(exc, "name", None)
+            if missing_module and missing_module.split(".", 1)[0] != pkg:
+                diag = f"{pkg} (broken transitive dependency: '{missing_module}')"
+                dep_status[pkg] = {
+                    "status": "BROKEN_DEPENDENCY",
+                    "version": None,
+                    "purpose": purpose,
+                    "error": str(exc),
+                    "missing_submodule": missing_module,
+                }
+                missing_deps.append(diag)
+            else:
+                dep_status[pkg] = {"status": "MISSING", "version": None, "purpose": purpose}
+                missing_deps.append(pkg)
 
     t2_pass = len(missing_deps) == 0
     results["test_2_dependencies"] = {
