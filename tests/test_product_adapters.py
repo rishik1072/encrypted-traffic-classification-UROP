@@ -93,6 +93,43 @@ class TestProductAdapters(unittest.TestCase):
         self.assertFalse(val_res["valid"])
         self.assertIn("No network adapters detected", val_res["message"])
 
+    @patch("product.adapter_manager.list_scapy_interfaces")
+    def test_default_adapter_cleared_on_empty_discovery(self, mock_scapy_list: MagicMock) -> None:
+        """Asserts get_default_adapter does not retain stale cache when discovery returns empty."""
+        # 1. First simulate active interface
+        mock_scapy_list.return_value = [{
+            "identifier": "eth0",
+            "friendly_name": "Ethernet",
+            "description": "Ethernet Adapter",
+            "network_name": r"\Device\NPF_{ETH}",
+            "guid": "{ETH}",
+            "ip": "192.168.1.10",
+            "is_up": True,
+            "scapy_object": MagicMock(),
+        }]
+        ad = get_default_adapter(force_refresh=True)
+        self.assertIsNotNone(ad)
+        self.assertEqual(ad["friendly_name"], "Ethernet")
+
+        # 2. Simulate subsequent discovery with zero interfaces
+        mock_scapy_list.return_value = []
+        ad_empty = get_default_adapter(force_refresh=True)
+        self.assertIsNone(ad_empty, "get_default_adapter must return None when interfaces are empty")
+
+    def test_safe_windows_adapter_discovery_structure(self) -> None:
+        """Ensures safe Windows adapter enumeration returns required structure without hanging."""
+        from capture.interface_resolver import _get_windows_adapters_safe
+        adapters = _get_windows_adapters_safe()
+        self.assertIsInstance(adapters, list)
+        for ad in adapters:
+            self.assertIn("identifier", ad)
+            self.assertIn("friendly_name", ad)
+            self.assertIn("description", ad)
+            self.assertIn("network_name", ad)
+            self.assertIn("guid", ad)
+            self.assertIn("ip", ad)
+            self.assertIn("is_up", ad)
+
 
 if __name__ == "__main__":
     unittest.main()

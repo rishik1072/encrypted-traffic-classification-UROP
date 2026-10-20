@@ -71,6 +71,10 @@ def list_adapters() -> List[Dict[str, Any]]:
             "scapy_object": item.get("scapy_object"),
         })
 
+    if not adapters:
+        global _CACHED_DEFAULT_ADAPTER
+        _CACHED_DEFAULT_ADAPTER = None
+
     return adapters
 
 
@@ -122,20 +126,6 @@ def get_default_adapter(force_refresh: bool = False) -> Optional[Dict[str, Any]]
 
         if not res and adapters:
             res = adapters[0]
-
-    # Fallback to last cached or standard default
-    if not res:
-        res = _CACHED_DEFAULT_ADAPTER or {
-            "friendly_name": "Wi-Fi",
-            "interface_description": "Default Wi-Fi Network Adapter",
-            "npcap_name": r"\Device\NPF_Generic",
-            "status": "UP",
-            "link_speed": "Wi-Fi (802.11ax/ac/n)",
-            "ip": "127.0.0.1",
-            "is_wifi": True,
-            "is_ethernet": False,
-            "scapy_object": None,
-        }
 
     _CACHED_DEFAULT_ADAPTER = res
     return res

@@ -95,8 +95,24 @@ class TestOfflineRealtimeParity(unittest.TestCase):
                 self.assertEqual(val_off, val_on, f"Categorical feature disparity for {key}")
 
     def test_inference_outcome_parity(self) -> None:
-        """Inference from model_loader directly matches classifier._classify_flow_instance."""
-        flow = Flow(
+        """Inference from model_loader directly matches classifier._classify_flow_instance on registered flows."""
+        # Legitimate lifecycle: flow must be tracked by flow_tracker before classification
+        flow_online = None
+        for pkt in self.golden_packets:
+            _, flow_online, _ = self.classifier.flow_tracker.update(pkt)
+
+        self.assertIsNotNone(flow_online)
+        raw_feats = self.extractor.extract_features(flow_online)
+        pred_class_direct, conf_direct, probs_direct = self.model_loader.predict_single(raw_feats)
+
+        event = self.classifier._classify_flow_instance(flow_online)
+        self.assertIsNotNone(event)
+        self.assertEqual(event.predicted_class, pred_class_direct)
+        self.assertAlmostEqual(event.fine_confidence, conf_direct, places=4)
+
+    def test_unregistered_flow_fails_closed(self) -> None:
+        """Ad-hoc or unobserved flow without flow_tracker registration must fail closed."""
+        unregistered_flow = Flow(
             key=FlowKey.from_packet(self.golden_packets[0])[0],
             initiator_ip=self.golden_packets[0].src_ip,
             initiator_port=self.golden_packets[0].src_port,
@@ -104,15 +120,11 @@ class TestOfflineRealtimeParity(unittest.TestCase):
             last_seen=self.golden_packets[0].timestamp,
         )
         for pkt in self.golden_packets:
-            flow.add_packet(pkt)
+            unregistered_flow.add_packet(pkt)
 
-        raw_feats = self.extractor.extract_features(flow)
-        pred_class_direct, conf_direct, probs_direct = self.model_loader.predict_single(raw_feats)
-
-        event = self.classifier._classify_flow_instance(flow)
-        self.assertIsNotNone(event)
-        self.assertEqual(event.predicted_class, pred_class_direct)
-        self.assertAlmostEqual(event.fine_confidence, conf_direct, places=4)
+        # Classifier must fail closed because flow was never observed by flow tracker
+        event = self.classifier._classify_flow_instance(unregistered_flow)
+        self.assertIsNone(event)
 
 
 
