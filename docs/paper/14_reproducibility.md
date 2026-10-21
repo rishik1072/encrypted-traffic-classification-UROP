@@ -17,7 +17,7 @@ python scripts/reproduce_research.py --all
 ### Execution Lifecycle:
 The orchestrator executes 15 sequential stages in strict dependency order:
 1. **Environment Verification:** Validates Python version (3.10+), OS architecture, core dependencies (`numpy`, `pandas`, `scikit-learn`, `lightgbm`, `scipy`, `scapy`, `psutil`), and filesystem write permissions.
-2. **Dataset Verification:** Asserts the cryptographic integrity (SHA-256) and `REAL_DATA` origin tag of `dataset_v2`. Rejects missing or modified files.
+2. **Dataset Verification:** Asserts the cryptographic integrity (SHA-256) and `HYBRID_PERTURBED` origin tag of `dataset_v2` (121 physical Wi-Fi flows + 180 controlled statistical perturbations). Rejects missing or modified files.
 3. **Dataset Quality Audit:** Verifies class balance (6 classes), minimum packet counts, and missing-value policies, generating `results/tables/research_dataset_inventory.csv`.
 4. **Leakage Audit:** Scans train/validation/test partitions to prove zero overlap of session identifiers and verify the complete excision of Layer-3/4 addressing shortcuts.
 5. **Baseline Benchmark (EXP-R09):** Evaluates all 4 candidate models under group-aware session splitting, generating `results/tables/research_baseline.csv`.

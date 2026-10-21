@@ -7,7 +7,7 @@ To systematically investigate the empirical boundaries and operational viability
 ### RQ1: In-Domain Baseline Fidelity & Estimator Trade-offs
 > **"What is the true baseline classification fidelity of lightweight machine learning models on real encrypted network traffic under strict group-aware session isolation, and what are the multi-objective trade-offs between linear, shallow tree, and ensemble architectures?"**
 
-- **Motivation:** Prior academic studies routinely report Macro-F1 scores exceeding 0.95, yet these results are predominantly obtained using synthetic traffic fixtures or random flow splitting that leaks session identity. RQ1 seeks to establish the true empirical baseline on real physical traffic under strict session isolation, evaluating whether complex tree ensembles (Random Forest, LightGBM) justify their latency overhead compared to ultra-fast single Decision Trees or linear models.
+- **Motivation:** Prior academic studies routinely report Macro-F1 scores exceeding 0.95, yet these results are predominantly obtained using synthetic traffic fixtures or random flow splitting that leaks session identity. RQ1 seeks to establish the true empirical baseline on encrypted traffic under strict session isolation using our hybrid benchmark (`dataset_v2`: 121 physical Wi-Fi flows + 180 controlled statistical perturbations) and pure physical Wi-Fi traffic (`dataset_real_v1`), evaluating whether complex tree ensembles (Random Forest, LightGBM) justify their latency overhead compared to ultra-fast single Decision Trees or linear models.
 - **Evaluation Regimes:** Group-aware stratified session splitting (70% Train, 15% Validation, 15% Locked Test) on `dataset_v2`.
 - **Target Experiment:** `EXP-R09`.
 
@@ -22,7 +22,7 @@ To systematically investigate the empirical boundaries and operational viability
 ---
 
 ### RQ3: Domain-Shift Robustness & Tunnel Asymmetry
-> **"How robust are zero-payload classifiers when evaluated under realistic operational distribution shifts—including unseen capture files, unseen user sessions, chronological temporal drift, unseen physical transmission media (Ethernet, Cellular), and unadapted WireGuard/WARP tunnel encapsulation?"**
+> **"How robust are zero-payload classifiers when evaluated under realistic operational distribution shifts—including unseen capture files, unseen user sessions, chronological temporal drift, simulated transmission media (Ethernet and Cellular perturbations), and unadapted WireGuard/WARP tunnel encapsulation?"**
 
 - **Motivation:** Production classifiers are rarely deployed in environments identical to their training data. Network conditions, physical interfaces, and encapsulation layers change dynamically. RQ3 evaluates model resilience across eight distinct distribution-shift regimes, with particular emphasis on quantifying the performance degradation caused by fixed-MTU WireGuard tunnel padding.
 - **Target Experiment:** `EXP-R11` (Regimes 01 through 08b).

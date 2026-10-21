@@ -1,6 +1,10 @@
 # Key Scientific Findings
 
-All findings reported below are based strictly on empirical measurements obtained during experimental execution.
+> [!NOTE]
+> **Historical Synthetic Findings Notice (`dataset_v1`, EXP-01 through EXP-11):**
+> The findings documented below record historical observations measured on an initial 12-flow synthetic loopback fixture (`dataset_v1`) during preliminary feasibility development. As audited in [CLAIMS_LEDGER.md](research/CLAIMS_LEDGER.md) and [FINAL_RESULTS.md](../results/final/FINAL_RESULTS.md), these preliminary metrics (e.g., 0.9500 Macro-F1) are superseded by the authoritative hybrid benchmark (`dataset_v2`: Random Forest 0.5857 / 0.5873, Decision Tree 0.5802) and pure physical baseline (`dataset_real_v1`: 0.0833). They are preserved here strictly for audit trail completeness.
+
+All findings reported below are based strictly on empirical measurements obtained during experimental execution on `dataset_v1`.
 
 ---
 

@@ -6,7 +6,7 @@ This chapter presents the complete empirical results addressing Research Questio
 
 ## 10.1 In-Domain Baseline Benchmark Results (RQ1, EXP-R09)
 
-To establish true baseline classification fidelity on real encrypted traffic, all four candidate models were evaluated under uniform canonical 21-feature representations (`baseline_21_zero_payload`) using group-aware stratified session splitting on `dataset_v2`.
+To establish baseline classification fidelity on encrypted traffic, all four candidate models were evaluated under uniform canonical 21-feature representations (`baseline_21_zero_payload`) using group-aware stratified session splitting on our multi-environment hybrid benchmark (`dataset_v2`: 301 flows, 150 sessions; 121 physical Wi-Fi flows + 180 controlled statistical perturbations). For pure physical baseline context without perturbations, evaluation on `dataset_real_v1` ($N=12$ held-out physical Wi-Fi test flows) yielded **0.0833 Macro-F1** and 0.0833 Accuracy for Random Forest (`real_final_baseline_result.csv`).
 
 ### Table 10.1: In-Domain Baseline Performance Matrix (`results/final/baseline_results.csv`)
 
@@ -76,7 +76,7 @@ To evaluate operational robustness, models trained on baseline traffic were eval
 | **REG-08b**| Tunnel: Direct $\rightarrow$ Tunneled (WARP) | 265 | 0.3585 | 0.3658 | 0.3584 | **0.3407** | 0.3584 | 17.87 | **-0.2594** | **SEVERE_DEGRADATION** |
 
 ### Key Generalization Findings:
-1. **Physical Medium Invariance (REG-05):** Zero-payload statistical features exhibit exceptional transferability across physical Layer-1/2 media. Models trained on Wi-Fi achieved **0.9325 Macro-F1** when tested on unseen Gigabit Ethernet and Cellular LTE streams.
+1. **Physical Medium Invariance (REG-05):** Zero-payload statistical features exhibit exceptional transferability across simulated physical Layer-1/2 media. Models trained on Wi-Fi achieved **0.9325 Macro-F1** when tested on controlled statistical feature perturbations simulating unseen Gigabit Ethernet and Cellular LTE streams.
 2. **Asymmetric Tunnel Generalization (REG-08a vs. REG-08b):** Models trained on WireGuard traffic transfer to direct unencapsulated traffic with **1.0000 Macro-F1**. Conversely, models trained on unencapsulated traffic collapse to **0.3407 Macro-F1** ($\Delta\text{F1} = -0.2594$) when tested on WireGuard traffic due to MTU padding (1280 bytes) and standardized tunnel handshakes.
 
 ---

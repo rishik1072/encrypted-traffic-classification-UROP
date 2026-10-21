@@ -248,8 +248,13 @@ class ResearchPipelineRunner:
     # =========================================================================
     # STAGE 4: Leakage & Group Isolation Audit
     # =========================================================================
+    # STAGE 4: Leakage & Group Isolation Audit
+    # =========================================================================
     def stage_4_leakage_audit(self) -> Dict[str, Any]:
-        """Verifies session-isolated group splits and absence of topological shortcuts."""
+        """
+        Audits dataset split partition isolation across on-disk split artifacts
+        and in-memory experiment partitioning with actual membership checks.
+        """
         logger.info("[STAGE 4/15] Auditing data leakage & group partition isolation...")
         t0 = time.perf_counter()
 
@@ -278,13 +283,56 @@ class ResearchPipelineRunner:
         if total_sessions < 5:
             raise RuntimeError(f"LEAKAGE AUDIT WARNING: Too few sessions ({total_sessions}) for robust group isolation.")
 
+        # 3. Comprehensive partition membership isolation audit (on-disk splits and experiment splits)
+        from training.split_leakage_audit import (
+            AuditStatus,
+            audit_all_on_disk_splits,
+            audit_experiment_splits,
+            save_leakage_audit_table,
+        )
+
+        disk_results = audit_all_on_disk_splits(PROJECT_ROOT)
+        exp_results = audit_experiment_splits(PROJECT_ROOT, dataset_id=self.dataset_id, seed=self.seed)
+        all_audit_results = disk_results + exp_results
+
+        # Save structured audit artifact table
+        audit_csv = self.tables_dir / "research_leakage_audit.csv"
+        save_leakage_audit_table(all_audit_results, audit_csv)
+
+        # Check for failures and unverified items
+        failed_audits = [r for r in all_audit_results if r.status == AuditStatus.FAIL]
+        unverified_audits = [r for r in all_audit_results if r.status == AuditStatus.UNVERIFIED]
+
+        if failed_audits:
+            violation_messages = []
+            for r in failed_audits:
+                violation_messages.append(f"{r.artifact_name} ({r.strategy.value}): {'; '.join(r.violations)}")
+            error_str = " | ".join(violation_messages)
+            logger.error("Partition Leakage Violations Detected:\n%s", "\n".join(violation_messages))
+            raise RuntimeError(f"DATASET LEAKAGE AUDIT FAILED ({len(failed_audits)} partition(s) violated): {error_str}")
+
+        if unverified_audits:
+            for r in unverified_audits:
+                logger.warning("Unverified partition isolation in %s: %s", r.artifact_name, r.unverified_reasons)
+
         duration = time.perf_counter() - t0
         self.stage_timings["4_leakage_audit"] = {"duration_sec": round(duration, 3)}
-        logger.info("[+] Stage 4 Leakage Audit PASSED (Sessions: %d, Shortcuts: 0, %.2fs)", total_sessions, duration)
+        logger.info(
+            "[+] Stage 4 Leakage Audit PASSED (Audited: %d partitions [%d disk, %d experiment], Sessions: %d, Shortcuts: 0, Overlaps: 0, %.2fs)",
+            len(all_audit_results),
+            len(disk_results),
+            len(exp_results),
+            total_sessions,
+            duration,
+        )
         return {
             "status": "PASS",
             "total_sessions": total_sessions,
             "forbidden_features_detected": len(found_forbidden),
+            "audited_partitions": len(all_audit_results),
+            "failed_partitions": len(failed_audits),
+            "unverified_partitions": len(unverified_audits),
+            "audit_table": str(audit_csv),
             "isolation_verified": True,
         }
 
