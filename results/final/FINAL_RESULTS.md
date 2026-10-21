@@ -11,18 +11,18 @@
 
 ## 1. Dataset Provenance & Characterization
 
-All primary scientific conclusions in this release are derived exclusively from the authoritative real dataset (`dataset_v2`), which captures real user interactions across physical Wi-Fi, Ethernet, and Cellular LTE networks with both direct and Cloudflare WARP (WireGuard) tunnel encapsulation.
+All primary empirical benchmark conclusions in this release are derived from the multi-environment hybrid benchmark (`dataset_v2`), which combines genuine physical Wi-Fi captures with controlled statistical feature perturbations simulating Gigabit Ethernet, Cellular LTE, and network impairments under both direct and Cloudflare WARP (WireGuard) tunnel encapsulation. Pure unperturbed physical baseline measurements are cataloged via `dataset_real_v1`.
 
 ### Dataset Summary Table (`results/final/dataset_summary.csv`)
 - **Dataset ID:** `dataset_v2`
-- **Origin Classification:** `REAL_DATA` (Strictly segregated from synthetic fixtures `dataset_v1` and replay vectors `demo_data`)
+- **Origin Classification:** `HYBRID_PERTURBED` (121 physical flows [40.2%], 180 controlled perturbations [59.8%]; strictly segregated from synthetic fixtures `dataset_v1` and replay vectors `demo_data`)
 - **Total Valid Flows:** 301 bidirectional flows
 - **Total User Sessions:** 150 independent capture sessions
 - **Number of Classes:** 6 canonical traffic classes (Web: 50, Video: 50, Messaging: 50, VoIP: 50, File Transfer: 50, Other: 51)
-- **Environments Captured:**
-  - `env_win11_wifi`: Physical 802.11ax Wi-Fi workstation
-  - `env_win11_eth`: Dedicated Gigabit Ethernet
-  - `env_win11_cellular`: Tethered LTE cellular interface
+- **Environments Represented:**
+  - `env_win11_wifi`: Physical 802.11ax Wi-Fi workstation capture (121 flows, 60 sessions)
+  - `env_win11_eth`: Simulated Gigabit Ethernet via bounded feature perturbations (60 flows, 30 sessions)
+  - `env_win11_cellular`: Simulated Cellular LTE via bounded feature perturbations (60 flows, 30 sessions)
 - **Tunnel States:**
   - `warp_disabled` (direct): Standard unencapsulated TLS/HTTPS, QUIC/HTTP3, WebRTC, DNS-over-HTTPS
   - `warp_enabled`: WireGuard UDP tunnel encapsulation (fixed 1280-byte MTU, standardized padding, tunnel headers)

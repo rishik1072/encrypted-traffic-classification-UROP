@@ -1,0 +1,16 @@
+artifact_name,strategy,status,train_samples,val_samples,test_samples,train_groups,val_groups,test_groups,violations_count,violations,unverified_reasons
+C:/UROP project/encrypted-traffic-classification-UROP/data/processed/splits/real_clean,session_isolated,PASS,85,24,12,42,12,6,0,NONE,NONE
+C:/UROP project/encrypted-traffic-classification-UROP/data/processed/splits/real,session_isolated,PASS,128,36,25,42,12,6,0,NONE,NONE
+C:/UROP project/encrypted-traffic-classification-UROP/data/processed/splits_session,session_isolated,PASS,7,0,4,7,0,4,0,NONE,NONE
+C:/UROP project/encrypted-traffic-classification-UROP/data/processed/splits_capture,capture_isolated,PASS,7,0,4,7,0,4,0,NONE,NONE
+C:/UROP project/encrypted-traffic-classification-UROP/data/processed/splits_temporal,temporal_isolated,PASS,5,2,4,5,2,4,0,NONE,NONE
+EXP-R09_baseline_group_split,session_isolated,PASS,205,48,48,102,24,24,0,NONE,NONE
+REG-01_random_group_baseline,session_isolated,PASS,205,48,48,102,24,24,0,NONE,NONE
+REG-02_unseen_capture,capture_isolated,PASS,241,0,60,120,0,30,0,NONE,NONE
+REG-03_unseen_session,session_isolated,PASS,241,0,60,120,0,30,0,NONE,NONE
+REG-04_temporal,temporal_isolated,PASS,144,0,157,3,0,1,0,NONE,NONE
+REG-05_unseen_environment,environment_isolated,PASS,181,0,120,1,0,2,0,NONE,NONE
+REG-06_unseen_network_condition,condition_isolated,PASS,205,0,96,1,0,3,0,NONE,NONE
+REG-07_unseen_activity_variant,activity_isolated,PASS,255,0,46,24,0,6,0,NONE,NONE
+REG-08a_tunnel_tunneled_to_direct,tunnel_isolated,PASS,265,0,36,1,0,1,0,NONE,NONE
+REG-08b_tunnel_direct_to_tunneled,tunnel_isolated,PASS,36,0,265,1,0,1,0,NONE,NONE
