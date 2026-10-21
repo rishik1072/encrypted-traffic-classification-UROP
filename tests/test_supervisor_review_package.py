@@ -112,6 +112,38 @@ class TestSupervisorReviewPackage(unittest.TestCase):
             fig_path = figures_dir / fig_name
             self.assertTrue(fig_path.exists(), f"Referenced presentation figure missing on disk: {fig_path}")
 
+    def test_urop_presentation_pptx_validity_and_embedded_notes(self) -> None:
+        """Verify that UROP_Research_Presentation.pptx opens and contains 10 slides with non-empty speaker notes."""
+        from pptx import Presentation
+
+        pptx_path = DOCS_PRESENTATION_DIR / "UROP_Research_Presentation.pptx"
+        self.assertTrue(pptx_path.exists(), f"Missing presentation file: {pptx_path}")
+
+        prs = Presentation(str(pptx_path))
+        self.assertEqual(len(prs.slides), 10, f"Expected 10 slides, got {len(prs.slides)}")
+
+        for idx, slide in enumerate(prs.slides, 1):
+            self.assertTrue(slide.has_notes_slide, f"Slide {idx} missing notes slide")
+            notes = slide.notes_slide.notes_text_frame.text.strip()
+            self.assertGreater(len(notes), 50, f"Slide {idx} notes are too short ({len(notes)} chars)")
+
+    def test_urop_speaker_notes_markdown_coverage_and_defense_qa(self) -> None:
+        """Verify that docs/presentation/UROP_Speaker_Notes.md exists and covers all 10 slides and defense Q&A."""
+        speaker_notes_path = DOCS_PRESENTATION_DIR / "UROP_Speaker_Notes.md"
+        self.assertTrue(speaker_notes_path.exists(), f"Missing speaker notes file: {speaker_notes_path}")
+        content = speaker_notes_path.read_text(encoding="utf-8")
+
+        for slide_num in range(1, 11):
+            slide_header = f"## Slide {slide_num}:"
+            self.assertIn(slide_header, content, f"Missing {slide_header} in speaker notes document")
+
+        # Verify key elements
+        self.assertIn("Speaking Script", content)
+        self.assertIn("Slide Transition", content)
+        self.assertIn("Anticipated Supervisor Question", content)
+        self.assertIn("Evidence-Based Answer:", content)
+        self.assertIn("Supervisor Defense Cheat-Sheet", content)
+
 
 if __name__ == "__main__":
     unittest.main()
