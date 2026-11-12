@@ -230,6 +230,22 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
             except Exception:
                 pass
 
+        # Avoid leaking counters from an old completed session if a new session is active
+        if active_sess_id and data.get("session_id") and data.get("session_id") != active_sess_id:
+            data["total_packets"] = 0
+            data["total_bytes"] = 0
+            data["live_packets_received"] = 0
+            data["packets_forwarded_to_flow_tracker"] = 0
+            data["flows_created"] = 0
+            data["flows_updated"] = 0
+            data["active_flows"] = 0
+            data["completed_flows"] = 0
+            data["expired_flows"] = 0
+            data["predictions_created"] = 0
+            data["feature_vectors_created"] = 0
+            data["flows_eligible_for_prediction"] = 0
+            data["session_id"] = active_sess_id
+
         defaults = {
             "session_id": active_sess_id,
             "packets_per_second": 0.0,

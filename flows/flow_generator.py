@@ -73,6 +73,12 @@ class Flow:
     # Packet metadata records: (timestamp, length, direction)
     packet_records: List[Tuple[float, int, Direction]] = field(default_factory=list)
     
+    # TCP connection state tracking
+    tcp_state: str = "ESTABLISHED"
+    has_fin: bool = False
+    has_rst: bool = False
+    fin_count: int = 0
+    
     # TLS metadata accumulator if encountered in handshake
     tls_sni: Optional[str] = None
     tls_version: Optional[str] = None
@@ -89,6 +95,17 @@ class Flow:
 
         self.packet_records.append((pkt.timestamp, pkt.length, direction))
         self.last_seen = max(self.last_seen, pkt.timestamp)
+
+        # Update TCP connection state if applicable
+        if pkt.protocol == "TCP" and pkt.tcp_flags is not None:
+            if pkt.tcp_flags & 0x04:  # RST flag
+                self.has_rst = True
+                self.tcp_state = "CLOSED"
+            elif pkt.tcp_flags & 0x01:  # FIN flag
+                self.has_fin = True
+                self.fin_count += 1
+                if self.fin_count >= 2:
+                    self.tcp_state = "CLOSED"
 
         # Cache TLS handshake attributes if present
         if pkt.tls_sni and not self.tls_sni:
@@ -120,7 +137,9 @@ class Flow:
         return sum(1 for r in self.packet_records if r[2] == Direction.BACKWARD)
 
     def is_expired(self, current_time: float, idle_timeout: float, active_timeout: float) -> bool:
-        """Checks whether the flow has exceeded idle or active expiration thresholds."""
+        """Checks whether the flow has exceeded idle, closed, or active expiration thresholds."""
+        if self.tcp_state == "CLOSED" and (current_time - self.last_seen) >= 5.0:
+            return True
         idle_time = current_time - self.last_seen
         active_time = current_time - self.start_time
         return idle_time >= idle_timeout or active_time >= active_timeout

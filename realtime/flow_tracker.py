@@ -223,6 +223,7 @@ class RealTimeFlowTracker:
                     "feature_readiness": flow.total_packets >= self.min_packets,
                 }
                 self._notify_lifecycle(FlowLifecycleState.FLOW_EXPIRED, flow)
+                self._notify_lifecycle(FlowLifecycleState.FLOW_COMPLETED, flow)
 
         for k in stale_keys:
             del self.active_flows[k]
