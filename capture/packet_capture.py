@@ -239,11 +239,15 @@ class LiveSniffer(BasePacketCapture):
                 try:
                     from capture.interface_resolver import resolve_capture_interface
                     res = resolve_capture_interface(self.interface)
-                    if res.get("scapy_object") is not None:
-                        resolved_iface = res["scapy_object"]
-                    elif res.get("network_name"):
-                        resolved_iface = res["network_name"]
-                except Exception:
+                    if isinstance(res, dict):
+                        resolved_iface = res.get("scapy_object") or res.get("network_name")
+                    elif res is not None:
+                        resolved_iface = res
+                    else:
+                        resolved_iface = self.interface
+                    logger.info("LiveSniffer resolved interface '%s' -> %s", self.interface, resolved_iface)
+                except Exception as e:
+                    logger.warning("Interface resolution note for '%s': %s", self.interface, e)
                     resolved_iface = self.interface
 
             _default_sniff(
@@ -296,7 +300,14 @@ def parse_scapy_packet(pkt: Any) -> Optional[RawPacketMetadata]:
     """Converts a Scapy packet into RawPacketMetadata, ignoring payload contents."""
     try:
         if not pkt.haslayer("IP") and not pkt.haslayer("IPv6"):
-            return None
+            if hasattr(pkt, "payload") and pkt.payload:
+                inner = pkt.payload
+                if inner.haslayer("IP") or inner.haslayer("IPv6"):
+                    pkt = inner
+                else:
+                    return None
+            else:
+                return None
 
         is_ipv6 = pkt.haslayer("IPv6")
         ip_layer = pkt["IPv6"] if is_ipv6 else pkt["IP"]

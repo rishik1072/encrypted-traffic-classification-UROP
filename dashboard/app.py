@@ -311,15 +311,37 @@ def main():
     event_count = len(records)
     feed_error = meta.get("error")
 
-    engine_status = subsystem.get("engine_status", "RUNNING" if event_count > 0 else "IDLE")
-    api_status = subsystem.get("api_status", "HEALTHY" if api_connected else "DEGRADED")
-    feed_status = "CONNECTED" if (api_connected and event_count > 0) else ("CONNECTED" if api_connected else "DEGRADED")
-
-    engine_badge = "🟢 `RUNNING`" if engine_status == "RUNNING" else f"⚪ `{engine_status}`"
-    api_badge = "🟢 `HEALTHY`" if api_status == "HEALTHY" else (f"🟠 `{api_status}`" if api_status == "DEGRADED" else "🔴 `OFFLINE`")
-    feed_badge = "🟢 `CONNECTED`" if feed_status == "CONNECTED" else f"🟠 `{feed_status}`"
     status_dict = subsystem.get("details", {}).get("status", {})
     metrics_dict = subsystem.get("details", {}).get("metrics", {})
+    pipe_status = metrics_dict.get("pipeline_status", "HEALTHY")
+    total_pkts = metrics_dict.get("total_packets", 0)
+
+    if not api_connected:
+        engine_status = "STOPPED"
+        api_status = "DEGRADED"
+    elif pipe_status == "PIPELINE_DEGRADED":
+        engine_status = "DEGRADED"
+        api_status = "DEGRADED"
+    elif total_pkts == 0 and event_count == 0:
+        engine_status = "WAITING FOR TRAFFIC"
+        api_status = "HEALTHY"
+    else:
+        engine_status = "RUNNING"
+        api_status = "HEALTHY"
+
+    feed_status = "CONNECTED" if (api_connected and (event_count > 0 or total_pkts > 0)) else ("CONNECTED" if api_connected else "DEGRADED")
+
+    if engine_status == "RUNNING":
+        engine_badge = "🟢 `RUNNING`"
+    elif engine_status == "WAITING FOR TRAFFIC":
+        engine_badge = "🟡 `WAITING FOR TRAFFIC`"
+    elif engine_status == "DEGRADED":
+        engine_badge = "🟠 `DEGRADED`"
+    else:
+        engine_badge = f"⚪ `{engine_status}`"
+
+    api_badge = "🟢 `HEALTHY`" if api_status == "HEALTHY" else (f"🟠 `{api_status}`" if api_status == "DEGRADED" else "🔴 `OFFLINE`")
+    feed_badge = "🟢 `CONNECTED`" if feed_status == "CONNECTED" else f"🟠 `{feed_status}`"
     active_session_id = status_dict.get("session_id") or metrics_dict.get("session_id") or "None"
 
     st.sidebar.markdown("### 🖥️ Subsystem Diagnostics")
@@ -411,12 +433,12 @@ def main():
         # Feed error / degraded banner
         if feed_status == "DEGRADED" and feed_error:
             st.warning(f"⚠️ **Prediction Feed: DEGRADED** — {feed_error}")
-        elif malformed_count > 0 and selected_mode != "LIVE_MODE":
+        elif malformed_count > 0 and selected_mode not in ("LIVE_NPCAP", "LIVE_MODE"):
             st.warning(f"⚠️ DATA QUALITY WARNING: {malformed_count} malformed prediction record(s) normalized automatically.")
 
         # KPI Extraction
         unique_flows = {r.flow_id for r in records if r.flow_id}
-        active_streams = len(unique_flows)
+        active_streams = metrics_dict.get("active_flows", len(unique_flows))
         known_count = sum(1 for r in records if r.prediction_state == "KNOWN_CLASS")
         low_conf_count = sum(1 for r in records if r.prediction_state == "LOW_CONFIDENCE")
         unk_count = sum(1 for r in records if r.prediction_state == "UNKNOWN")
@@ -455,6 +477,23 @@ def main():
         m10.metric("Recent Alerts", f"{len(subsystem.get('details', {}).get('alerts', []))}")
         m11.metric("Error Count", f"{error_cnt}")
         m12.metric("Inference Latency", f"{avg_lat:.3f} ms", f"p99: {p99_lat:.3f}ms")
+
+        # Subsystem Pipeline Diagnostics
+        cap_status = "RUNNING" if packets_rcvd > 0 else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
+        proc_status = "RUNNING" if packets_rcvd > 0 else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
+        flow_status = "RUNNING" if (metrics_dict.get("flows_created", 0) > 0 or active_streams > 0) else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
+        feat_status = "RUNNING" if metrics_dict.get("feature_vectors_created", 0) > 0 else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
+        inf_status = "RUNNING" if (metrics_dict.get("predictions_created", 0) > 0 or event_count > 0) else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
+        trans_status = "RUNNING" if api_connected else "DEGRADED"
+
+        st.markdown("##### ⚙️ Subsystem Pipeline Diagnostics")
+        d1, d2, d3, d4, d5, d6 = st.columns(6)
+        d1.info(f"**Capture Engine**\n\n`{cap_status}`")
+        d2.info(f"**Packet Processing**\n\n`{proc_status}`")
+        d3.info(f"**Flow Reconstruction**\n\n`{flow_status}`")
+        d4.info(f"**Feature Extraction**\n\n`{feat_status}`")
+        d5.info(f"**ML Inference**\n\n`{inf_status}`")
+        d6.info(f"**Event Transport**\n\n`{trans_status}`")
 
         st.markdown("---")
 
@@ -506,8 +545,10 @@ def main():
             elif not api_connected:
                 st.warning(f"⚠️ Prediction Feed Offline / Degraded: {feed_error or 'Could not connect to API'}")
             else:
-                if selected_mode == "LIVE_MODE":
-                    st.info("Awaiting live network packets. Start monitoring on your Wi-Fi/Ethernet adapter.")
+                if selected_mode in ("LIVE_NPCAP", "LIVE_MODE"):
+                    st.info("Awaiting live network packets. Capturing traffic on your active network adapter...")
+                elif selected_mode == "RECORDED_CAPTURE":
+                    st.info("Awaiting recorded capture stream. Replaying recorded traffic...")
                 else:
                     st.info("Awaiting demo traffic stream. Run: `python -m realtime.run --mode demo`")
 

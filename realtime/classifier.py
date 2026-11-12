@@ -152,6 +152,11 @@ class RealTimeClassifier:
         self._worker_thread.start()
         self._metrics_thread = threading.Thread(target=self._metrics_heartbeat_loop, daemon=True)
         self._metrics_thread.start()
+        # Flush initial snapshot with fresh session state immediately
+        try:
+            self.get_metrics_snapshot()
+        except Exception as e:
+            logger.debug("Initial metrics snapshot error: %s", e)
         logger.info(
             "RealTimeClassifier started in [%s] mode with model '%s' (session=%s)",
             self.operating_mode,
@@ -163,6 +168,7 @@ class RealTimeClassifier:
         """Periodically refreshes metrics and flushes results/realtime/metrics.json."""
         while self._is_running:
             try:
+                self.flow_tracker.clean_stale_flows()
                 self.get_metrics_snapshot()
             except Exception as e:
                 logger.debug("Metrics heartbeat error: %s", e)

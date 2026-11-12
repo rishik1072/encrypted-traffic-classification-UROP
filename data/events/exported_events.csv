@@ -1,0 +1,1 @@
+timestamp,flow_id,session_id,model_id,feature_profile,prediction,predicted_class,predicted_family,confidence,composed_confidence,prediction_state,packets_observed,elapsed_seconds,latency_us,operating_mode,protocol
