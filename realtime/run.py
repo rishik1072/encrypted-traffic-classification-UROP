@@ -108,7 +108,8 @@ def main() -> None:
             )
         elif args.mode in ("live", "live_npcap"):
             logger.info("Starting in [LIVE_NPCAP] on interface: %s (Evidence Class: REAL_LIVE_NPCAP)...", args.interface)
-            sniffer = LiveSniffer(interface=args.interface)
+            sniffer = LiveSniffer(interface=args.interface, session_id=session_id)
+            classifier.set_sniffer(sniffer)
             logger.info("[CAPTURE ENGINE ACTIVE] Packet callback registered and active on interface: %s", args.interface)
             # Write initial snapshot to ensure metrics.json exists immediately
             classifier.get_metrics_snapshot()

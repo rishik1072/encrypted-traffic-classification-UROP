@@ -23,6 +23,7 @@ import sqlite3
 import threading
 import time
 from typing import Any, Dict, Generator, List, Optional
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +43,11 @@ class LocalEventStore:
         self._init_db()
 
     def get_active_session_id(self) -> Optional[str]:
-        """Returns the currently active session ID from memory or SQLite."""
-        if self.active_session_id:
-            return self.active_session_id
+        """Returns the currently active session ID from SQLite, falling back to memory."""
         try:
             with self._lock, self._get_connection() as conn:
                 cur = conn.execute(
-                    "SELECT session_id FROM monitoring_sessions WHERE status = 'ACTIVE' ORDER BY start_time DESC LIMIT 1"
+                    "SELECT session_id FROM monitoring_sessions WHERE status = 'ACTIVE' ORDER BY start_time DESC, rowid DESC LIMIT 1"
                 )
                 row = cur.fetchone()
                 if row:
@@ -56,11 +55,28 @@ class LocalEventStore:
                     return self.active_session_id
         except Exception as e:
             logger.debug("Failed to query active session from SQLite: %s", e)
-        return None
+        return self.active_session_id
 
     def set_active_session_id(self, session_id: str) -> None:
-        """Sets the active session ID explicitly in memory."""
+        """Sets the active session ID explicitly in memory and SQLite."""
         self.active_session_id = session_id
+        try:
+            with self._lock, self._get_connection() as conn:
+                conn.execute(
+                    "UPDATE monitoring_sessions SET status = 'COMPLETED', end_time = ? WHERE status = 'ACTIVE' AND session_id != ?",
+                    (time.time(), session_id),
+                )
+                cur = conn.execute("SELECT COUNT(*) FROM monitoring_sessions WHERE session_id = ?", (session_id,))
+                if cur.fetchone()[0] == 0:
+                    conn.execute(
+                        "INSERT INTO monitoring_sessions (session_id, session_name, start_time, status, operating_mode) VALUES (?, ?, ?, 'ACTIVE', 'LIVE_NPCAP')",
+                        (session_id, f"Session_{session_id}", time.time()),
+                    )
+                else:
+                    conn.execute("UPDATE monitoring_sessions SET status = 'ACTIVE' WHERE session_id = ?", (session_id,))
+                conn.commit()
+        except Exception as e:
+            logger.debug("Failed to sync active session to SQLite: %s", e)
 
     @contextmanager
     def _get_connection(self) -> Generator[sqlite3.Connection, None, None]:
@@ -104,6 +120,8 @@ class LocalEventStore:
             conn.execute("CREATE INDEX IF NOT EXISTS idx_events_state ON prediction_events (prediction_state);")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_events_session ON prediction_events (session_id);")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_events_mode ON prediction_events (operating_mode);")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_events_sess_ts ON prediction_events (session_id, timestamp);")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_events_sess_mode ON prediction_events (session_id, operating_mode);")
 
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS monitoring_sessions (
@@ -145,7 +163,7 @@ class LocalEventStore:
     ) -> str:
         """Starts a new named monitoring session."""
         now = time.time()
-        sess_id = f"SESS-{int(now)}-{time.perf_counter_ns() % 10000:04d}"
+        sess_id = f"SESS-{int(now)}-{uuid.uuid4().hex[:8]}"
         name = session_name or f"Session_{time.strftime('%Y%m%d_%H%M%S', time.localtime(now))}"
 
         with self._lock, self._get_connection() as conn:
@@ -234,6 +252,10 @@ class LocalEventStore:
                 conn.execute("DELETE FROM monitoring_sessions")
             deleted = cur.rowcount
             conn.commit()
+
+        if session_id is None or session_id == self.active_session_id:
+            self.active_session_id = None
+            self.session_start_time = None
 
         logger.info("Cleared %d events from event store (session=%s)", deleted, session_id or "ALL")
         return deleted

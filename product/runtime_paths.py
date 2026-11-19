@@ -26,6 +26,9 @@ def get_base_dir() -> Path:
     """
     if is_frozen():
         return Path(sys.executable).resolve().parent
+    repo_root = Path(__file__).resolve().parent.parent
+    if (repo_root / "config.yaml").exists():
+        return repo_root
     return Path.cwd().resolve()
 
 

@@ -112,6 +112,7 @@ class RealTimeClassifier:
         self._metrics_thread: Optional[threading.Thread] = None
         self._prediction_count = 0
         self._file_lock = threading.Lock()
+        self.sniffer: Optional[Any] = None
 
         # Initialize CSV header matching canonical schema exactly:
         # timestamp,flow_id,session_id_hash,model_id,feature_profile,predicted_family,predicted_class,family_confidence,fine_confidence,composed_confidence,prediction_state,packets_observed,elapsed_seconds,latency_us
@@ -140,6 +141,10 @@ class RealTimeClassifier:
                     fieldnames=self.CANONICAL_CSV_FIELDS,
                 )
                 writer.writeheader()
+
+    def set_sniffer(self, sniffer: Any) -> None:
+        """Attaches the active LiveSniffer to sync ingestion telemetry."""
+        self.sniffer = sniffer
 
 
     def start(self) -> None:
@@ -188,6 +193,21 @@ class RealTimeClassifier:
             pass
         logger.info("RealTimeClassifier stopped")
 
+    def sync_session_if_needed(self) -> None:
+        """Dynamically synchronizes session ID if a new session started in local_event_store."""
+        try:
+            from product.event_store import local_event_store
+            active_id = local_event_store.get_active_session_id()
+            if active_id and active_id != self.session_id:
+                logger.info("RealTimeClassifier switching active session: %s -> %s", self.session_id, active_id)
+                self.session_id = active_id
+                self.flow_tracker.session_id = active_id
+                self.metrics_collector.session_id = active_id
+                if self.sniffer:
+                    self.sniffer.session_id = active_id
+        except Exception:
+            pass
+
     def process_packet(self, pkt: RawPacketMetadata) -> None:
         """
         Main packet ingress point. Enqueues flows for inference without blocking packet capture.
@@ -195,13 +215,14 @@ class RealTimeClassifier:
         if self.pipeline_status == "PIPELINE_DEGRADED" and self.operating_mode in (OperatingMode.LIVE_NPCAP.value, "LIVE_MODE"):
             return
 
-        # Diagnostic: Count live packets received strictly in live mode
-        if self.operating_mode in (OperatingMode.LIVE_NPCAP.value, "LIVE_MODE", "LIVE"):
-            self.metrics_collector.live_packets_received += 1
-
+        self.sync_session_if_needed()
         self.metrics_collector.record_packet(pkt.length)
-        self.metrics_collector.packets_forwarded_to_flow_tracker += 1
+        self.metrics_collector.record_packet_processed()
+        prev_flows = self.flow_tracker.flows_created
         _, flow, should_predict = self.flow_tracker.update(pkt)
+
+        if self.flow_tracker.flows_created > prev_flows:
+            self.metrics_collector.record_flow_created()
 
         # Sync counters from flow tracker
         self.metrics_collector.flows_created = self.flow_tracker.flows_created
@@ -213,6 +234,7 @@ class RealTimeClassifier:
                 self._prediction_work_queue.put_nowait(flow)
             except queue.Full:
                 self.metrics_collector.dropped_packets += 1
+                self.metrics_collector.packets_dropped += 1
                 logger.warning("Prediction queue full! Dropped prediction trigger.")
 
     def _prediction_worker_loop(self) -> None:
@@ -240,8 +262,13 @@ class RealTimeClassifier:
                 return None
 
             t0 = time.perf_counter()
-            raw_feats = self.extractor.extract_features(flow)
-            self.metrics_collector.feature_vectors_created += 1
+            try:
+                raw_feats = self.extractor.extract_features(flow)
+                self.metrics_collector.record_feature_extracted(success=True)
+            except Exception as feat_err:
+                self.metrics_collector.record_feature_extracted(success=False)
+                logger.error("[FEATURE EXTRACTION ERROR] %s", feat_err)
+                return None
             pred_class, confidence, prob_map = self.model_loader.predict_single(raw_feats)
             t1 = time.perf_counter()
             latency_us = (t1 - t0) * 1_000_000.0
@@ -288,6 +315,9 @@ class RealTimeClassifier:
             # Research-Defined Selective Prediction State Machine
             effective_conf = composed_conf if composed_conf is not None else float(confidence)
 
+            valid_fine_classes = {"Web", "Video", "Messaging", "VoIP", "File Transfer", "Other"}
+            valid_families = {"Bulk_Streaming", "Interactive", "Other"}
+
             if flow.total_packets < self.min_evidence_packets:
                 # Nascent flow lacking minimum packet evidence
                 state = PredictionState.INSUFFICIENT_EVIDENCE.value
@@ -306,19 +336,23 @@ class RealTimeClassifier:
             elif effective_conf < self.confidence_threshold:
                 # Moderate candidate affinity, below selective acceptance threshold
                 state = PredictionState.LOW_CONFIDENCE.value
-                coarse_family_out = coarse_family
-                pred_class_out = pred_class or "LOW_CONFIDENCE"
+                coarse_family_out = coarse_family if coarse_family in valid_families else "Other"
+                pred_class_out = pred_class if pred_class in valid_fine_classes else "LOW_CONFIDENCE"
                 fine_reason = f"Confidence ({effective_conf:.4f}) below selective acceptance threshold ({self.confidence_threshold:.4f})"
             else:
-                # Confident, accepted prediction for a known class (including legitimate 'Other')
-                state = PredictionState.KNOWN_CLASS.value
-                coarse_family_out = coarse_family
-                pred_class_out = pred_class
-                fine_reason = "Nominal fine-grained classification"
+                # Confident prediction candidate: strictly assign KNOWN only if in canonical 6 classes
+                if pred_class in valid_fine_classes:
+                    state = PredictionState.KNOWN_CLASS.value
+                    coarse_family_out = coarse_family if coarse_family in valid_families else "Other"
+                    pred_class_out = pred_class
+                    fine_reason = "Nominal fine-grained classification"
+                else:
+                    state = PredictionState.UNKNOWN.value
+                    coarse_family_out = "UNKNOWN"
+                    pred_class_out = "UNKNOWN"
+                    fine_reason = f"Model predicted non-canonical class '{pred_class}'"
 
             # Strict validation: Reject known-class predictions missing fine-grained class
-            valid_fine_classes = {"Web", "Video", "Messaging", "VoIP", "File Transfer", "Other"}
-            valid_families = {"Bulk_Streaming", "Interactive", "Other"}
             if state == PredictionState.KNOWN_CLASS.value:
                 if not pred_class_out or pred_class_out not in valid_fine_classes:
                     logger.error("[FAIL-CLOSED] Refusing to emit KNOWN_CLASS event without valid fine-grained predicted_class: '%s'", pred_class_out)
@@ -378,8 +412,9 @@ class RealTimeClassifier:
             try:
                 from product.event_store import local_event_store
                 local_event_store.record_event(event.to_dict())
-                self.metrics_collector.events_stored += 1
+                self.metrics_collector.record_event_stored(success=True)
             except Exception as es_err:
+                self.metrics_collector.record_event_stored(success=False)
                 logger.debug("Failed to record event to LocalEventStore: %s", es_err)
 
             # 4. Evaluate Security Alerts (Per-event + Telemetry)
@@ -434,6 +469,12 @@ class RealTimeClassifier:
             self.metrics_collector.record_flow_expired()
 
     def get_metrics_snapshot(self) -> SystemMetricsSnapshot:
+        self.sync_session_if_needed()
+        if self.sniffer is not None:
+            try:
+                self.metrics_collector.sync_from_sniffer(self.sniffer.get_telemetry())
+            except Exception as e:
+                logger.debug("Failed to sync from sniffer: %s", e)
         active_flows = self.flow_tracker.get_active_flow_count()
         q_depth = self._prediction_work_queue.qsize()
         return self.metrics_collector.get_snapshot(active_flows_count=active_flows, queue_depth=q_depth, persist=True)

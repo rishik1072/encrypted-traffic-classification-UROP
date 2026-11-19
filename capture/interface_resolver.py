@@ -95,7 +95,7 @@ def list_scapy_interfaces(force_refresh: bool = False) -> List[Dict[str, Any]]:
         except Exception:
             is_adm = False
 
-    if is_win and not is_adm:
+    if is_win:
         interfaces = _get_windows_adapters_safe()
         _CACHED_INTERFACES = interfaces
         _LAST_IFACE_SCAN_TIME = now
