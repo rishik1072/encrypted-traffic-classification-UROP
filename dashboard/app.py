@@ -227,7 +227,7 @@ def main():
         index=0,
     )
     refresh_rate = st.sidebar.slider("Console Refresh Interval (s)", 1, 10, 2)
-    auto_refresh = st.sidebar.checkbox("Auto-Refresh Feed", value=False)
+    auto_refresh = st.sidebar.checkbox("Auto-Refresh Feed", value=True)
     if st.sidebar.button("🔄 Refresh Now"):
         st.rerun()
 
@@ -436,9 +436,53 @@ def main():
         elif malformed_count > 0 and selected_mode not in ("LIVE_NPCAP", "LIVE_MODE"):
             st.warning(f"⚠️ DATA QUALITY WARNING: {malformed_count} malformed prediction record(s) normalized automatically.")
 
-        # KPI Extraction
+        # Subsystem metrics and active counts
+        metrics_dict = subsystem.get("details", {}).get("metrics", {})
+        status_dict = subsystem.get("details", {}).get("status", {})
+        adapter_name = status_dict.get("adapter", "Wi-Fi (Auto)")
+        capture_pkts = metrics_dict.get("capture_packets_received", metrics_dict.get("total_packets", 0))
+        packets_rcvd = max(capture_pkts, metrics_dict.get("total_packets", sum(r.packets_observed for r in records)))
+        completed_flows = metrics_dict.get("completed_flows", 0)
         unique_flows = {r.flow_id for r in records if r.flow_id}
         active_streams = metrics_dict.get("active_flows", len(unique_flows))
+        pred_cnt = metrics_dict.get("predictions_generated", len(records))
+
+        # Explicit 3 Runtime Lifecycle States for Live Mode
+        if selected_mode in ("LIVE_NPCAP", "LIVE_MODE"):
+            if pred_cnt > 0 or len(records) > 0:
+                live_stage = "LIVE CLASSIFICATION ACTIVE"
+                st.markdown(
+                    f"""
+                    <div style='background-color: #064e3b; border-left: 6px solid #10b981; padding: 12px; border-radius: 6px; margin-bottom: 12px;'>
+                        <strong style='color: #6ee7b7;'>🟢 LIVE CLASSIFICATION ACTIVE</strong> — Continuously classifying real traffic from <code>{adapter_name}</code> ({packets_rcvd:,} packets observed across {active_streams} active flows).
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            elif packets_rcvd > 0:
+                live_stage = "LIVE TRAFFIC RECEIVED"
+                st.markdown(
+                    f"""
+                    <div style='background-color: #1e3a8a; border-left: 6px solid #3b82f6; padding: 12px; border-radius: 6px; margin-bottom: 12px;'>
+                        <strong style='color: #93c5fd;'>🔵 LIVE TRAFFIC RECEIVED</strong> — Traffic observed: <strong>{packets_rcvd:,} packets</strong> on <code>{adapter_name}</code>. Assembling flows and computing statistical distributions...
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                live_stage = "MONITORING ACTIVE"
+                st.markdown(
+                    f"""
+                    <div style='background-color: #33280c; border-left: 6px solid #eab308; padding: 12px; border-radius: 6px; margin-bottom: 12px;'>
+                        <strong style='color: #fde68a;'>🟡 MONITORING ACTIVE</strong> — Listening on <code>{adapter_name}</code> — waiting for live traffic. Open a browser tab or generate network traffic to see classifications.
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+        else:
+            live_stage = engine_status
+
+        # KPI Extraction
         known_count = sum(1 for r in records if r.prediction_state == "KNOWN_CLASS")
         low_conf_count = sum(1 for r in records if r.prediction_state == "LOW_CONFIDENCE")
         unk_count = sum(1 for r in records if r.prediction_state == "UNKNOWN")
@@ -449,13 +493,6 @@ def main():
 
         latencies = [r.latency_us for r in records if r.latency_us is not None and r.latency_us > 0]
         avg_lat = (sum(latencies) / len(latencies) / 1000.0) if latencies else 0.0028  # in ms
-
-        # Detailed subsystem and telemetry metrics
-        metrics_dict = subsystem.get("details", {}).get("metrics", {})
-        status_dict = subsystem.get("details", {}).get("status", {})
-        adapter_name = status_dict.get("adapter", "Wi-Fi (Auto)")
-        packets_rcvd = metrics_dict.get("total_packets", sum(r.packets_observed for r in records))
-        completed_flows = metrics_dict.get("completed_flows", 0)
         p99_lat = metrics_dict.get("p99_latency_ms", avg_lat * 1.5)
         pred_rate = metrics_dict.get("predictions_per_second", (len(records) / 5.0) if len(records) > 0 else 0.0)
         error_cnt = malformed_count + (1 if feed_status == "DEGRADED" else 0)
@@ -463,7 +500,7 @@ def main():
         # 12 Required Live Metric Fields
         st.markdown("##### 📊 Operational Metrics")
         m1, m2, m3, m4, m5, m6 = st.columns(6)
-        m1.metric("Monitoring Status", engine_status, f"{selected_mode}")
+        m1.metric("Monitoring Status", live_stage, f"{selected_mode}")
         m2.metric("Adapter", adapter_name[:14])
         m3.metric("Packets Received", f"{packets_rcvd:,}")
         m4.metric("Active Flows", f"{active_streams}")
@@ -479,11 +516,11 @@ def main():
         m12.metric("Inference Latency", f"{avg_lat:.3f} ms", f"p99: {p99_lat:.3f}ms")
 
         # Subsystem Pipeline Diagnostics
-        cap_status = "RUNNING" if packets_rcvd > 0 else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
-        proc_status = "RUNNING" if packets_rcvd > 0 else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
-        flow_status = "RUNNING" if (metrics_dict.get("flows_created", 0) > 0 or active_streams > 0) else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
-        feat_status = "RUNNING" if metrics_dict.get("feature_vectors_created", 0) > 0 else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
-        inf_status = "RUNNING" if (metrics_dict.get("predictions_created", 0) > 0 or event_count > 0) else ("STOPPED" if not api_connected else "WAITING FOR TRAFFIC")
+        cap_status = "RUNNING" if packets_rcvd > 0 else ("LISTENING" if api_connected else "STOPPED")
+        proc_status = "RUNNING" if metrics_dict.get("packets_processed", 0) > 0 else ("WAITING FOR TRAFFIC" if packets_rcvd == 0 else "PROCESSING")
+        flow_status = "RUNNING" if (metrics_dict.get("flows_created", 0) > 0 or active_streams > 0) else "WAITING FOR TRAFFIC"
+        feat_status = "RUNNING" if (metrics_dict.get("features_extracted", 0) > 0 or metrics_dict.get("feature_vectors_created", 0) > 0) else ("ACCUMULATING EVIDENCE" if packets_rcvd > 0 else "WAITING FOR TRAFFIC")
+        inf_status = "RUNNING" if (pred_cnt > 0 or len(records) > 0) else ("AWAITING ELIGIBLE FLOWS" if packets_rcvd > 0 else "WAITING FOR TRAFFIC")
         trans_status = "RUNNING" if api_connected else "DEGRADED"
 
         st.markdown("##### ⚙️ Subsystem Pipeline Diagnostics")

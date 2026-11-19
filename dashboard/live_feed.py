@@ -190,6 +190,7 @@ def load_live_predictions(
     mode: str = "DEMO_MODE",
     api_url: str = "http://127.0.0.1:8080/predictions",
     timeout: float = 2.0,
+    session_id: Optional[str] = None,
 ) -> Tuple[List[CanonicalPredictionRecord], Dict[str, Any]]:
     """
     Authoritative function for loading live prediction records from the Local REST API.
@@ -198,6 +199,8 @@ def load_live_predictions(
         (normalized_canonical_records_list, metadata_dict)
     """
     req_url = f"{api_url}?limit={limit}&mode={mode}"
+    if session_id:
+        req_url += f"&session_id={session_id}"
     source = "LOCAL_API"
     http_status: Optional[int] = None
     connected = False

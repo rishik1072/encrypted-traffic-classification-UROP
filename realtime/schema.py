@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import math
 from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
@@ -79,6 +80,15 @@ def validate_feature_schema(
         err_msg = f"Feature schema mismatch! Missing required feature(s): {missing}"
         logger.error(err_msg)
         raise ValueError(err_msg)
+
+    # Validate numerical values: reject NaN and Infinity
+    for col in target_schema:
+        val = extracted_features.get(col)
+        if isinstance(val, (float, int)):
+            if math.isnan(val) or math.isinf(val):
+                err_msg = f"Feature validation failed: '{col}' is NaN or Inf ({val})! Fail-closed."
+                logger.error(err_msg)
+                raise ValueError(err_msg)
 
     if expected_hash:
         current_hash = get_feature_schema_hash(target_schema)

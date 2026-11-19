@@ -18,6 +18,8 @@ import json
 import logging
 from pathlib import Path
 import threading
+import time
+import traceback
 from typing import Any, Dict, List, Optional
 from urllib.parse import parse_qs, urlparse
 
@@ -70,28 +72,40 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
         if not path:
             path = "/"
 
-        if path == "/health":
-            self.handle_health()
-        elif path == "/status":
-            self.handle_status()
-        elif path == "/adapters":
-            self.handle_adapters()
-        elif path == "/model":
-            self.handle_model()
-        elif path == "/metrics":
-            self.handle_metrics()
-        elif path == "/predictions":
-            self.handle_predictions(parsed.query)
-        elif path == "/events":
-            self.handle_events(parsed.query)
-        elif path == "/alerts":
-            self.handle_alerts(parsed.query)
-        elif path == "/session/export":
-            self.handle_session_export(parsed.query)
-        elif path == "/":
-            self.handle_root()
-        else:
-            self._send_json_response({"error": "Not Found", "endpoint": path}, status_code=404)
+        try:
+            if path == "/health":
+                self.handle_health()
+            elif path == "/status":
+                self.handle_status()
+            elif path == "/adapters":
+                self.handle_adapters()
+            elif path == "/model":
+                self.handle_model()
+            elif path == "/metrics":
+                self.handle_metrics()
+            elif path == "/predictions":
+                self.handle_predictions(parsed.query)
+            elif path == "/events":
+                self.handle_events(parsed.query)
+            elif path == "/alerts":
+                self.handle_alerts(parsed.query)
+            elif path == "/session/export":
+                self.handle_session_export(parsed.query)
+            elif path == "/":
+                self.handle_root()
+            else:
+                self._send_json_response({"error": "Not Found", "endpoint": path}, status_code=404)
+        except Exception as e:
+            logger.error("Unhandled error processing GET %s: %s\n%s", path, e, traceback.format_exc())
+            self._send_json_response(
+                {
+                    "error": "Internal Server Error",
+                    "endpoint": path,
+                    "message": str(e),
+                    "pipeline_status": "DEGRADED",
+                },
+                status_code=500,
+            )
 
     def do_POST(self) -> None:
         """Dispatches POST requests for session management and configuration."""
@@ -173,6 +187,33 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
         evidence_class = EVIDENCE_CLASS_MAP.get(canonical_mode, "UNKNOWN_EVIDENCE")
         active_sess_id = local_event_store.get_active_session_id()
 
+        # Phase 4: verified live capture evidence check
+        live_machine_verified = False
+        capture_state = "IDLE" if not active_sess_id else "UNKNOWN"
+        packets_captured_total = 0
+        if active_sess_id:
+            try:
+                metrics_file = Path("results/realtime/metrics.json")
+                if metrics_file.exists():
+                    with open(metrics_file, "r", encoding="utf-8") as f:
+                        m_data = json.load(f)
+                    if m_data.get("session_id") == active_sess_id:
+                        capture_state = m_data.get("capture_state", "UNKNOWN")
+                        packets_captured_total = m_data.get("capture_packets_received", 0)
+                        if packets_captured_total > 0 and m_data.get("packets_processed", 0) > 0:
+                            live_machine_verified = True
+                if not live_machine_verified:
+                    with local_event_store._lock, local_event_store._get_connection() as conn:
+                        cur = conn.execute(
+                            "SELECT COUNT(*) FROM prediction_events WHERE session_id = ? AND operating_mode = 'LIVE_NPCAP' AND packets_observed > 0",
+                            (active_sess_id,),
+                        )
+                        row = cur.fetchone()
+                        if row and row[0] > 0:
+                            live_machine_verified = True
+            except Exception as e:
+                logger.debug("Live machine verification check note: %s", e)
+
         self._send_json_response({
             "app_name": APP_NAME,
             "version": __version__,
@@ -184,7 +225,8 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
             "model_id": "model_lightgbm_v1",
             "npcap_detected": is_npcap_present,
             "npcap_status": npcap_res.get("status"),
-            "live_machine_verified": False,
+            "capture_state": capture_state,
+            "live_machine_verified": live_machine_verified,
             "implementation_status": "IMPLEMENTATION READY",
             "privacy": "LOCAL ONLY",
             "zero_payload": "PASS",
@@ -219,60 +261,213 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
 
     def handle_metrics(self) -> None:
         """Returns latest telemetry and performance metrics including all diagnostic counters."""
-        active_sess_id = local_event_store.get_active_session_id()
-        metrics_file = Path("results/realtime/metrics.json")
-        data: Dict[str, Any] = {}
+        try:
+            active_sess_id = local_event_store.get_active_session_id()
+            metrics_file = Path("results/realtime/metrics.json")
+            data: Dict[str, Any] = {}
+            telemetry_available = False
+            telemetry_source = "UNAVAILABLE"
 
-        if metrics_file.exists():
-            try:
-                with open(metrics_file, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-            except Exception:
-                pass
+            from product.environment import check_npcap
+            npcap_res = check_npcap()
+            is_npcap_present = npcap_res.get("status") == "PASS"
 
-        # Avoid leaking counters from an old completed session if a new session is active
-        if active_sess_id and data.get("session_id") and data.get("session_id") != active_sess_id:
-            data["total_packets"] = 0
-            data["total_bytes"] = 0
-            data["live_packets_received"] = 0
-            data["packets_forwarded_to_flow_tracker"] = 0
-            data["flows_created"] = 0
-            data["flows_updated"] = 0
-            data["active_flows"] = 0
-            data["completed_flows"] = 0
-            data["expired_flows"] = 0
-            data["predictions_created"] = 0
-            data["feature_vectors_created"] = 0
-            data["flows_eligible_for_prediction"] = 0
-            data["session_id"] = active_sess_id
+            if metrics_file.exists():
+                try:
+                    with open(metrics_file, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    telemetry_available = True
+                    telemetry_source = "REALTIME_FILE"
+                except Exception as read_err:
+                    logger.error("Failed to read metrics file %s: %s\n%s", metrics_file, read_err, traceback.format_exc())
+                    telemetry_available = False
+                    telemetry_source = "READ_ERROR"
 
-        defaults = {
-            "session_id": active_sess_id,
-            "packets_per_second": 0.0,
-            "bytes_per_second": 0.0,
-            "active_flows": 0,
-            "dropped_packets": 0,
-            "p95_latency_ms": 0.0,
-            "p99_latency_ms": 0.0,
-            "pipeline_status": "HEALTHY",
-            "live_packets_received": 0,
-            "packets_forwarded_to_flow_tracker": 0,
-            "flows_created": 0,
-            "flows_updated": 0,
-            "flows_eligible_for_prediction": 0,
-            "feature_vectors_created": 0,
-            "predictions_created": 0,
-            "events_stored": local_event_store.events_stored_count,
-        }
+            # Avoid leaking counters from an old completed session if a new session is active
+            if active_sess_id and data.get("session_id") and data.get("session_id") != active_sess_id:
+                for k in [
+                    "total_packets", "total_bytes", "live_packets_received", "packets_forwarded_to_flow_tracker",
+                    "flows_created", "flows_updated", "active_flows", "completed_flows", "expired_flows",
+                    "predictions_created", "feature_vectors_created", "flows_eligible_for_prediction",
+                    "capture_packets_received", "packets_forwarded_to_processor", "packets_processed",
+                    "packets_dropped", "processing_errors", "features_extracted", "feature_extraction_failures",
+                    "predictions_generated", "known_predictions", "low_confidence_predictions",
+                    "unknown_predictions", "insufficient_evidence_predictions", "events_created",
+                    "events_stored", "event_storage_failures",
+                    "packets_per_second", "packets_per_sec", "bytes_per_second", "throughput_mbps",
+                    "predictions_per_sec", "known_class_rate", "low_confidence_rate", "unknown_rate",
+                ]:
+                    data[k] = 0.0 if ("rate" in k or "sec" in k or "mbps" in k or "second" in k) else 0
+                for ts_k in [
+                    "last_packet_at", "last_packet_processed_at", "last_flow_created_at",
+                    "last_feature_extracted_at", "last_prediction_at", "last_event_stored_at",
+                    "last_packet_age_seconds", "last_packet_processed_age_seconds",
+                    "last_flow_created_age_seconds", "last_feature_extracted_age_seconds",
+                    "last_prediction_age_seconds", "last_event_stored_age_seconds",
+                ]:
+                    data[ts_k] = None
+                data["session_id"] = active_sess_id
+                telemetry_source = "SESSION_INITIALIZING"
 
-        for k, v in defaults.items():
-            if k not in data or data[k] is None:
-                data[k] = v
+            # Freshness and staleness evaluation
+            now = time.time()
+            metric_ts = data.get("timestamp")
+            if telemetry_available and isinstance(metric_ts, (int, float)):
+                telemetry_age_seconds = round(max(0.0, now - float(metric_ts)), 2)
+                is_stale = telemetry_age_seconds > 5.0
+            else:
+                telemetry_age_seconds = None
+                is_stale = not telemetry_available
 
-        if active_sess_id:
-            data["session_id"] = active_sess_id
+            defaults = {
+                "session_id": active_sess_id,
+                "packets_per_second": 0.0,
+                "packets_per_sec": 0.0,
+                "bytes_per_second": 0.0,
+                "throughput_mbps": 0.0,
+                "predictions_per_sec": 0.0,
+                "active_flows": 0,
+                "completed_flows": 0,
+                "expired_flows": 0,
+                "total_packets": 0,
+                "total_bytes": 0,
+                "dropped_packets": 0,
+                "queue_depth": 0,
+                "p95_latency_ms": 0.0,
+                "p99_latency_ms": 0.0,
+                "avg_latency_ms": 0.0,
+                "median_latency_ms": 0.0,
+                "pipeline_status": "WAITING_FOR_TRAFFIC",
+                "live_packets_received": 0,
+                "packets_forwarded_to_flow_tracker": 0,
+                "flows_created": 0,
+                "flows_updated": 0,
+                "flows_eligible_for_prediction": 0,
+                "feature_vectors_created": 0,
+                "predictions_created": 0,
+                "events_stored": local_event_store.events_stored_count,
 
-        self._send_json_response(data)
+                # Phase 4 exact canonical telemetry counters
+                "capture_packets_received": 0,
+                "packets_forwarded_to_processor": 0,
+                "packets_processed": 0,
+                "packets_dropped": 0,
+                "processing_errors": 0,
+                "features_extracted": 0,
+                "feature_extraction_failures": 0,
+                "predictions_generated": 0,
+                "known_predictions": 0,
+                "low_confidence_predictions": 0,
+                "unknown_predictions": 0,
+                "insufficient_evidence_predictions": 0,
+                "events_created": 0,
+                "event_storage_failures": 0,
+                "worker_alive": True,
+                "capture_thread_alive": True,
+                "capture_state": "CAPTURE_ACTIVE",
+                "last_capture_error": None,
+                "last_capture_error_stage": None,
+
+                # Timestamps
+                "last_packet_at": None,
+                "last_packet_processed_at": None,
+                "last_flow_created_at": None,
+                "last_feature_extracted_at": None,
+                "last_prediction_at": None,
+                "last_event_stored_at": None,
+                "last_packet_age_seconds": None,
+                "last_packet_processed_age_seconds": None,
+                "last_flow_created_age_seconds": None,
+                "last_feature_extracted_age_seconds": None,
+                "last_prediction_age_seconds": None,
+                "last_event_stored_age_seconds": None,
+            }
+
+            for k, v in defaults.items():
+                if k not in data or data[k] is None:
+                    data[k] = v
+
+            if active_sess_id:
+                data["session_id"] = active_sess_id
+
+            # Invariant: Never report nonzero performance when actual counters show no activity
+            if data.get("total_packets", 0) == 0 or data.get("capture_packets_received", 0) == 0:
+                data["packets_per_second"] = 0.0
+                data["packets_per_sec"] = 0.0
+                data["bytes_per_second"] = 0.0
+                data["throughput_mbps"] = 0.0
+
+            if data.get("predictions_generated", 0) == 0 or data.get("predictions_created", 0) == 0:
+                data["predictions_per_sec"] = 0.0
+                data["known_class_rate"] = 0.0
+                data["low_confidence_rate"] = 0.0
+                data["unknown_rate"] = 0.0
+
+            # Independent Phase 4 subsystem verification booleans
+            pkts_rcvd = data.get("capture_packets_received", 0)
+            pkts_proc = data.get("packets_processed", 0)
+            feats_ext = data.get("features_extracted", 0)
+            preds_gen = data.get("predictions_generated", 0)
+            evts_stored = data.get("events_stored", 0)
+            cap_thread = bool(data.get("capture_thread_alive", True))
+            work_alive = bool(data.get("worker_alive", True))
+
+            data["api_responding"] = True
+            data["npcap_available"] = is_npcap_present
+            data["actual_packets_received"] = pkts_rcvd > 0
+            data["packets_processed_status"] = pkts_proc > 0
+            data["flows_created_status"] = data.get("flows_created", 0) > 0
+            data["features_extracted_status"] = feats_ext > 0
+            data["predictions_generated_status"] = preds_gen > 0
+            data["events_persisted_status"] = evts_stored > 0
+
+            # Distinguish actual zero vs unavailable metric vs stale metric vs degraded
+            if not telemetry_available:
+                metrics_status = "UNAVAILABLE"
+                pipeline_status = "INITIALIZING"
+            elif is_stale or not cap_thread or not work_alive:
+                metrics_status = "STALE" if is_stale else "DEGRADED"
+                pipeline_status = "DEGRADED"
+            elif pkts_rcvd == 0 and data.get("pipeline_status") not in ("PIPELINE_DEGRADED", "DEGRADED"):
+                metrics_status = "ACTIVE"
+                pipeline_status = "WAITING_FOR_TRAFFIC"
+            elif feats_ext == 0 and data.get("pipeline_status") not in ("PIPELINE_DEGRADED", "DEGRADED"):
+                metrics_status = "ACTIVE"
+                pipeline_status = "ACCUMULATING_EVIDENCE"
+            else:
+                metrics_status = "ACTIVE"
+                pipeline_status = data.get("pipeline_status", "HEALTHY")
+
+            # Compute dynamic activity age in seconds for all last-activity timestamps
+            for field in ("last_packet", "last_packet_processed", "last_flow_created", "last_feature_extracted", "last_prediction", "last_event_stored"):
+                ts = data.get(f"{field}_at")
+                if ts is not None and isinstance(ts, (int, float)):
+                    data[f"{field}_age_seconds"] = round(max(0.0, now - float(ts)), 2)
+                else:
+                    data[f"{field}_age_seconds"] = None
+
+            # Add status descriptors
+            data["telemetry_available"] = telemetry_available
+            data["telemetry_source"] = telemetry_source
+            data["is_stale"] = is_stale
+            data["telemetry_age_seconds"] = telemetry_age_seconds
+            data["metrics_status"] = metrics_status
+            data["pipeline_status"] = pipeline_status
+
+            self._send_json_response(data, status_code=200)
+        except Exception as e:
+            logger.error("Unexpected error in handle_metrics(): %s\n%s", e, traceback.format_exc())
+            self._send_json_response(
+                {
+                    "error": "Metrics Collection Failed",
+                    "message": str(e),
+                    "pipeline_status": "DEGRADED",
+                    "telemetry_available": False,
+                    "is_stale": True,
+                    "timestamp": time.time(),
+                },
+                status_code=500,
+            )
 
     def handle_predictions(self, query_string: str) -> None:
         """Returns recent prediction records with strict mode segregation."""
@@ -293,12 +488,16 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
 
         from realtime.events import EVIDENCE_CLASS_MAP
         evidence_class = EVIDENCE_CLASS_MAP.get(mode, "ALL_EVIDENCE") if mode else "ALL_EVIDENCE"
+        query_sess = qs.get("session_id", [None])[0]
+        active_sess_id = local_event_store.get_active_session_id()
+        sess_filter = query_sess or (active_sess_id if mode in ("LIVE_NPCAP", "LIVE_MODE") else None)
 
-        # 1. First check LocalEventStore
+        # 1. First check LocalEventStore (Strictly scoped by session for live capture)
         try:
             stored_events = local_event_store.query_events(
                 limit=limit,
                 operating_mode=mode if mode else None,
+                session_id=sess_filter,
             )
             if stored_events:
                 clean_records = []
@@ -313,6 +512,7 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
                     "count": len(clean_records),
                     "limit": limit,
                     "mode": mode or "ALL",
+                    "session_id": sess_filter,
                     "evidence_class": evidence_class,
                     "source": "EVENT_STORE",
                     "predictions": clean_records,
@@ -322,12 +522,13 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
             logger.warning("LocalEventStore query in API failed: %s", e)
 
         # 2. Strict live npcap rule: If LIVE_NPCAP requested and 0 live events exist, return empty list!
-        # Do NOT leak demo or recorded data into live view!
+        # Do NOT leak past sessions, demo, or recorded data into live view!
         if mode in ("LIVE_NPCAP", "LIVE_MODE"):
             self._send_json_response({
                 "count": 0,
                 "limit": limit,
                 "mode": "LIVE_NPCAP",
+                "session_id": sess_filter,
                 "evidence_class": "REAL_LIVE_NPCAP",
                 "source": "EVENT_STORE",
                 "predictions": [],

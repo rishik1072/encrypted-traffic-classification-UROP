@@ -233,7 +233,12 @@ class ProductApplication:
 
         # 5. Start Local API Server
         if self.config.local_api_config.get("enabled", True):
-            self.api_server.start()
+            api_ok = self.api_server.start()
+            if not api_ok:
+                print(f"[!] Local API server failed to bind to {self.api_server.host}:{self.api_server.port}.")
+                print("[!] Another instance of the application may already be running.")
+                self.stop()
+                return False
 
         # 6. Start Realtime Classification Engine (Propagate active session_id)
         print(f"[*] Starting Real-Time Classifier Engine ({resolved_model}, session={self.current_session_id})...")
