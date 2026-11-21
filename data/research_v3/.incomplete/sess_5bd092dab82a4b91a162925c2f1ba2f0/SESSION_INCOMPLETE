@@ -1,0 +1,1 @@
+SESSION_INCOMPLETE:sess_5bd092dab82a4b91a162925c2f1ba2f0:2026-11-21T06:46:47.000000+00:00:AsyncSniffer socket initialization failure (TypeError: L2pcapListenSocket.__init__() got an unexpected keyword argument 'snaplen'). 0 packets captured.

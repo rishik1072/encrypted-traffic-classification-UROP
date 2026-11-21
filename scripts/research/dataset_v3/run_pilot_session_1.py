@@ -100,33 +100,64 @@ def main() -> None:
         collector.start_capture(dry_run=True)
         time.sleep(1.0)
         collector.stop_capture(status="INTERRUPTED", notes="Dry-run lifecycle test; publication suppressed.")
-        # Ensure zero publication or residue in dataset directory
+        # Ensure zero publication or residue for this dry-run session
         import shutil
-        if cfg.staging_root and cfg.staging_root.exists():
-            shutil.rmtree(cfg.staging_root, ignore_errors=True)
-        if cfg.incomplete_root and cfg.incomplete_root.exists():
-            shutil.rmtree(cfg.incomplete_root, ignore_errors=True)
+        if cfg.staging_session_dir and cfg.staging_session_dir.exists():
+            shutil.rmtree(cfg.staging_session_dir, ignore_errors=True)
+        if cfg.incomplete_session_dir and cfg.incomplete_session_dir.exists():
+            shutil.rmtree(cfg.incomplete_session_dir, ignore_errors=True)
         if cfg.final_session_dir.exists():
             shutil.rmtree(cfg.final_session_dir, ignore_errors=True)
         logger.info("Dry run completed successfully with zero published datasets.")
         return
 
     # 4. Live Physical Capture
-    logger.info("STARTING PHYSICAL CAPTURE for %.1f seconds...", cfg.duration_seconds)
+    logger.info("Starting physical capture initialization for %.1f seconds...", cfg.duration_seconds)
+
+    try:
+        collector.start_capture(dry_run=False)
+    except Exception as e:
+        logger.error("Physical capture initialization failed: %s", e)
+        print(f"\n[FATAL] Physical capture failed to initialize: {e}\n")
+        sys.exit(1)
+
+    if collector.lifecycle_state != "COLLECTOR_ACTIVE":
+        logger.error(
+            "Collector did not enter ACTIVE state (state=%s): %s",
+            collector.lifecycle_state,
+            collector.last_error,
+        )
+        print(f"\n[FATAL] Collector failed to start: {collector.last_error}\n")
+        sys.exit(1)
+
+    logger.info("Physical capture successfully initialized and verified active.")
     print("\n>>> CAPTURE ACTIVE. Please open Chrome and browse target pages now. <<<")
     print(f">>> Capture will automatically stop after {cfg.duration_seconds} seconds. <<<\n")
 
-    collector.start_capture(dry_run=False)
-
     try:
-        # Wait for duration timer to finish
+        # Wait for duration timer to finish while actively monitoring worker thread
         while collector.lifecycle_state == "COLLECTOR_ACTIVE":
-            time.sleep(1.0)
+            if not collector.is_worker_alive():
+                logger.error("Capture worker thread died prematurely during active collection!")
+                collector.fail_capture(
+                    reason="Capture worker thread died prematurely during active collection.",
+                    stage="CAPTURE_WORKER_DIED",
+                )
+                break
+            time.sleep(0.5)
     except KeyboardInterrupt:
         logger.warning("Interrupted by operator (Ctrl+C). Finalizing gracefully...")
         collector.stop_capture(status="INTERRUPTED", notes="Manually interrupted by operator.")
 
     logger.info("Pilot Session 1 finalized with state: %s", collector.lifecycle_state)
+    if collector.lifecycle_state != "COLLECTOR_COMPLETED":
+        print(f"\n[WARNING] Pilot session did NOT complete successfully (state: {collector.lifecycle_state}).")
+        if collector.last_error:
+            print(f"Failure reason: {collector.last_error}")
+        print(f"Quarantine location: {cfg.incomplete_session_dir}\n")
+        sys.exit(1)
+    else:
+        print(f"\n[SUCCESS] Pilot session completed and validated: {cfg.final_session_dir}\n")
 
 
 if __name__ == "__main__":

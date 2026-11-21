@@ -12,7 +12,7 @@
   "application_alias": "chrome_browsing",
   "intended_traffic_class": "Web",
   "collection_operator_label": "operator_rishi",
-  "capture_status": "COMPLETE",
+  "capture_status": "FAILED",
   "collection_plan_id": "sess_pilot_001_wifi_direct_web",
   "packet_count": 0,
   "flow_count": 0,
@@ -30,5 +30,5 @@
     "labels.csv": "26736e06e27443f7acb9f84c359220eb27cb9aa4795d0999f85b9202fa487308",
     "session_manifest.json": "6fbfa2d0e0ce1bbe0646c232872860648d3afc5c6adee0ed07c2919cf35f9c70"
   },
-  "notes": "Reached configured duration limit."
+  "notes": "Reached configured duration limit. | INVALID: AsyncSniffer socket initialization failure (TypeError: L2pcapListenSocket.__init__() got an unexpected keyword argument 'snaplen'). 0 packets captured."
 }
