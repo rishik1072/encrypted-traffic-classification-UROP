@@ -578,7 +578,8 @@ def create_presentation() -> None:
     p.font.color.rgb = DARK_NAVY
 
     insights = [
-        "Decision Tree is Pareto Winner: Captures 99.1% of ensemble F1 (0.5802 vs 0.5854) while running 249x faster and requiring 91x less memory.",
+        "Formal Selection Winner: LightGBM selected based on validation Macro-F1 = 0.5664 (Test F1 = 0.5474); CART Decision Tree is the Pareto deployment winner.",
+        "Decision Tree Pareto Dominance: Captures 99.1% of ensemble F1 (0.5802 vs 0.5854) while running 249x faster and requiring 91x less memory.",
         "Linear Boundaries Fail: Logistic Regression collapses to 0.3240 Macro-F1, proving encrypted transport metadata is non-linearly separable.",
         "Pure Physical Wi-Fi Baseline (dataset_real_v1): Random Forest yields 0.0833 Macro-F1 (1/12 flows correct). Severe sample starvation (N=12, standard error +/-14.4%) disclosed openly.",
     ]
@@ -596,7 +597,8 @@ def create_presentation() -> None:
     set_speaker_notes(
         s5,
         "Slide 5 presents our in-domain baseline evaluation on dataset_v2 across four candidate machine learning architectures under 70/15/15 group-aware session isolation.\n\n"
-        "Looking at the table and the Pareto curve on the right, our headline finding is the Pareto dominance of the shallow CART Decision Tree:\n"
+        "Under our validation-based model selection protocol, LightGBM is the formal baseline winner with validation Macro-F1 = 0.5664 (test Macro-F1 = 0.5474).\n"
+        "Looking at the table and the Pareto curve on the right, our headline deployment finding is the Pareto dominance of the shallow CART Decision Tree:\n"
         "- The Decision Tree achieves 0.5802 Test Macro-F1 and 0.5833 Accuracy (28 out of 48 flows correct).\n"
         "- The 100-tree Random Forest ensemble achieves 0.5854 Test Macro-F1 and 0.5833 Accuracy (also 28 out of 48 flows correct).\n\n"
         "In exchange for a negligible 0.005 difference in Macro-F1, the Decision Tree executes in 0.0694 milliseconds—which is 249 times faster than the Random Forest (16.97 ms)—and occupies just 9.58 kilobytes of serialized storage, which is 91 times smaller than the ensemble.\n\n"

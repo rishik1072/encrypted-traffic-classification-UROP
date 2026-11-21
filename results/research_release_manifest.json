@@ -30,7 +30,8 @@
   "dataset": {
     "dataset_identifier": "dataset_v2",
     "dataset_version": "2.0.0",
-    "dataset_origin": "REAL_DATA",
+    "dataset_origin": "HYBRID_PERTURBED",
+    "description": "Hybrid benchmark comprising 121 genuine physical Wi-Fi flows and 180 controlled statistical perturbations, for 301 total flow records.",
     "total_flows": 301,
     "total_sessions": 150,
     "traffic_classes": [
@@ -120,11 +121,18 @@
   },
   "headline_findings": {
     "in_domain_baseline": {
-      "random_forest_macro_f1": 0.5873,
-      "decision_tree_macro_f1": 0.5802,
+      "selected_winner_model": "lightgbm",
+      "selected_model_validation_macro_f1": 0.5664,
+      "selected_model_test_macro_f1": 0.5474,
+      "selected_model_test_accuracy": 0.5417,
+      "selection_criterion": "Highest validation Macro-F1 under group-aware session isolation",
+      "random_forest_test_macro_f1": 0.5854,
+      "random_forest_accuracy": 0.5833,
+      "decision_tree_test_macro_f1": 0.5802,
       "decision_tree_accuracy": 0.5833,
       "decision_tree_inference_latency_ms": 0.0579,
-      "decision_tree_model_size_kb": 3.11
+      "decision_tree_model_size_kb": 9.58,
+      "historical_secondary_rf_macro_f1_superseded": 0.5873
     },
     "feature_discovery": {
       "highest_density_family": "directionality",

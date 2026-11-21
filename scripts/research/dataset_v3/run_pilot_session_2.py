@@ -180,7 +180,6 @@ def main() -> None:
         collector = PhysicalTrafficCollector(config=cfg)
         collector.initialize(bypass_prerequisites=True)
 
-        # Test Chrome launcher lifecycle in dry-run mode (headless)
         chrome_exe = ControlledChromeLauncher.find_chrome_executable()
         logger.info("Dry-run: Discovered Chrome binary at %s", chrome_exe)
         launcher = ControlledChromeLauncher(
@@ -189,29 +188,80 @@ def main() -> None:
             headless=True,
         )
 
+        temp_profile_dir: Optional[Path] = None
         try:
-            logger.info("Dry-run: Launching isolated controlled Chrome for lifecycle test...")
+            # Step 1: Launch dedicated Chrome
+            logger.info("Step 1: Launching isolated controlled Chrome for dry-run...")
             root_pid = launcher.launch(initial_url="about:blank")
-            logger.info("Dry-run: Chrome root launched with PID %s; registered in ProcessTracker", root_pid)
-            assert collector.process_tracker.root_pid == root_pid
-            time.sleep(0.5)
+            temp_profile_dir = launcher._temp_user_data_dir
+            logger.info("Step 1: Chrome root launched with PID %s; temporary profile created", root_pid)
+
+            # Step 2: Register root process identity
+            assert collector.process_tracker.root_pid == root_pid, "Root PID must be registered in ProcessTracker!"
             collector.process_tracker.refresh_chrome_tree()
             logger.info(
-                "Dry-run: ProcessTracker tracking %d process identities in volatile memory",
-                len(collector.process_tracker._controlled_identities),
+                "Step 2: Registered root PID %s in ProcessTracker (%d identities tracked)",
+                root_pid,
+                len(collector.process_tracker.active_controlled_pids),
             )
-        finally:
-            launcher.stop()
-            logger.info("Dry-run: Chrome stopped and temporary user-data-dir cleaned up")
 
-        # Start collector dry-run
-        collector.start_capture(dry_run=True)
-        time.sleep(1.0)
-        collector.stop_capture(
-            status="INTERRUPTED",
-            notes="Dry-run lifecycle test; publication suppressed.",
-            suppress_quarantine=True,
-        )
+            # Step 3: Start snapshot polling
+            logger.info("Step 3: Starting snapshot polling worker while Chrome is alive (simultaneous operation)...")
+            collector.snapshot_manager.start_polling()
+            assert collector.snapshot_manager.is_polling_active, "Snapshot worker must be actively polling!"
+
+            # Step 4: Keep Chrome alive during warmup
+            logger.info("Step 4 & 5: Keeping Chrome alive during warmup and collecting at least two snapshots...")
+            warmup_start = time.monotonic()
+            while collector.snapshot_manager.total_snapshot_count() < 2 and time.monotonic() - warmup_start < 4.0:
+                assert launcher.is_running, "Chrome must remain alive during snapshot collection!"
+                time.sleep(0.1)
+
+            # Step 5: Collect at least two snapshots while Chrome remains alive
+            snap_count = collector.snapshot_manager.total_snapshot_count()
+            assert snap_count >= 2, f"Expected at least 2 snapshots while Chrome alive, got {snap_count}"
+            assert launcher.is_running, "Chrome must remain alive after collecting snapshots!"
+            logger.info("Step 5: Successfully collected %d snapshots while Chrome was alive", snap_count)
+
+            # Step 6: Execute collector dry-run lifecycle
+            logger.info("Step 6: Executing collector dry-run lifecycle (hardware sniffer suppressed)...")
+            collector.start_capture(dry_run=True)
+            assert collector._sniffer is None, "AsyncSniffer must NEVER be instantiated in dry-run!"
+            assert collector.packets_processed_count == 0, "Zero packets must be read in dry-run!"
+            time.sleep(1.0)
+
+            # Step 7: Stop collector
+            logger.info("Step 7: Stopping collector...")
+            collector.stop_capture(
+                status="INTERRUPTED",
+                notes="Dry-run lifecycle test; publication suppressed.",
+                suppress_quarantine=True,
+            )
+
+            # Step 8: Stop snapshot worker
+            logger.info("Step 8: Stopping snapshot worker...")
+            collector.snapshot_manager.stop_polling()
+            assert not collector.snapshot_manager.is_polling_active, "Snapshot worker must have stopped cleanly!"
+            logger.info("Step 8: Snapshot worker stopped and joined cleanly.")
+
+        finally:
+            # Step 9: Stop Chrome
+            logger.info("Step 9: Stopping Chrome...")
+            launcher.stop()
+            assert not launcher.is_running, "Chrome must be stopped!"
+            logger.info("Step 9: Chrome stopped.")
+
+            # Step 10: Remove temporary Chrome profile
+            logger.info("Step 10: Verifying temporary Chrome profile removal...")
+            if temp_profile_dir is not None:
+                assert not temp_profile_dir.exists(), "Temporary profile directory must be deleted!"
+            logger.info("Step 10: Temporary Chrome profile directory cleanly removed.")
+
+            # Step 11: Remove temporary staging artifacts
+            logger.info("Step 11: Verifying staging artifacts cleanup...")
+            assert not cfg.staging_session_dir.exists(), "Staging directory must not persist after dry-run!"
+            assert not cfg.final_session_dir.exists(), "Published directory must not exist in dry-run!"
+            logger.info("Step 11: Staging artifacts cleaned with zero disk residue.")
 
         print("\n" + "=" * 70)
         print("PILOT SESSION 2 DRY RUN RESULT: SUCCESS")

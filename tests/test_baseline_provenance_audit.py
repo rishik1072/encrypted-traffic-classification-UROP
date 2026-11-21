@@ -104,32 +104,32 @@ class TestBaselineProvenanceAudit(unittest.TestCase):
 
     # 3. Incorrect dataset-origin labels
     def test_incorrect_dataset_origin_labels(self) -> None:
-        """Asserts that research_baseline.csv's contradictory 'REAL_DATA' label fails validation."""
+        """Asserts that contradictory 'REAL_DATA' labels fail validation while HYBRID_PERTURBED passes."""
         baseline_csv = PROJECT_ROOT / "results" / "tables" / "research_baseline.csv"
         res = validate_baseline_table(baseline_csv, project_root=PROJECT_ROOT)
 
-        # The historical table claims dataset_origin=REAL_DATA for dataset_v2 -> Must return FAIL
-        self.assertEqual(res.status, ValidationStatus.FAIL)
-        self.assertIn("Provenance contradiction", res.reason)
-        self.assertIn("HYBRID_PERTURBED", res.reason)
+        # The authoritative table claims dataset_origin=HYBRID_PERTURBED for dataset_v2 -> Must return PASS
+        self.assertEqual(res.status, ValidationStatus.PASS)
+        self.assertIn("hybrid benchmark", res.reason)
 
-        # Now test that a corrected copy stating HYBRID_PERTURBED truthfully passes validation
+        # Now test that a contradictory copy stating REAL_DATA fails validation
         with open(baseline_csv, "r", encoding="utf-8") as f:
             rows = list(csv.DictReader(f))
 
-        corrected_csv = self.temp_path / "research_baseline_corrected.csv"
+        contradictory_csv = self.temp_path / "research_baseline_contradictory.csv"
         fieldnames = list(rows[0].keys())
         for r in rows:
-            r["dataset_origin"] = "HYBRID_PERTURBED"
+            r["dataset_origin"] = "REAL_DATA"
 
-        with open(corrected_csv, "w", newline="", encoding="utf-8") as f:
+        with open(contradictory_csv, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(rows)
 
-        res_corrected = validate_baseline_table(corrected_csv, project_root=PROJECT_ROOT)
-        self.assertEqual(res_corrected.status, ValidationStatus.PASS)
-        self.assertIn("hybrid benchmark", res_corrected.reason)
+        res_contradictory = validate_baseline_table(contradictory_csv, project_root=PROJECT_ROOT)
+        self.assertEqual(res_contradictory.status, ValidationStatus.FAIL)
+        self.assertIn("Provenance contradiction", res_contradictory.reason)
+        self.assertIn("HYBRID_PERTURBED", res_contradictory.reason)
 
     # 4. Missing or inconsistent provenance evidence
     def test_missing_or_inconsistent_provenance_evidence(self) -> None:
