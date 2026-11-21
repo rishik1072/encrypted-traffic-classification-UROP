@@ -1,0 +1,16 @@
+{
+  "session_id": "sess_b04fe53843b04caa8bf86e60209d3fd0",
+  "validator_version": "3.0.0",
+  "validation_timestamp_utc": "2026-11-21T14:25:19.747559+00:00",
+  "is_valid": true,
+  "total_checks_run": 22,
+  "passed_checks": 22,
+  "failed_checks": 0,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "packet_count": 25499,
+    "flow_count": 90,
+    "label_count": 90
+  }
+}

@@ -31,12 +31,15 @@ logger = logging.getLogger("research.dataset_v3.pilot_config")
 
 # Canonical Pilot Session 1 Constants
 PILOT_COLLECTION_PLAN_ID = "sess_pilot_001_wifi_direct_web"
+PILOT_2_COLLECTION_PLAN_ID = "sess_pilot_002_wifi_direct_web"
 PILOT_ADAPTER_TYPE = "Wi-Fi"
 PILOT_INTERFACE_NAME = "Wi-Fi"
 PILOT_TUNNEL_STATUS = "DIRECT"
 PILOT_TRAFFIC_CLASS = "Web"
 PILOT_APPLICATION_ALIAS = "chrome_browsing"
+PILOT_2_APPLICATION_ALIAS = "chrome_controlled"
 PILOT_ACTIVITY_DESCRIPTION = "Active Web Browsing (Chrome Wikipedia/Documentation)"
+PILOT_2_ACTIVITY_DESCRIPTION = "Controlled Chrome Web Browsing (Wikipedia/Documentation)"
 PILOT_OPERATOR_LABEL = "operator_rishi"
 PILOT_ENVIRONMENT_ID = "pilot_home_wlan"
 PILOT_DURATION_SECONDS = 60.0
@@ -80,6 +83,56 @@ def create_pilot_session_1_config(
         flow_active_timeout_seconds=120.0,
         max_packets_per_flow=10000,
         is_synthetic=False,
+    )
+    return config
+
+
+def create_pilot_session_2_config(
+    output_root: Optional[Path] = None,
+    interface: Optional[str] = None,
+    duration_seconds: float = PILOT_DURATION_SECONDS,
+    session_id: Optional[str] = None,
+) -> DatasetV3Config:
+    """
+    Constructs an immutable DatasetV3Config configured precisely for Pilot Session 2.
+    Separates collection_plan_id ('sess_pilot_002_wifi_direct_web') from the newly
+    generated random UUID session_id for this physical execution.
+    Enables Windows process attribution subsystem with 150 ms polling.
+    Does NOT start packet capture or touch disk.
+    """
+    root = Path(output_root) if output_root is not None else Path("data/research_v3")
+    iface = interface if interface is not None else PILOT_INTERFACE_NAME
+    sid = session_id if session_id is not None else f"sess_{uuid.uuid4().hex}"
+
+    config = DatasetV3Config(
+        output_root=root,
+        collection_plan_id=PILOT_2_COLLECTION_PLAN_ID,
+        session_id=sid,
+        interface=iface,
+        adapter_type=PILOT_ADAPTER_TYPE,
+        environment_id=PILOT_ENVIRONMENT_ID,
+        tunnel_status=PILOT_TUNNEL_STATUS,
+        intended_traffic_class=PILOT_TRAFFIC_CLASS,
+        application_alias=PILOT_2_APPLICATION_ALIAS,
+        collection_activity=PILOT_2_ACTIVITY_DESCRIPTION,
+        collection_operator_label=PILOT_OPERATOR_LABEL,
+        duration_seconds=duration_seconds,
+        snaplen=PILOT_SNAPLEN,
+        promiscuous=False,
+        pcap_filter=PILOT_PCAP_FILTER,
+        flow_idle_timeout_seconds=30.0,
+        flow_active_timeout_seconds=120.0,
+        max_packets_per_flow=10000,
+        is_synthetic=False,
+        enable_attribution=True,
+        attribution_poll_interval_seconds=0.15,
+        attribution_controlled_alias="chrome_controlled",
+        attribution_min_coverage_ratio=0.50,
+        attribution_min_observation_count=2,
+        attribution_max_observation_gap_seconds=0.50,
+        attribution_min_covered_bins=2,
+        attribution_min_separation_seconds=0.10,
+        attribution_window_margin_seconds=1.0,
     )
     return config
 

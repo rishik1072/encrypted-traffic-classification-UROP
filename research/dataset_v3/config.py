@@ -91,6 +91,16 @@ class DatasetV3Config:
     staging_root: Optional[Path] = None
     incomplete_root: Optional[Path] = None
     device_state_dir: Optional[Path] = None
+    enable_attribution: bool = False  # Set to True to enable Windows IP Helper socket snapshotting and process correlation
+    attribution_poll_interval_seconds: float = 0.15  # Default 150 ms polling interval
+    attribution_allow_failure: bool = True  # If True, capture continues on attribution failure but flows stay AMBIGUOUS
+    attribution_controlled_alias: str = "chrome_controlled"
+    attribution_window_margin_seconds: float = 1.0
+    attribution_min_separation_seconds: float = 0.10
+    attribution_min_coverage_ratio: float = 0.5
+    attribution_min_observation_count: int = 2
+    attribution_max_observation_gap_seconds: float = 0.50
+    attribution_min_covered_bins: int = 2
 
     def __post_init__(self) -> None:
         self.output_root = Path(self.output_root)

@@ -21,12 +21,30 @@ from research.dataset_v3.schemas import FlowIndexRecord, PacketMetadataRecord
 logger = logging.getLogger("research.dataset_v3.flow_manager")
 
 
+@dataclass(frozen=True)
+class TransientFlowEndpointData:
+    """
+    Volatile in-memory endpoint metadata for a finalized flow.
+    Retained temporarily in RAM until attribution correlation completes, then wiped.
+    NEVER written to disk.
+    """
+    flow_id: str
+    protocol: str
+    endpoint_a: Tuple[str, int]
+    endpoint_b: Tuple[str, int]
+    first_packet_wire_ts: float
+    last_packet_wire_ts: float
+    first_packet_arrival_mono: float
+    last_packet_arrival_mono: float
+
+
 @dataclass
 class _ActiveFlowState:
     """Internal volatile tracking state for an active in-flight flow."""
     flow_id: str
     parent_flow_id: str
     init_endpoint: Tuple[str, int]  # (src_ip, src_port) of packet index 0
+    remote_endpoint: Tuple[str, int]  # (dst_ip, dst_port) of packet index 0
     first_packet_wire_ts: float
     last_packet_wire_ts: float
     first_packet_arrival_mono: float
@@ -61,6 +79,8 @@ class FlowManager:
         # Key: ((ip_a, port_a), (ip_b, port_b), protocol)
         self._active_flows: Dict[Tuple[Tuple[str, int], Tuple[str, int], str], _ActiveFlowState] = {}
         self._completed_flow_records: List[FlowIndexRecord] = []
+        # Volatile flow endpoints retained in RAM only until attribution correlation completes
+        self._transient_flow_endpoints: Dict[str, TransientFlowEndpointData] = {}
 
     def _canonical_key(
         self, src_ip: str, src_port: int, dst_ip: str, dst_port: int, protocol: str
@@ -102,6 +122,7 @@ class FlowManager:
                 flow_id=flow_id,
                 parent_flow_id=parent_flow_id,
                 init_endpoint=init_endpoint,
+                remote_endpoint=(pkt.dst_ip, pkt.dst_port),
                 first_packet_wire_ts=now_wire,
                 last_packet_wire_ts=now_wire,
                 first_packet_arrival_mono=now_mono,
@@ -210,6 +231,19 @@ class FlowManager:
         )
 
         self._completed_flow_records.append(index_record)
+
+        # Store volatile endpoint reference in memory for attribution correlation
+        self._transient_flow_endpoints[state.flow_id] = TransientFlowEndpointData(
+            flow_id=state.flow_id,
+            protocol=state.transport_protocol,
+            endpoint_a=state.init_endpoint,
+            endpoint_b=state.remote_endpoint,
+            first_packet_wire_ts=state.first_packet_wire_ts,
+            last_packet_wire_ts=state.last_packet_wire_ts,
+            first_packet_arrival_mono=state.first_packet_arrival_mono,
+            last_packet_arrival_mono=state.last_packet_arrival_mono,
+        )
+
         if key in self._active_flows:
             del self._active_flows[key]
 
@@ -257,3 +291,12 @@ class FlowManager:
     @property
     def completed_flow_count(self) -> int:
         return len(self._completed_flow_records)
+
+    def get_transient_endpoints(self) -> Dict[str, TransientFlowEndpointData]:
+        """Returns in-memory transient flow endpoints for attribution correlation."""
+        return dict(self._transient_flow_endpoints)
+
+    def clear_transient_endpoints(self) -> None:
+        """Purges all transient flow endpoints from volatile memory."""
+        self._transient_flow_endpoints.clear()
+        logger.debug("Transient flow endpoints purged from volatile memory")

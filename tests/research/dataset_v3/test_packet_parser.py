@@ -87,9 +87,6 @@ def test_parse_raw_ip_bytes_strips_payload() -> None:
 
 def test_parse_scapy_packet_fixture() -> None:
     pytest.importorskip("scapy")
-    import scapy.interfaces
-    from scapy.config import conf
-    conf.ifaces.reload = lambda *args, **kwargs: None
     from scapy.layers.inet import IP, TCP
 
     packet = IP(src="172.16.0.5", dst="8.8.8.8") / TCP(sport=12345, dport=80, flags="S") / b"HTTP_GET_PAYLOAD"

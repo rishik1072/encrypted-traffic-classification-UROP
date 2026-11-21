@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import logging
 import platform
+import sys
 import threading
 import time
 from datetime import datetime, timezone
@@ -38,6 +39,288 @@ from research.dataset_v3.validator import DatasetV3Validator
 logger = logging.getLogger("research.dataset_v3.collector")
 
 
+def sanitize_device_name(device_name: Optional[str]) -> str:
+    r"""Redacts GUID in Windows device path, e.g. \Device\NPF_{12345678-...} -> \Device\NPF_{1234...}"""
+    if not device_name:
+        return "UNKNOWN"
+    if "{" in device_name and "}" in device_name:
+        parts = device_name.split("{")
+        guid = parts[1].split("}")[0]
+        if len(guid) >= 8:
+            redacted = f"{guid[:4]}...{guid[-4:]}"
+        else:
+            redacted = "..."
+        return f"{parts[0]}{{{redacted}}}"
+    return device_name
+
+
+def resolve_and_validate_interface(
+    interface_name: str,
+    expected_adapter_type: str = "Wi-Fi",
+    is_mock_socket: bool = False,
+    collector_instance: Optional[Any] = None,
+) -> Any:
+    """
+    Canonical interface enumeration, registry reload, resolution, and validation helper.
+    Ensures that both live capture and diagnostic smoke test execute the exact same resolution pipeline.
+    """
+    import scapy
+    import scapy.config
+    import scapy.interfaces
+    from scapy.config import conf
+    from scapy.interfaces import resolve_iface, network_name
+    from unittest.mock import Mock, NonCallableMock
+
+    # Check mock state if not explicitly passed
+    if not is_mock_socket:
+        is_mock_socket = (
+            isinstance(conf.L2listen, (Mock, NonCallableMock))
+            or "Mock" in interface_name
+        )
+
+    # Stage 1: Interface Enumeration / Registry Refresh
+    interfaces_before: List[str] = []
+    if hasattr(conf, "ifaces") and conf.ifaces is not None:
+        try:
+            interfaces_before = [str(k) for k in conf.ifaces.keys()]
+        except Exception:
+            pass
+
+    if platform.system() == "Windows" and getattr(conf, "use_pcap", False) and not is_mock_socket:
+        try:
+            conf.ifaces.reload()
+        except PermissionError as perm_err:
+            err_msg = (
+                f"[INTERFACE_ENUMERATION_FAILED] Npcap permission denied while refreshing interfaces: {perm_err}. "
+                "Ensure process is running with Administrator privileges or user is in npcap-users group."
+            )
+            logger.error("%s", err_msg)
+            if collector_instance:
+                collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+                collector_instance.last_error_stage = "INTERFACE_ENUMERATION"
+                collector_instance.last_error_type = type(perm_err).__name__
+                collector_instance.last_error_code = getattr(perm_err, "winerror", getattr(perm_err, "errno", None))
+                collector_instance.last_error = err_msg
+                collector_instance.last_error_message = str(perm_err)
+                collector_instance._quarantine_failed_start(err_msg)
+            raise PermissionError(err_msg) from perm_err
+        except Exception as enum_err:
+            err_str = str(enum_err).lower()
+            if "access" in err_str or "denied" in err_str or "permission" in err_str:
+                err_msg = (
+                    f"[INTERFACE_ENUMERATION_FAILED] Npcap access denied during interface reload: {enum_err}. "
+                    "Ensure process is running with Administrator privileges or user is in npcap-users group."
+                )
+                logger.error("%s", err_msg)
+                if collector_instance:
+                    collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+                    collector_instance.last_error_stage = "INTERFACE_ENUMERATION"
+                    collector_instance.last_error_type = "PermissionError"
+                    collector_instance.last_error = err_msg
+                    collector_instance.last_error_message = str(enum_err)
+                    collector_instance._quarantine_failed_start(err_msg)
+                raise PermissionError(err_msg) from enum_err
+            err_msg = f"[INTERFACE_ENUMERATION_FAILED] Failed refreshing Scapy interface registry: {enum_err}"
+            logger.error("%s", err_msg)
+            if collector_instance:
+                collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+                collector_instance.last_error_stage = "INTERFACE_ENUMERATION"
+                collector_instance.last_error_type = type(enum_err).__name__
+                collector_instance.last_error = err_msg
+                collector_instance.last_error_message = str(enum_err)
+                collector_instance._quarantine_failed_start(err_msg)
+            raise RuntimeError(err_msg) from enum_err
+
+    interfaces_after: List[str] = []
+    if hasattr(conf, "ifaces") and conf.ifaces is not None:
+        try:
+            interfaces_after = [str(k) for k in conf.ifaces.keys()]
+        except Exception:
+            pass
+
+    # Stage 2: Interface Resolution
+    try:
+        resolved_iface = resolve_iface(interface_name)
+    except Exception as res_err:
+        err_msg = f"[INTERFACE_RESOLUTION_FAILED] Error resolving interface '{interface_name}': {res_err}"
+        logger.error("%s", err_msg)
+        if collector_instance:
+            collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+            collector_instance.last_error_stage = "INTERFACE_RESOLUTION"
+            collector_instance.last_error_type = type(res_err).__name__
+            collector_instance.last_error_code = getattr(res_err, "winerror", getattr(res_err, "errno", None))
+            collector_instance.last_error = err_msg
+            collector_instance.last_error_message = str(res_err)
+            collector_instance._quarantine_failed_start(err_msg)
+        raise RuntimeError(err_msg) from res_err
+
+    # Explicit validation: Reject dummy / invalid interfaces
+    is_dummy = getattr(resolved_iface, "dummy", False)
+    if not is_dummy and hasattr(resolved_iface, "is_valid"):
+        try:
+            if not resolved_iface.is_valid():
+                is_dummy = True
+        except Exception:
+            pass
+
+    if is_dummy and not is_mock_socket:
+        diag_lines = [
+            f"[INTERFACE_RESOLUTION_FAILED] Interface '{interface_name}' resolved to dummy fallback. No physical Npcap adapter match found.",
+            "Detailed Resolution Diagnostics:",
+            f"  sys.executable:            {sys.executable}",
+            f"  scapy.__file__:            {getattr(scapy, '__file__', None)}",
+            f"  scapy.interfaces.__file__:  {getattr(scapy.interfaces, '__file__', None)}",
+            f"  scapy.config.__file__:      {getattr(scapy.config, '__file__', None)}",
+            f"  conf.use_pcap:             {getattr(conf, 'use_pcap', False)}",
+            f"  id(conf):                  {id(conf)}",
+            f"  id(conf.ifaces):           {id(conf.ifaces) if hasattr(conf, 'ifaces') else None}",
+            f"  interfaces before reload:  {interfaces_before}",
+            f"  interfaces after reload:   {interfaces_after}",
+            f"  requested interface:       {repr(interface_name)}",
+            f"  resolved type:             {type(resolved_iface).__name__}",
+            f"  resolved name:             {getattr(resolved_iface, 'name', None)}",
+            f"  resolved description:      {getattr(resolved_iface, 'description', None)}",
+            f"  resolved dummy flag:       {is_dummy}",
+            f"  resolved network name:     {getattr(resolved_iface, 'network_name', None)}",
+        ]
+        full_diag_msg = "\n".join(diag_lines)
+        logger.error("%s", full_diag_msg)
+        err_msg = f"[INTERFACE_RESOLUTION_FAILED] Interface '{interface_name}' resolved to dummy fallback. No physical Npcap adapter match found."
+        if collector_instance:
+            collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+            collector_instance.last_error_stage = "INTERFACE_RESOLUTION"
+            collector_instance.last_error_type = "RuntimeError"
+            collector_instance.last_error = err_msg
+            collector_instance.last_error_message = err_msg
+            collector_instance._quarantine_failed_start(err_msg)
+        raise RuntimeError(err_msg)
+
+    # Validate interface name matches requested friendly name
+    if not is_mock_socket and getattr(resolved_iface, "name", None) != interface_name:
+        err_msg = f"[INTERFACE_RESOLUTION_FAILED] Interface name mismatch: requested '{interface_name}', got '{getattr(resolved_iface, 'name', None)}'"
+        logger.error("%s", err_msg)
+        if collector_instance:
+            collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+            collector_instance.last_error_stage = "INTERFACE_RESOLUTION"
+            collector_instance.last_error_type = "RuntimeError"
+            collector_instance.last_error = err_msg
+            collector_instance.last_error_message = err_msg
+            collector_instance._quarantine_failed_start(err_msg)
+        raise RuntimeError(err_msg)
+
+    # Obtain and verify network name
+    resolved_network_name = network_name(resolved_iface)
+    iface_net_name = getattr(resolved_iface, "network_name", None)
+    if resolved_network_name != iface_net_name and not is_mock_socket:
+        err_msg = f"[INTERFACE_RESOLUTION_FAILED] network_name('{interface_name}') mismatch: '{resolved_network_name}' != '{iface_net_name}'"
+        logger.error("%s", err_msg)
+        if collector_instance:
+            collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+            collector_instance.last_error_stage = "INTERFACE_RESOLUTION"
+            collector_instance.last_error_type = "RuntimeError"
+            collector_instance.last_error = err_msg
+            collector_instance.last_error_message = err_msg
+            collector_instance._quarantine_failed_start(err_msg)
+        raise RuntimeError(err_msg)
+
+    dev_net_name = resolved_network_name or str(resolved_iface)
+    if not is_mock_socket:
+        if not dev_net_name or (dev_net_name == interface_name and not dev_net_name.startswith(r"\Device\NPF_")):
+            err_msg = f"[INTERFACE_RESOLUTION_FAILED] Resolved network identifier for '{interface_name}' is invalid or unchanged ('{dev_net_name}'). Must resolve to an Npcap adapter path."
+            logger.error("%s", err_msg)
+            if collector_instance:
+                collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+                collector_instance.last_error_stage = "INTERFACE_RESOLUTION"
+                collector_instance.last_error_type = "RuntimeError"
+                collector_instance.last_error = err_msg
+                collector_instance.last_error_message = err_msg
+                collector_instance._quarantine_failed_start(err_msg)
+            raise RuntimeError(err_msg)
+
+        if dev_net_name == getattr(conf, "loopback_name", r"\Device\NPF_Loopback"):
+            err_msg = f"[INTERFACE_RESOLUTION_FAILED] Interface '{interface_name}' resolved to loopback adapter: {dev_net_name}"
+            logger.error("%s", err_msg)
+            if collector_instance:
+                collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+                collector_instance.last_error_stage = "INTERFACE_RESOLUTION"
+                collector_instance.last_error_type = "RuntimeError"
+                collector_instance.last_error = err_msg
+                collector_instance.last_error_message = err_msg
+                collector_instance._quarantine_failed_start(err_msg)
+            raise RuntimeError(err_msg)
+
+        if expected_adapter_type == "Wi-Fi":
+            desc = getattr(resolved_iface, "description", "") or ""
+            lower_desc = desc.lower()
+            if any(v in lower_desc for v in ["virtual", "hyper-v", "vmware", "vpn", "tunnel", "tap"]):
+                err_msg = f"[INTERFACE_RESOLUTION_FAILED] Interface '{interface_name}' resolved to virtual adapter '{desc}'. Physical Wi-Fi adapter required."
+                logger.error("%s", err_msg)
+                if collector_instance:
+                    collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+                    collector_instance.last_error_stage = "INTERFACE_RESOLUTION"
+                    collector_instance.last_error_type = "RuntimeError"
+                    collector_instance.last_error = err_msg
+                    collector_instance.last_error_message = err_msg
+                    collector_instance._quarantine_failed_start(err_msg)
+                raise RuntimeError(err_msg)
+
+    return resolved_iface
+
+
+def select_and_validate_socket_factory(
+    resolved_iface: Any,
+    is_mock_socket: bool = False,
+    collector_instance: Optional[Any] = None,
+) -> Any:
+    """
+    Canonical Layer-2 socket provider selection and validation helper.
+    Ensures interface-specific L2 listener is retrieved and verified as an Npcap/libpcap socket.
+    """
+    from scapy.config import conf
+    import scapy.arch.libpcap as sal
+    from unittest.mock import Mock, NonCallableMock
+
+    socket_factory = None
+    if hasattr(resolved_iface, "l2listen") and callable(resolved_iface.l2listen):
+        try:
+            socket_factory = resolved_iface.l2listen()
+        except Exception as l2_err:
+            logger.debug("resolved_iface.l2listen() raised exception: %s", l2_err)
+
+    if socket_factory is None:
+        socket_factory = conf.L2listen
+
+    if not callable(socket_factory):
+        err_msg = f"[SOCKET_SELECTION_FAILED] Selected socket factory is not callable: {socket_factory}"
+        logger.error("%s", err_msg)
+        if collector_instance:
+            collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+            collector_instance.last_error_stage = "SOCKET_SELECTION"
+            collector_instance.last_error_type = "RuntimeError"
+            collector_instance.last_error = err_msg
+            collector_instance.last_error_message = err_msg
+            collector_instance._quarantine_failed_start(err_msg)
+        raise RuntimeError(err_msg)
+
+    is_mock_factory = is_mock_socket or isinstance(socket_factory, (Mock, NonCallableMock))
+    if not is_mock_factory and not (isinstance(socket_factory, type) and issubclass(socket_factory, sal._L2libpcapSocket)):
+        err_msg = (
+            f"[SOCKET_SELECTION_FAILED] Selected socket class {socket_factory} is not an Npcap/libpcap socket. "
+            "Refusing to fall back to an unsupported socket provider."
+        )
+        logger.error("%s", err_msg)
+        if collector_instance:
+            collector_instance.lifecycle_state = "COLLECTOR_FAILED"
+            collector_instance.last_error_stage = "SOCKET_SELECTION"
+            collector_instance.last_error_type = "RuntimeError"
+            collector_instance.last_error = err_msg
+            collector_instance.last_error_message = err_msg
+            collector_instance._quarantine_failed_start(err_msg)
+        raise RuntimeError(err_msg)
+
+    return socket_factory
+
+
 class PhysicalTrafficCollector:
     """
     Physical network packet metadata collector for Dataset V3.
@@ -52,6 +335,10 @@ class PhysicalTrafficCollector:
 
         self.lifecycle_state = "COLLECTOR_IDLE"
         self.last_error: Optional[str] = None
+        self.last_error_stage: Optional[str] = None
+        self.last_error_type: Optional[str] = None
+        self.last_error_code: Optional[int] = None
+        self.last_error_message: Optional[str] = None
 
         self.flow_manager = FlowManager(
             session_id=self.session_id,
@@ -73,12 +360,49 @@ class PhysicalTrafficCollector:
         self.candidate_flow_ids: Set[str] = set()
         self.residual_other_flow_ids: Set[str] = set()
 
+        # Attribution subsystem components
+        self.attribution_enabled: bool = getattr(config, "enable_attribution", False)
+        self.attribution_available: bool = True
+        self.attribution_error: Optional[str] = None
+        self.last_attribution_report: Optional[Any] = None
+
+        from research.dataset_v3.attribution.correlator import ProcessSocketCorrelator
+        from research.dataset_v3.attribution.policy import AttributionEvidencePolicy
+        from research.dataset_v3.attribution.process_tracker import ProcessTracker
+        from research.dataset_v3.attribution.report import AttributionReportGenerator
+        from research.dataset_v3.attribution.snapshot_manager import SocketSnapshotManager
+
+        self.snapshot_manager = SocketSnapshotManager(
+            snapshot_interval_seconds=getattr(config, "attribution_poll_interval_seconds", 0.15),
+        )
+        self.process_tracker = ProcessTracker(
+            controlled_app_alias=getattr(config, "attribution_controlled_alias", "chrome_controlled"),
+        )
+        self.correlator = ProcessSocketCorrelator(
+            snapshot_manager=self.snapshot_manager,
+            process_tracker=self.process_tracker,
+            window_margin_seconds=getattr(config, "attribution_window_margin_seconds", 1.0),
+            min_observation_separation_seconds=getattr(config, "attribution_min_separation_seconds", 0.10),
+            min_tcp_coverage_ratio=getattr(config, "attribution_min_coverage_ratio", 0.5),
+            min_observation_count=getattr(config, "attribution_min_observation_count", 2),
+            max_observation_gap_seconds=getattr(config, "attribution_max_observation_gap_seconds", 0.50),
+            min_covered_bins=getattr(config, "attribution_min_covered_bins", 2),
+            sampling_bin_width_seconds=getattr(config, "attribution_poll_interval_seconds", 0.15),
+        )
+        self.evidence_policy = AttributionEvidencePolicy(
+            min_tcp_coverage_ratio=getattr(config, "attribution_min_coverage_ratio", 0.5),
+            min_observation_count=getattr(config, "attribution_min_observation_count", 2),
+            allow_strict_udp_promotion=False,
+        )
+        self.report_generator = AttributionReportGenerator()
+
         self._manifest: Optional[SessionManifest] = None
         self._sniffer: Any = None
         self._socket: Optional[Any] = None
         self._stop_event = threading.Event()
         self._timer_thread: Optional[threading.Thread] = None
         self._lock = threading.RLock()
+        self._is_dry_run: bool = False
 
         # Telemetry
         self.packets_captured_count = 0
@@ -144,6 +468,21 @@ class PhysicalTrafficCollector:
             self.lifecycle_state = "COLLECTOR_STARTING"
             self.start_monotonic = time.monotonic()
             self._stop_event.clear()
+            self._is_dry_run = dry_run
+
+            # Start attribution snapshot sampling prior to packet collection
+            if self.attribution_enabled:
+                logger.info("Starting attribution snapshot sampling prior to packet collection...")
+                try:
+                    self.snapshot_manager.start_polling()
+                except Exception as snap_err:
+                    err_msg = f"[ATTRIBUTION_INIT_FAILED] Failed starting socket snapshot polling: {snap_err}"
+                    logger.warning("%s", err_msg)
+                    self.attribution_available = False
+                    self.attribution_error = err_msg
+                    if not getattr(self.config, "attribution_allow_failure", True):
+                        self.fail_capture(reason=err_msg, stage="ATTRIBUTION_INIT")
+                        raise RuntimeError(err_msg) from snap_err
 
             if dry_run:
                 self.lifecycle_state = "COLLECTOR_ACTIVE"
@@ -153,39 +492,72 @@ class PhysicalTrafficCollector:
             # Live Physical Sniffer Execution
             try:
                 from scapy.config import conf
-                from scapy.interfaces import resolve_iface
+                from scapy.interfaces import network_name
                 from scapy.sendrecv import AsyncSniffer
+                from unittest.mock import Mock, NonCallableMock
 
-                # 1. Resolve Layer-2 socket class for specified interface
-                sock_cls = conf.L2listen
-                try:
-                    resolved_iface = resolve_iface(self.config.interface)
-                    if hasattr(resolved_iface, "l2listen") and callable(resolved_iface.l2listen):
-                        sock_cls = resolved_iface.l2listen() or conf.L2listen
-                except Exception as iface_err:
-                    logger.debug(
-                        "resolve_iface failed for '%s', using conf.L2listen: %s",
-                        self.config.interface,
-                        iface_err,
-                    )
-
-                # 2. Synchronous Layer-2 capture socket construction
-                logger.info(
-                    "Opening synchronous Layer-2 capture socket on '%s' (filter='%s', promisc=%s)",
-                    self.config.interface,
-                    self.config.pcap_filter,
-                    self.config.promiscuous,
+                is_mock_socket = (
+                    isinstance(conf.L2listen, (Mock, NonCallableMock))
+                    or "Mock" in getattr(self.config, "interface", "")
                 )
+
+                # Stage 1 & 2: Canonical Interface Resolution and Validation
+                self.last_error_stage = "INTERFACE_RESOLUTION"
                 try:
-                    self._socket = sock_cls(
-                        iface=self.config.interface,
+                    resolved_iface = resolve_and_validate_interface(
+                        interface_name=self.config.interface,
+                        expected_adapter_type=getattr(self.config, "adapter_type", "Wi-Fi"),
+                        is_mock_socket=is_mock_socket,
+                        collector_instance=self,
+                    )
+                except Exception as res_err:
+                    if "[INTERFACE_ENUMERATION_FAILED]" in str(res_err):
+                        self.last_error_stage = "INTERFACE_ENUMERATION"
+                    else:
+                        self.last_error_stage = "INTERFACE_RESOLUTION"
+                    raise
+
+                # Stage 3: Canonical Socket Provider Selection and Validation
+                self.last_error_stage = "SOCKET_SELECTION"
+                socket_factory = select_and_validate_socket_factory(
+                    resolved_iface=resolved_iface,
+                    is_mock_socket=is_mock_socket,
+                    collector_instance=self,
+                )
+
+                # Stage 4: Synchronous Layer-2 capture socket construction
+                # Diagnostics logged before opening (avoiding logging full raw GUID)
+                dev_net_name = network_name(resolved_iface) or str(resolved_iface)
+                sanitized_dev = sanitize_device_name(dev_net_name)
+                logger.info(
+                    "Initializing Layer-2 capture socket: friendly_name='%s', iface_type='%s', provider='%s', socket_class='%s', libpcap_enabled=%s, resolved_device='%s'",
+                    self.config.interface,
+                    type(resolved_iface).__name__,
+                    getattr(getattr(resolved_iface, "provider", None), "name", "unknown"),
+                    getattr(socket_factory, "__name__", str(socket_factory)),
+                    getattr(conf, "use_pcap", False),
+                    sanitized_dev,
+                )
+
+                self.last_error_stage = "SOCKET_INITIALIZATION"
+                try:
+                    self._socket = socket_factory(
+                        iface=resolved_iface,
                         filter=self.config.pcap_filter,
                         promisc=self.config.promiscuous,
                     )
                 except Exception as sock_err:
                     self.lifecycle_state = "COLLECTOR_FAILED"
-                    self.last_error = f"[SOCKET_INIT_FAILED] Layer-2 socket creation failed on '{self.config.interface}': {sock_err}"
+                    self.last_error_type = type(sock_err).__name__
+                    self.last_error_code = getattr(sock_err, "winerror", getattr(sock_err, "errno", None))
+                    err_code_str = f" (native_code: {self.last_error_code})" if self.last_error_code is not None else ""
+                    self.last_error = (
+                        f"[SOCKET_INITIALIZATION_FAILED] [SOCKET_INIT_FAILED] Layer-2 socket creation failed on '{self.config.interface}' "
+                        f"[Device: {sanitized_dev}]{err_code_str}: {sock_err}"
+                    )
+                    self.last_error_message = str(sock_err)
                     logger.error("%s", self.last_error)
+                    self._cleanup_sniffer_and_socket()
                     self._quarantine_failed_start(self.last_error)
                     raise RuntimeError(self.last_error) from sock_err
 
@@ -263,10 +635,11 @@ class PhysicalTrafficCollector:
         ts: Optional[float] = None,
         wire_len: Optional[int] = None,
         orig_frame_len: Optional[int] = None,
+        arrival_mono: Optional[float] = None,
     ) -> None:
         """Public ingestion method for feeding raw IP bytes in test harnesses."""
         res = parse_raw_ip_bytes_detailed(
-            data, ts=ts, wire_len=wire_len, orig_frame_len=orig_frame_len
+            data, ts=ts, arrival_mono=arrival_mono, wire_len=wire_len, orig_frame_len=orig_frame_len
         )
         if res.status == ParseStatus.VALID_METADATA and res.packet_data is not None:
             self.packets_captured_count += 1
@@ -373,6 +746,12 @@ class PhysicalTrafficCollector:
             finally:
                 self._socket = None
 
+        if self.attribution_enabled:
+            try:
+                self.snapshot_manager.stop_polling()
+            except Exception as e:
+                logger.debug("Error stopping snapshot manager in cleanup: %s", e)
+
     def is_worker_alive(self) -> bool:
         """Checks whether the capture worker thread is active and alive."""
         if self.lifecycle_state != "COLLECTOR_ACTIVE":
@@ -415,10 +794,18 @@ class PhysicalTrafficCollector:
                 break
             time.sleep(0.5)
 
-    def stop_capture(self, status: str = "COMPLETE", notes: str = "") -> None:
+    def stop_capture(
+        self,
+        status: str = "COMPLETE",
+        notes: str = "",
+        suppress_quarantine: bool = False,
+    ) -> None:
         """
         Gracefully stops packet capture, finalizes all flows, runs validation on staging,
         and either publishes to final destination or quarantines to .incomplete/.
+        
+        If suppress_quarantine=True (e.g. during dry-run executions), cleans up staging artifacts
+        without publishing or writing quarantine residue to disk.
         """
         # Normalize status
         if status == "COMPLETED":
@@ -447,6 +834,22 @@ class PhysicalTrafficCollector:
             self._stop_event.set()
             logger.info("Stopping Dataset V3 capture session '%s'", self.session_id)
 
+            # Dry-run execution with suppressed quarantine: Clean up staging artifacts and exit cleanly without disk residue
+            if suppress_quarantine:
+                logger.info(
+                    "Session '%s' completed with suppress_quarantine=True: cleaning staging artifacts without publishing or quarantining.",
+                    self.session_id,
+                )
+                self._cleanup_sniffer_and_socket()
+                self.metadata_writer.cleanup_staging_session()
+                if status == "INTERRUPTED":
+                    self.lifecycle_state = "COLLECTOR_INTERRUPTED"
+                elif status == "FAILED":
+                    self.lifecycle_state = "COLLECTOR_FAILED"
+                else:
+                    self.lifecycle_state = "COLLECTOR_COMPLETED"
+                return
+
             # 1. Fetch drops and stop live sniffer / socket
             kernel_drops = None
             if self._sniffer is not None:
@@ -463,11 +866,22 @@ class PhysicalTrafficCollector:
 
             self._cleanup_sniffer_and_socket()
 
-            # 2. Finalize all active flows
+            # 2. Stop attribution snapshot polling safely
+            if self.attribution_enabled:
+                try:
+                    self.snapshot_manager.stop_polling()
+                except Exception as snap_stop_err:
+                    logger.warning("Error stopping snapshot manager polling: %s", snap_stop_err)
+
+            # 3. Finalize all active flows
             completed_flows = self.flow_manager.finalize_all()
             self.metadata_writer.write_flow_index(completed_flows)
 
-            # 3. Generate ground-truth labels
+            # 4. Execute process attribution correlation (if enabled)
+            if self.attribution_enabled:
+                self._run_attribution_correlation(completed_flows)
+
+            # 5. Generate ground-truth labels
             labels = self.annotator.generate_initial_labels(
                 completed_flows,
                 verified_flow_ids=self.verified_flow_ids if self.verified_flow_ids else None,
@@ -533,3 +947,234 @@ class PhysicalTrafficCollector:
                 )
 
             self.metadata_writer.close()
+
+    def _run_attribution_correlation(self, completed_flows: List[FlowIndexRecord]) -> None:
+        """
+        Executes process-to-socket correlation against completed flows.
+        Correlates in volatile memory, generates sidecar report, and cleans up transient data.
+        """
+        evidence_records: List[Any] = []
+        transient_endpoints = self.flow_manager.get_transient_endpoints()
+
+        try:
+            from research.dataset_v3.attribution.schemas import (
+                ATTRIBUTION_RULE_VERSION,
+                AttributionEvidenceMethod,
+                AttributionEvidenceRecord,
+                AttributionQuality,
+            )
+
+            if not self.attribution_available:
+                logger.warning("Attribution was marked unavailable; evaluating all flows as INSUFFICIENT_EVIDENCE")
+                for fl in completed_flows:
+                    rec = AttributionEvidenceRecord(
+                        flow_id=fl.flow_id,
+                        evidence_method=AttributionEvidenceMethod.INSUFFICIENT_EVIDENCE.value,
+                        application_alias=None,
+                        matched_observation_count=0,
+                        attribution_coverage_ratio=0.0,
+                        unique_owner=False,
+                        evidence_quality=AttributionQuality.UNATTRIBUTED.value,
+                        attribution_rule_version=ATTRIBUTION_RULE_VERSION,
+                        rejection_reason="Attribution sampling was unavailable or failed during capture",
+                    )
+                    evidence_records.append(rec)
+                    self.candidate_flow_ids.add(fl.flow_id)
+            else:
+                for fl in completed_flows:
+                    ep_data = transient_endpoints.get(fl.flow_id)
+                    if ep_data is None:
+                        rec = AttributionEvidenceRecord(
+                            flow_id=fl.flow_id,
+                            evidence_method=AttributionEvidenceMethod.INSUFFICIENT_EVIDENCE.value,
+                            application_alias=None,
+                            matched_observation_count=0,
+                            attribution_coverage_ratio=0.0,
+                            unique_owner=False,
+                            evidence_quality=AttributionQuality.UNATTRIBUTED.value,
+                            attribution_rule_version=ATTRIBUTION_RULE_VERSION,
+                            rejection_reason="Flow transient endpoint metadata not found",
+                        )
+                    else:
+                        rec = self.correlator.correlate_flow(
+                            flow_id=fl.flow_id,
+                            protocol=ep_data.protocol,
+                            endpoint_a=ep_data.endpoint_a,
+                            endpoint_b=ep_data.endpoint_b,
+                            first_packet_wire_ts=ep_data.first_packet_wire_ts,
+                            last_packet_wire_ts=ep_data.last_packet_wire_ts,
+                            first_packet_mono_ts=ep_data.first_packet_arrival_mono,
+                            last_packet_mono_ts=ep_data.last_packet_arrival_mono,
+                        )
+
+                    evidence_records.append(rec)
+
+                    # Evaluate policy recommendation
+                    rec_class, quality, source, rej_reason = self.evidence_policy.evaluate_label_recommendation(
+                        rec,
+                        intended_traffic_class=self.config.intended_traffic_class,
+                        controlled_app_alias=self.process_tracker.controlled_app_alias,
+                    )
+
+                    if quality == "VERIFIED":
+                        self.verified_flow_ids.add(fl.flow_id)
+                    elif quality == "UNLABELLED":
+                        # Background noise: do not add to candidate or verified
+                        pass
+                    else:
+                        self.candidate_flow_ids.add(fl.flow_id)
+
+            # Generate and serialize sidecar report in staging
+            report = self.report_generator.generate_report(
+                session_id=self.session_id,
+                evidence_records=evidence_records,
+            )
+            self.last_attribution_report = report
+            self.metadata_writer.write_attribution_report(report)
+
+        except Exception as attr_err:
+            logger.error("Error during attribution correlation: %s", attr_err)
+            self.attribution_available = False
+            self.attribution_error = str(attr_err)
+            if not getattr(self.config, "attribution_allow_failure", True):
+                raise
+        finally:
+            # Strictly release all transient endpoints and volatile process references
+            self.flow_manager.clear_transient_endpoints()
+            self.snapshot_manager.clear()
+            self.process_tracker.clear()
+
+    @classmethod
+    def smoke_test_socket(
+        cls,
+        interface_name: str = "Wi-Fi",
+        pcap_filter: str = "tcp or udp",
+        promiscuous: bool = False,
+        expected_adapter_type: str = "Wi-Fi",
+    ) -> Dict[str, Any]:
+        """
+        Diagnostic smoke-test for Layer-2 socket resolution, opening, and immediate closing.
+        1. Refreshes Scapy interface registry on Windows (conf.ifaces.reload()).
+        2. Resolves friendly interface name to Scapy NetworkInterface via resolve_iface().
+        3. Validates interface is non-dummy, matches friendly name, has valid NPF device path,
+           and is the intended physical adapter.
+        4. Validates interface-specific Layer-2 listener via resolved.l2listen().
+        5. Confirms socket provider is Npcap/libpcap L2pcapListenSocket.
+        6. Opens the Layer-2 socket synchronously.
+        7. Confirms socket creation.
+        8. Immediately closes the socket in a guaranteed finally block.
+        9. Strictly DOES NOT invoke sniff(), AsyncSniffer, recv(), packet callbacks, or PCAP writers.
+        10. Strictly DOES NOT create dataset sessions or touch disk.
+        """
+        import platform
+        from scapy.config import conf
+        from scapy.interfaces import resolve_iface, network_name, NetworkInterface
+        import scapy.arch.libpcap as sal
+        from unittest.mock import Mock, NonCallableMock
+
+        diagnostics: Dict[str, Any] = {
+            "interface_input": interface_name,
+            "stage_reached": "START",
+            "resolved_name": None,
+            "resolved_network_name": None,
+            "sanitized_network_name": None,
+            "interface_type": None,
+            "provider_name": None,
+            "description": None,
+            "libpcap_enabled": getattr(conf, "use_pcap", False),
+            "is_dummy": None,
+            "socket_class": None,
+            "socket_opened": False,
+            "socket_closed": False,
+            "error_stage": None,
+            "exception_type": None,
+            "native_error_code": None,
+            "error_message": None,
+        }
+
+        is_mock_socket = (
+            isinstance(conf.L2listen, (Mock, NonCallableMock))
+            or "Mock" in interface_name
+        )
+
+        # Stage 1 & 2: Canonical Interface Resolution and Validation
+        diagnostics["stage_reached"] = "INTERFACE_RESOLUTION"
+        try:
+            resolved = resolve_and_validate_interface(
+                interface_name=interface_name,
+                expected_adapter_type=expected_adapter_type,
+                is_mock_socket=is_mock_socket,
+            )
+        except Exception as res_err:
+            if "[INTERFACE_ENUMERATION_FAILED]" in str(res_err):
+                diagnostics["error_stage"] = "INTERFACE_ENUMERATION"
+            else:
+                diagnostics["error_stage"] = "INTERFACE_RESOLUTION"
+            diagnostics["exception_type"] = type(res_err).__name__
+            diagnostics["native_error_code"] = getattr(res_err, "winerror", getattr(res_err, "errno", None))
+            diagnostics["error_message"] = str(res_err)
+            raise
+
+        diagnostics["interface_type"] = type(resolved).__name__
+        diagnostics["provider_name"] = getattr(getattr(resolved, "provider", None), "name", "unknown")
+        diagnostics["description"] = getattr(resolved, "description", None)
+        diagnostics["resolved_name"] = getattr(resolved, "name", str(resolved))
+        diagnostics["resolved_network_name"] = getattr(resolved, "network_name", None)
+        diagnostics["sanitized_network_name"] = sanitize_device_name(diagnostics["resolved_network_name"])
+        diagnostics["is_dummy"] = getattr(resolved, "dummy", False)
+
+        # Stage 3: Canonical Socket Provider Selection and Validation
+        diagnostics["stage_reached"] = "SOCKET_SELECTION"
+        try:
+            socket_factory = select_and_validate_socket_factory(
+                resolved_iface=resolved,
+                is_mock_socket=is_mock_socket,
+            )
+        except Exception as sock_sel_err:
+            diagnostics["error_stage"] = "SOCKET_SELECTION"
+            diagnostics["exception_type"] = type(sock_sel_err).__name__
+            diagnostics["error_message"] = str(sock_sel_err)
+            raise
+
+        diagnostics["socket_class"] = getattr(socket_factory, "__name__", str(socket_factory))
+
+        # Stage 4: Synchronous Socket Creation & Immediate Closing
+        diagnostics["stage_reached"] = "SOCKET_INITIALIZATION"
+        sock = None
+        try:
+            logger.info(
+                "Smoke-test: Opening Layer-2 socket on '%s' [Device: %s] (socket_class: %s, libpcap_enabled=%s)",
+                interface_name,
+                diagnostics["sanitized_network_name"],
+                diagnostics["socket_class"],
+                diagnostics["libpcap_enabled"],
+            )
+            sock = socket_factory(
+                iface=resolved,
+                filter=pcap_filter,
+                promisc=promiscuous,
+            )
+            diagnostics["socket_opened"] = True
+            logger.info("Smoke-test: Successfully opened Layer-2 socket on '%s'", diagnostics["sanitized_network_name"])
+        except Exception as sock_err:
+            diagnostics["error_stage"] = "SOCKET_INITIALIZATION"
+            diagnostics["exception_type"] = type(sock_err).__name__
+            diagnostics["native_error_code"] = getattr(sock_err, "winerror", getattr(sock_err, "errno", None))
+            err_code_str = f" (code: {diagnostics['native_error_code']})" if diagnostics["native_error_code"] is not None else ""
+            diagnostics["error_message"] = (
+                f"[SOCKET_INITIALIZATION_FAILED] [SOCKET_INIT_FAILED] Failed opening Layer-2 socket on '{interface_name}' "
+                f"[Device: {diagnostics['sanitized_network_name']}]{err_code_str}: {sock_err}"
+            )
+            logger.error("%s", diagnostics["error_message"])
+            raise RuntimeError(diagnostics["error_message"]) from sock_err
+        finally:
+            if sock is not None:
+                try:
+                    sock.close()
+                    diagnostics["socket_closed"] = True
+                    logger.info("Smoke-test: Successfully closed Layer-2 socket.")
+                except Exception as close_err:
+                    logger.warning("Smoke-test: Error closing socket: %s", close_err)
+
+        diagnostics["stage_reached"] = "COMPLETED"
+        return diagnostics

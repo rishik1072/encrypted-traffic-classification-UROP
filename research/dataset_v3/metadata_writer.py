@@ -157,15 +157,28 @@ class MetadataWriter:
         with self._lock:
             self._write_json_atomically(self.validation_path, report.to_dict())
 
+    def write_attribution_report(self, report: Any) -> Path:
+        """Writes process_attribution_report.json sidecar to staging."""
+        with self._lock:
+            from research.dataset_v3.attribution.report import AttributionReportGenerator
+            gen = AttributionReportGenerator()
+            out_path = gen.save_sidecar_report(report, self.staging_dir)
+            return out_path
+
     def compute_artifact_hashes(self) -> Dict[str, str]:
         """Computes SHA-256 cryptographic hashes of all staging session artifacts."""
         hashes = {}
-        for name, path in [
+        target_files = [
             ("packet_metadata.jsonl", self.packets_path),
             ("flow_index.csv", self.flows_path),
             ("labels.csv", self.labels_path),
             ("session_manifest.json", self.manifest_path),
-        ]:
+        ]
+        sidecar_path = self.staging_dir / "process_attribution_report.json"
+        if sidecar_path.exists():
+            target_files.append(("process_attribution_report.json", sidecar_path))
+
+        for name, path in target_files:
             if path.exists():
                 h = hashlib.sha256()
                 with open(path, "rb") as f:
@@ -233,6 +246,17 @@ class MetadataWriter:
 
             logger.warning("Quarantined incomplete session to: %s", self.incomplete_dir)
             return self.incomplete_dir
+
+    def cleanup_staging_session(self) -> None:
+        """
+        Safely removes the staging session directory for a dry-run or aborted session
+        without creating quarantine artifacts or touching published sessions.
+        """
+        with self._lock:
+            self.flush_and_close_packets()
+            if self.staging_dir.exists():
+                shutil.rmtree(self.staging_dir, ignore_errors=True)
+                logger.info("Cleaned up staging artifacts for session: %s", self.session_id)
 
     @classmethod
     def quarantine_invalid_published_session(
