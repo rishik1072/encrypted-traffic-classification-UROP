@@ -915,10 +915,7 @@ class TestValidateResearchClaims(unittest.TestCase):
         Audits all canonical empirical tables in results/tables/.
         Asserts that:
         - early prediction, generalization, selective prediction, latency, realtime,
-          dataset provenance, and stale synthetic guard PASS.
-        - historical research_baseline.csv FAILS due to provenance contradiction
-          (dataset_origin='REAL_DATA' contradicted by DatasetRegistry classification of
-          dataset_v2 as HYBRID_PERTURBED).
+          dataset provenance, stale synthetic guard, and baseline PASS.
         """
         tables_path = PROJECT_ROOT / "results" / "tables"
 
@@ -951,12 +948,12 @@ class TestValidateResearchClaims(unittest.TestCase):
         res_stale = validate_stale_synthetic_rejection(tables_path)
         self.assertEqual(res_stale.status, ValidationStatus.PASS, res_stale.reason)
 
-        # 8. Baseline table on historical results/tables/research_baseline.csv FAILS
-        # because it asserts dataset_origin='REAL_DATA' on dataset_v2 (HYBRID_PERTURBED).
-        # This confirms that false-positive validation of the provenance contradiction is eliminated.
+        # 8. Baseline table on authoritative results/tables/research_baseline.csv PASSES
+        # now that dataset_origin='HYBRID_PERTURBED' matches DatasetRegistry classification of
+        # dataset_v2 as HYBRID_PERTURBED.
         res_base = validate_baseline_table(tables_path / "research_baseline.csv", PROJECT_ROOT)
-        self.assertEqual(res_base.status, ValidationStatus.FAIL)
-        self.assertIn("Provenance contradiction", res_base.reason)
+        self.assertEqual(res_base.status, ValidationStatus.PASS, res_base.reason)
+        self.assertIn("hybrid benchmark", res_base.reason)
 
 
 if __name__ == "__main__":

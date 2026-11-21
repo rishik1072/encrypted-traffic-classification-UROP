@@ -11,7 +11,8 @@
   "dataset": {
     "dataset_id": "dataset_v2",
     "version": "2.0.0",
-    "origin": "REAL_DATA",
+    "origin": "HYBRID_PERTURBED",
+    "description": "Hybrid benchmark comprising 121 genuine physical Wi-Fi flows and 180 controlled statistical perturbations, for 301 total flow records.",
     "flow_count": 301,
     "session_count": 150,
     "traffic_classes": [

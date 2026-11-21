@@ -475,6 +475,10 @@ class PhysicalTrafficCollector:
                 logger.info("Starting attribution snapshot sampling prior to packet collection...")
                 try:
                     self.snapshot_manager.start_polling()
+                    if self.process_tracker.root_pid is not None:
+                        self.process_tracker.start_periodic_refresh(
+                            interval_seconds=getattr(self.config, "attribution_tree_refresh_interval_seconds", 1.0)
+                        )
                 except Exception as snap_err:
                     err_msg = f"[ATTRIBUTION_INIT_FAILED] Failed starting socket snapshot polling: {snap_err}"
                     logger.warning("%s", err_msg)
@@ -749,8 +753,9 @@ class PhysicalTrafficCollector:
         if self.attribution_enabled:
             try:
                 self.snapshot_manager.stop_polling()
+                self.process_tracker.stop_periodic_refresh()
             except Exception as e:
-                logger.debug("Error stopping snapshot manager in cleanup: %s", e)
+                logger.debug("Error stopping snapshot manager or process tracker in cleanup: %s", e)
 
     def is_worker_alive(self) -> bool:
         """Checks whether the capture worker thread is active and alive."""
@@ -866,12 +871,13 @@ class PhysicalTrafficCollector:
 
             self._cleanup_sniffer_and_socket()
 
-            # 2. Stop attribution snapshot polling safely
+            # 2. Stop attribution snapshot polling and process tree refresh safely
             if self.attribution_enabled:
                 try:
                     self.snapshot_manager.stop_polling()
+                    self.process_tracker.stop_periodic_refresh()
                 except Exception as snap_stop_err:
-                    logger.warning("Error stopping snapshot manager polling: %s", snap_stop_err)
+                    logger.warning("Error stopping attribution workers: %s", snap_stop_err)
 
             # 3. Finalize all active flows
             completed_flows = self.flow_manager.finalize_all()

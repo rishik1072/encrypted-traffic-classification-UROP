@@ -4,25 +4,25 @@
 **Status:** Authoritative Final Release  
 **Target Platform:** Windows 11 / Windows 10 x64  
 **Date:** September 2026  
-**Authoritative Dataset:** `dataset_v2` (Multi-Environment Real-Traffic Benchmark)  
+**Authoritative Dataset:** `dataset_v2` (Multi-Environment Hybrid Benchmark)<br>
 **Verification Baseline:** Strict Group-Aware Session Isolation, Locked Test Evaluation  
 
 ---
 
 ## 1. Dataset Provenance & Characterization
 
-All primary empirical benchmark conclusions in this release are derived from the multi-environment hybrid benchmark (`dataset_v2`), which combines genuine physical Wi-Fi captures with controlled statistical feature perturbations simulating Gigabit Ethernet, Cellular LTE, and network impairments under both direct and Cloudflare WARP (WireGuard) tunnel encapsulation. Pure unperturbed physical baseline measurements are cataloged via `dataset_real_v1`.
+All primary empirical benchmark conclusions in this release are derived from the multi-environment hybrid benchmark (`dataset_v2`): a "Hybrid benchmark comprising 121 genuine physical Wi-Fi flows and 180 controlled statistical perturbations, for 301 total flow records." Ethernet and cellular conditions are represented by controlled statistical perturbations, not native physical Ethernet or cellular captures. Pure unperturbed physical baseline measurements are cataloged via `dataset_real_v1` (pure physical dataset), while `dataset_v1` is identified as a synthetic fixture.
 
 ### Dataset Summary Table (`results/final/dataset_summary.csv`)
 - **Dataset ID:** `dataset_v2`
-- **Origin Classification:** `HYBRID_PERTURBED` (121 physical flows [40.2%], 180 controlled perturbations [59.8%]; strictly segregated from synthetic fixtures `dataset_v1` and replay vectors `demo_data`)
+- **Origin Classification:** `HYBRID_PERTURBED` (Hybrid benchmark comprising 121 genuine physical Wi-Fi flows and 180 controlled statistical perturbations, for 301 total flow records; strictly segregated from synthetic fixtures `dataset_v1` and replay vectors `demo_data`)
 - **Total Valid Flows:** 301 bidirectional flows
 - **Total User Sessions:** 150 independent capture sessions
 - **Number of Classes:** 6 canonical traffic classes (Web: 50, Video: 50, Messaging: 50, VoIP: 50, File Transfer: 50, Other: 51)
 - **Environments Represented:**
-  - `env_win11_wifi`: Physical 802.11ax Wi-Fi workstation capture (121 flows, 60 sessions)
-  - `env_win11_eth`: Simulated Gigabit Ethernet via bounded feature perturbations (60 flows, 30 sessions)
-  - `env_win11_cellular`: Simulated Cellular LTE via bounded feature perturbations (60 flows, 30 sessions)
+  - `env_win11_wifi`: Genuine physical 802.11ax Wi-Fi workstation capture (121 flows, 60 sessions)
+  - `env_win11_eth`: Controlled statistical feature perturbations modeling Gigabit Ethernet (60 flows, 30 sessions; not native physical Ethernet)
+  - `env_win11_cellular`: Controlled statistical feature perturbations modeling Cellular LTE (60 flows, 30 sessions; not native physical cellular)
 - **Tunnel States:**
   - `warp_disabled` (direct): Standard unencapsulated TLS/HTTPS, QUIC/HTTP3, WebRTC, DNS-over-HTTPS
   - `warp_enabled`: WireGuard UDP tunnel encapsulation (fixed 1280-byte MTU, standardized padding, tunnel headers)
@@ -68,17 +68,17 @@ All features are extracted strictly from packet metadata without payload inspect
 
 ## 5. Baseline Results (EXP-R09)
 
-*Source: `results/final/baseline_results.csv` and `results/final/model_comparison.csv`*
+*Source: `results/tables/research_baseline.csv` (authoritative) and `results/final/model_comparison.csv`*
 
 | Model Architecture | Val Macro-F1 | Test Accuracy | Test Macro-Precision | Test Macro-Recall | Test Macro-F1 | Test Balanced Accuracy | Single-Flow Median Latency | Single-Flow P95 Latency | Serialized Model Size | Selected Winner |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Random Forest** | **0.5984** | **0.5833** | 0.5999 | 0.5833 | **0.5873** | 0.5833 | 17.2884 ms | 31.7871 ms | 881.98 KB | **YES** |
-| **Decision Tree** | 0.5382 | **0.5833** | 0.6657 | 0.5833 | **0.5802** | 0.5833 | **0.0694 ms** | **0.1893 ms** | **9.58 KB** | NO |
-| **LightGBM** | 0.5664 | 0.5417 | 0.5579 | 0.5417 | **0.5474** | 0.5417 | 1.4520 ms | 1.7393 ms | 689.33 KB | NO |
-| **Logistic Regression** | 0.3684 | 0.3333 | 0.3327 | 0.3333 | **0.3240** | 0.3333 | 0.0842 ms | 0.1487 ms | 2.00 KB | NO |
+| **LightGBM** | **0.5664** | 0.5417 | 0.5579 | 0.5417 | **0.5474** | 0.5417 | 1.4407 ms | 1.7283 ms | 689.33 KB | **YES** |
+| **Decision Tree** | 0.5382 | **0.5833** | 0.6657 | 0.5833 | **0.5802** | 0.5833 | **0.0625 ms** | **0.1422 ms** | **9.58 KB** | NO |
+| **Random Forest** | 0.5582 | **0.5833** | 0.5989 | 0.5833 | 0.5854 | 0.5833 | 16.9701 ms | 30.9834 ms | 878.04 KB | NO |
+| **Logistic Regression** | 0.3684 | 0.3333 | 0.3327 | 0.3333 | 0.3240 | 0.3333 | 0.0801 ms | 0.1361 ms | 2.00 KB | NO |
 
 ### Baseline Synthesis
-On real encrypted traffic under strict group-aware isolation, zero-payload statistical features achieve **0.5873 Macro-F1** (Random Forest) and **0.5802 Macro-F1** (Decision Tree). Decision Tree delivers 98.8% of Random Forest's macro-F1 while executing in **0.069 ms** ($249\times$ faster) with a **9.58 KB** serialized model footprint.
+On hybrid multi-environment traffic under strict group-aware session isolation, LightGBM is the selected model based on validation Macro-F1 = 0.5664 (achieving 0.5474 Test Macro-F1 and 0.5417 Accuracy). Random Forest achieves 0.5854 Test Macro-F1 (with an unarchived historical secondary run at 0.5873 documented as SUPERSEDED). Decision Tree achieves 0.5802 Macro-F1 (99.1% of Random Forest's test score) while executing in 0.0625 ms (over 240x faster) with an ultra-compact 9.58 KB serialized model footprint, establishing it as the Pareto-optimal edge estimator.
 
 ---
 
@@ -225,7 +225,7 @@ Physical packet observation delay constitutes **99.8%** of real-time classificat
 ### B. Forensic Discrepancy Resolution Table
 | # | Conflict / Discrepancy | Stale / Inaccurate Source | Authoritative Source | Authoritative Value | Forensic Resolution & Scientific Rationale |
 |---|---|---|---|:---:|---|
-| **1** | **Baseline Macro-F1** (0.9500 vs. 0.5873) | `model_comparison.csv` (EXP-01) | `research_baseline.csv` (EXP-R09) | **0.5873** (RF)<br>**0.5802** (DT) | The 0.9500 figure was generated on an early 12-flow synthetic fixture (`dataset_v1`). Real traffic under session-isolated group evaluation achieves 0.5873 Macro-F1. Synthetic 0.95 is marked as `STALE / SYNTHETIC_ONLY`. |
+| **1** | **Baseline Macro-F1** (0.9500 vs. 0.5474 / 0.5854) | `model_comparison.csv` (EXP-01) | `research_baseline.csv` (EXP-R09) | **0.5474** (LightGBM Winner)<br>**0.5854** (RF)<br>**0.5802** (DT) | The 0.9500 figure was generated on an early 12-flow synthetic fixture (`dataset_v1`). Hybrid traffic under session-isolated group evaluation selects LightGBM (Val F1=0.5664, Test F1=0.5474), while RF achieves 0.5854 and DT achieves 0.5802. An unarchived secondary run of RF (0.5873) is SUPERSEDED. Synthetic 0.95 is marked as `STALE / SYNTHETIC_ONLY`. |
 | **2** | **Selective Macro-F1** (0.9500 vs. 0.6515) | `phase8_final_test.csv` (EXP-R08) | `research_selective_prediction.csv` (EXP-R13) | **0.6515** ($\tau^*=0.70$, 54.2% Cov) | `phase8_final_test.csv` reported 0.95 Macro-F1 with **0.0% coverage** (the model rejected 100% of test samples). EXP-R13 calibrates thresholds on validation data, achieving 0.6515 Macro-F1 at 54.2% coverage on real test flows. |
 | **3** | **Real-Time Latency** (< 0.003 ms vs. 79.94 ms) | `README.md` (EXP-06 microbench) | `research_early_prediction.csv` (EXP-R12) & `research_latency.csv` (EXP-R14) | **79.94 ms** (Triage)<br>**0.449 ms** (End-to-End) | The <0.003 ms claim isolated single-sample C tree evaluation, ignoring physical packet arrival delays and feature calculation. Total triage time requires 79.94 ms (64 ms physical observation + 16.5 ms inference). |
 | **4** | **Direct to Tunneled Generalization** (0.9000 vs. 0.3407) | `generalization_scorecard.csv` (EXP-08) | `research_generalization_scorecard.csv` (EXP-R11) | **0.3407** ($\Delta\text{F1}=-0.2594$) | The legacy 0.9000 figure was computed on synthetic PCAP splits. WireGuard tunnel padding severely masks packet length distributions, causing direct models to drop from 0.6001 to 0.3407 Macro-F1 when evaluated on real WARP traffic. |

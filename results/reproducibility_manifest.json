@@ -1,4 +1,6 @@
 {
+  "manifest_status": "HISTORICAL_SYNTHETIC_FIXTURE_SUPERSEDED",
+  "historical_disclosure": "This manifest documents the historical Phase 1 synthetic-fixture milestone evaluated exclusively on dataset_v1 (12 Scapy-generated synthetic flows, 0.9500 Macro-F1). It is SUPERSEDED by results/research_release_manifest.json and results/research_manifest.json for the authoritative hybrid benchmark (dataset_v2: 121 physical Wi-Fi flows + 180 controlled statistical perturbations = 301 flows) under group-aware session isolation.",
   "project_name": "encrypted-traffic-classification",
   "project_version": "1.0.0",
   "git_commit": "unavailable",
