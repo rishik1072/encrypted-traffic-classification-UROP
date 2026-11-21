@@ -376,6 +376,17 @@ class DatasetV3Validator:
                         errors.append(f"Check 16 FAIL: MAC address detected in packet line {i+1}!")
                         check16_passed = False
                         break
+
+            sidecar_path = s_dir / "process_attribution_report.json"
+            if sidecar_path.exists():
+                with open(sidecar_path, "r", encoding="utf-8") as f:
+                    sidecar_content = f.read()
+                    if IPV4_PATTERN.search(sidecar_content):
+                        errors.append("Check 16 FAIL: Raw IPv4 address pattern detected in process_attribution_report.json!")
+                        check16_passed = False
+                    if MAC_PATTERN.search(sidecar_content):
+                        errors.append("Check 16 FAIL: MAC address pattern detected in process_attribution_report.json!")
+                        check16_passed = False
         except Exception as e:
             errors.append(f"Check 16 FAIL: Error during forbidden identifier audit: {e}")
             check16_passed = False

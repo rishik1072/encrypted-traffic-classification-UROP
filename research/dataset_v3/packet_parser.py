@@ -39,13 +39,10 @@ class PacketParseResult:
 
 
 def _init_scapy() -> None:
-    """Safely pre-initializes Scapy layer definitions and prevents hangs on Windows with AdminOnly Npcap."""
+    """Safely pre-initializes Scapy layer definitions."""
     try:
         import platform
         if platform.system() == "Windows":
-            import scapy.interfaces
-            from scapy.config import conf
-            conf.ifaces.reload = lambda *args, **kwargs: None
             import scapy.layers.l2
             import scapy.layers.inet
     except Exception as e:

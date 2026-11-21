@@ -52,6 +52,11 @@ def main() -> None:
         help="Execute lifecycle verification without starting physical Npcap sniffer.",
     )
     parser.add_argument(
+        "--test-socket",
+        action="store_true",
+        help="Execute safe Layer-2 socket open/close smoke test without sniffing or data collection.",
+    )
+    parser.add_argument(
         "--duration",
         type=float,
         default=60.0,
@@ -72,7 +77,34 @@ def main() -> None:
 
     logger.info("Pre-flight validation PASSED.")
 
-    # 2. Safety confirmation gate
+    # 2. Safety confirmation gate and diagnostic branches
+    if args.test_socket:
+        logger.info("Executing safe Layer-2 socket smoke-test on '%s'...", cfg.interface)
+        try:
+            diag = PhysicalTrafficCollector.smoke_test_socket(
+                interface_name=cfg.interface,
+                pcap_filter=cfg.pcap_filter,
+                promiscuous=cfg.promiscuous,
+            )
+            print("\n" + "=" * 70)
+            print("SOCKET SMOKE TEST RESULT: SUCCESS")
+            print(f"  Input Interface:        {diag['interface_input']}")
+            print(f"  Resolved Name:          {diag['resolved_name']}")
+            print(f"  Resolved Device Path:   {diag['sanitized_network_name']}")
+            print(f"  Socket Provider Class:  {diag['socket_class']}")
+            print(f"  Socket Opened:          {diag['socket_opened']}")
+            print(f"  Socket Closed:          {diag['socket_closed']}")
+            print(f"  Final Stage Reached:    {diag['stage_reached']}")
+            print("=" * 70 + "\n")
+            sys.exit(0)
+        except Exception as e:
+            logger.error("Socket smoke-test failed: %s", e)
+            print("\n" + "=" * 70)
+            print("SOCKET SMOKE TEST RESULT: FAILED")
+            print(f"  Error: {e}")
+            print("=" * 70 + "\n")
+            sys.exit(1)
+
     if not args.confirm and not args.dry_run:
         print("\n" + "=" * 70)
         print("SAFETY GATE: Physical network traffic capture is NOT started.")
@@ -86,8 +118,10 @@ def main() -> None:
         print("\nTo execute this session, supervisory authorization is required.")
         print("Once authorized, run:")
         print("  python scripts/research/dataset_v3/run_pilot_session_1.py --confirm")
-        print("Or test with:")
+        print("Or test lifecycle with:")
         print("  python scripts/research/dataset_v3/run_pilot_session_1.py --dry-run")
+        print("Or run socket smoke-test with:")
+        print("  python scripts/research/dataset_v3/run_pilot_session_1.py --test-socket")
         print("=" * 70 + "\n")
         sys.exit(0)
 
@@ -99,16 +133,12 @@ def main() -> None:
         logger.info("DRY RUN: Testing collector lifecycle without starting sniffer or publishing dataset...")
         collector.start_capture(dry_run=True)
         time.sleep(1.0)
-        collector.stop_capture(status="INTERRUPTED", notes="Dry-run lifecycle test; publication suppressed.")
-        # Ensure zero publication or residue for this dry-run session
-        import shutil
-        if cfg.staging_session_dir and cfg.staging_session_dir.exists():
-            shutil.rmtree(cfg.staging_session_dir, ignore_errors=True)
-        if cfg.incomplete_session_dir and cfg.incomplete_session_dir.exists():
-            shutil.rmtree(cfg.incomplete_session_dir, ignore_errors=True)
-        if cfg.final_session_dir.exists():
-            shutil.rmtree(cfg.final_session_dir, ignore_errors=True)
-        logger.info("Dry run completed successfully with zero published datasets.")
+        collector.stop_capture(
+            status="INTERRUPTED",
+            notes="Dry-run lifecycle test; publication suppressed.",
+            suppress_quarantine=True,
+        )
+        logger.info("Dry run completed successfully with zero published datasets and zero disk residue.")
         return
 
     # 4. Live Physical Capture
