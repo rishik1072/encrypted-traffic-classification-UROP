@@ -202,15 +202,6 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
                         packets_captured_total = m_data.get("capture_packets_received", 0)
                         if packets_captured_total > 0 and m_data.get("packets_processed", 0) > 0:
                             live_machine_verified = True
-                if not live_machine_verified:
-                    with local_event_store._lock, local_event_store._get_connection() as conn:
-                        cur = conn.execute(
-                            "SELECT COUNT(*) FROM prediction_events WHERE session_id = ? AND operating_mode = 'LIVE_NPCAP' AND packets_observed > 0",
-                            (active_sess_id,),
-                        )
-                        row = cur.fetchone()
-                        if row and row[0] > 0:
-                            live_machine_verified = True
             except Exception as e:
                 logger.debug("Live machine verification check note: %s", e)
 

@@ -1,0 +1,16 @@
+{
+  "session_id": "sess_5bd092dab82a4b91a162925c2f1ba2f0",
+  "validator_version": "3.0.0",
+  "validation_timestamp_utc": "2026-11-21T05:17:23.477724+00:00",
+  "is_valid": true,
+  "total_checks_run": 22,
+  "passed_checks": 22,
+  "failed_checks": 0,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "packet_count": 0,
+    "flow_count": 0,
+    "label_count": 0
+  }
+}
