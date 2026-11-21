@@ -42,37 +42,38 @@ The Dataset V3 pilot design has been reconciled against the source implementatio
 ## 3. Pre-Capture Verification Results
 
 ### 3.1 Test Suite Verification
-The complete isolated research test suite was executed in `tests/research/dataset_v3/`:
+The complete isolated research test suite was executed in `tests/research/dataset_v3/` (including 10 new regression tests for Scapy initialization and socket safety):
 ```
 ============================= test session starts =============================
 platform win32 -- Python 3.14.7, pytest-9.0.3, pluggy-1.7.0
 rootdir: C:\UROP project\encrypted-traffic-classification-UROP
 plugins: cov-7.1.0, anyio-4.14.2
-collected 51 items
+collected 61 items
 
-tests/research/dataset_v3/test_annotation.py ......................... [  5%]
-tests/research/dataset_v3/test_capture_integrity.py ................. [ 17%]
-tests/research/dataset_v3/test_collector_lifecycle.py ............... [ 23%]
-tests/research/dataset_v3/test_flow_manager.py ...................... [ 27%]
-tests/research/dataset_v3/test_hardening_features.py ................ [ 39%]
-tests/research/dataset_v3/test_metadata_writer.py ................... [ 41%]
-tests/research/dataset_v3/test_packet_length_semantics.py ........... [ 60%]
-tests/research/dataset_v3/test_packet_parser.py ..................... [ 64%]
-tests/research/dataset_v3/test_prefix_reconstruction.py ............. [ 66%]
-tests/research/dataset_v3/test_privacy_enforcement.py ............... [ 68%]
-tests/research/dataset_v3/test_split_planning.py .................... [ 82%]
+tests/research/dataset_v3/test_annotation.py ......................... [  4%]
+tests/research/dataset_v3/test_capture_initialization_fix.py .......... [ 21%]
+tests/research/dataset_v3/test_capture_integrity.py ................. [ 31%]
+tests/research/dataset_v3/test_collector_lifecycle.py ............... [ 36%]
+tests/research/dataset_v3/test_flow_manager.py ...................... [ 39%]
+tests/research/dataset_v3/test_hardening_features.py ................ [ 49%]
+tests/research/dataset_v3/test_metadata_writer.py ................... [ 50%]
+tests/research/dataset_v3/test_packet_length_semantics.py ........... [ 67%]
+tests/research/dataset_v3/test_packet_parser.py ..................... [ 70%]
+tests/research/dataset_v3/test_prefix_reconstruction.py ............. [ 72%]
+tests/research/dataset_v3/test_privacy_enforcement.py ............... [ 73%]
+tests/research/dataset_v3/test_split_planning.py .................... [ 85%]
 tests/research/dataset_v3/test_validator.py ......................... [100%]
 
-============================= 51 passed in 0.65s ==============================
+============================= 61 passed in 0.96s ==============================
 ```
 
-### 3.2 Storage Invariant Audit
+### 3.2 Storage Invariant & Reconciliation Audit
 Direct filesystem audit of `data/research_v3/` confirms:
 - **Files Published**: `0`
-- **Directories Published**: `0`
-- **Total Storage Size**: `0 bytes`
-- **Integrity**: Pristine. Zero physical packet captures or synthetic data exist in Dataset V3.
+- **Sessions Published**: `0` (Zero physical captures published in the primary dataset directory)
+- **Quarantine Audit**: Failed session `sess_5bd092dab82a4b91a162925c2f1ba2f0` has been safely reconciled and moved to `data/research_v3/.incomplete/` with all diagnostic evidence intact and `SESSION_COMPLETE` marker removed.
 - **Dry-run Pipeline Verification**: Tested and confirmed to leave 0 residue on disk.
+- **Reference**: Detailed technical root cause and fix analysis documented in [PHASE2B_CAPTURE_INITIALIZATION_FIX.md](file:///c:/UROP%20project/encrypted-traffic-classification-UROP/docs/research/PHASE2B_CAPTURE_INITIALIZATION_FIX.md).
 
 ---
 

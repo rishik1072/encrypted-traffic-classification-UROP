@@ -84,8 +84,9 @@ class DatasetV3Config:
     max_packets_per_flow: int = 10000
     pcap_filter: Optional[str] = "ip or ip6"
     promiscuous: bool = True
-    snaplen: Optional[int] = None  # None for full wire capture; integer (e.g. 128) for safe header truncation
+    snaplen: Optional[int] = None  # None for full wire capture; integer (e.g. 96) for safe user-space parser header truncation
     is_synthetic: bool = False  # Strictly False for physical capture
+    allow_empty_capture: bool = False  # If False, 0-packet captures are considered failed and quarantined
     collection_day: Optional[str] = None
     staging_root: Optional[Path] = None
     incomplete_root: Optional[Path] = None

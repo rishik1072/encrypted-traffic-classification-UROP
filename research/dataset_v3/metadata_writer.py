@@ -20,6 +20,7 @@ import os
 import shutil
 import tempfile
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -232,6 +233,76 @@ class MetadataWriter:
 
             logger.warning("Quarantined incomplete session to: %s", self.incomplete_dir)
             return self.incomplete_dir
+
+    @classmethod
+    def quarantine_invalid_published_session(
+        cls,
+        published_session_dir: Path,
+        incomplete_root: Path,
+        failure_reason: str,
+    ) -> Path:
+        """
+        Controlled session invalidation and safe quarantine procedure for an incorrectly
+        published session:
+        1. Updates session_manifest.json (capture_status='FAILED', notes='INVALID: ...').
+        2. Removes SESSION_COMPLETE marker.
+        3. Creates SESSION_INCOMPLETE marker with diagnostic failure reason.
+        4. Moves session directory to .incomplete/<session_id>/ preserving all artifacts.
+        Never deletes raw data or diagnostic evidence.
+        """
+        pub_dir = Path(published_session_dir)
+        inc_root = Path(incomplete_root)
+        session_id = pub_dir.name
+
+        if not pub_dir.exists():
+            raise FileNotFoundError(f"Published session directory does not exist: {pub_dir}")
+
+        # 1. Update manifest
+        manifest_path = pub_dir / "session_manifest.json"
+        if manifest_path.exists():
+            try:
+                with open(manifest_path, "r", encoding="utf-8") as f:
+                    manifest_data = json.load(f)
+                manifest_data["capture_status"] = "FAILED"
+                curr_notes = manifest_data.get("notes", "")
+                manifest_data["notes"] = f"{curr_notes} | INVALID: {failure_reason}".strip(" |")
+                with open(manifest_path, "w", encoding="utf-8") as f:
+                    json.dump(manifest_data, f, indent=2)
+            except Exception as e:
+                logger.warning("Failed to update manifest during quarantine: %s", e)
+
+        # 2. Remove SESSION_COMPLETE marker
+        complete_marker = pub_dir / "SESSION_COMPLETE"
+        if complete_marker.exists():
+            try:
+                complete_marker.unlink()
+            except Exception as e:
+                logger.warning("Failed to remove SESSION_COMPLETE: %s", e)
+
+        # 3. Create SESSION_INCOMPLETE marker
+        incomplete_marker = pub_dir / "SESSION_INCOMPLETE"
+        with open(incomplete_marker, "w", encoding="utf-8") as f:
+            now_iso = datetime.now(timezone.utc).isoformat()
+            f.write(f"SESSION_INCOMPLETE:{session_id}:{now_iso}:{failure_reason}\n")
+
+        # 4. Safe move to quarantine
+        inc_root.mkdir(parents=True, exist_ok=True)
+        dest_dir = inc_root / session_id
+        if dest_dir.exists():
+            shutil.rmtree(dest_dir, ignore_errors=True)
+
+        try:
+            os.replace(pub_dir, dest_dir)
+        except Exception:
+            shutil.move(str(pub_dir), str(dest_dir))
+
+        logger.warning(
+            "Successfully invalidated and quarantined session '%s' to '%s' (Reason: %s)",
+            session_id,
+            dest_dir,
+            failure_reason,
+        )
+        return dest_dir
 
     def close(self) -> None:
         """Closes file descriptors."""

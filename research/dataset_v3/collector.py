@@ -75,6 +75,7 @@ class PhysicalTrafficCollector:
 
         self._manifest: Optional[SessionManifest] = None
         self._sniffer: Any = None
+        self._socket: Optional[Any] = None
         self._stop_event = threading.Event()
         self._timer_thread: Optional[threading.Thread] = None
         self._lock = threading.RLock()
@@ -122,10 +123,16 @@ class PhysicalTrafficCollector:
 
         self.lifecycle_state = "COLLECTOR_READY"
 
-    def start_capture(self, dry_run: bool = False) -> None:
+    def start_capture(self, dry_run: bool = False, startup_timeout: float = 5.0) -> None:
         """
-        Starts the physical packet capture.
-        If dry_run=True, initializes state without starting physical Npcap sniffer (for testing).
+        Starts physical packet capture with synchronous Layer-2 socket initialization.
+        
+        Lifecycle guarantees:
+        1. Layer-2 capture socket is opened synchronously using conf.L2listen / resolve_iface.
+        2. AsyncSniffer receives opened_socket and started_callback (strictly NO snaplen).
+        3. Waits for started_callback with a bounded timeout.
+        4. Validates capture worker thread liveness before transitioning to COLLECTOR_ACTIVE.
+        5. If dry_run=True, initializes state without starting physical Npcap hardware sniffer.
         """
         with self._lock:
             if self.lifecycle_state not in ("COLLECTOR_READY", "COLLECTOR_IDLE"):
@@ -145,28 +152,75 @@ class PhysicalTrafficCollector:
 
             # Live Physical Sniffer Execution
             try:
+                from scapy.config import conf
+                from scapy.interfaces import resolve_iface
                 from scapy.sendrecv import AsyncSniffer
 
+                # 1. Resolve Layer-2 socket class for specified interface
+                sock_cls = conf.L2listen
+                try:
+                    resolved_iface = resolve_iface(self.config.interface)
+                    if hasattr(resolved_iface, "l2listen") and callable(resolved_iface.l2listen):
+                        sock_cls = resolved_iface.l2listen() or conf.L2listen
+                except Exception as iface_err:
+                    logger.debug(
+                        "resolve_iface failed for '%s', using conf.L2listen: %s",
+                        self.config.interface,
+                        iface_err,
+                    )
+
+                # 2. Synchronous Layer-2 capture socket construction
                 logger.info(
-                    "Starting Scapy AsyncSniffer on interface '%s' (filter='%s', promisc=%s)",
+                    "Opening synchronous Layer-2 capture socket on '%s' (filter='%s', promisc=%s)",
                     self.config.interface,
                     self.config.pcap_filter,
                     self.config.promiscuous,
                 )
+                try:
+                    self._socket = sock_cls(
+                        iface=self.config.interface,
+                        filter=self.config.pcap_filter,
+                        promisc=self.config.promiscuous,
+                    )
+                except Exception as sock_err:
+                    self.lifecycle_state = "COLLECTOR_FAILED"
+                    self.last_error = f"[SOCKET_INIT_FAILED] Layer-2 socket creation failed on '{self.config.interface}': {sock_err}"
+                    logger.error("%s", self.last_error)
+                    self._quarantine_failed_start(self.last_error)
+                    raise RuntimeError(self.last_error) from sock_err
 
+                # 3. Setup AsyncSniffer with opened_socket and started_callback
+                # Strictly DO NOT pass snaplen or iface to AsyncSniffer
+                started_evt = threading.Event()
                 sniffer_kwargs = {
-                    "iface": self.config.interface,
-                    "filter": self.config.pcap_filter,
-                    "promisc": self.config.promiscuous,
+                    "opened_socket": self._socket,
                     "prn": self._packet_callback,
                     "store": False,
+                    "started_callback": started_evt.set,
                 }
-                if self.config.snaplen is not None:
-                    sniffer_kwargs["snaplen"] = self.config.snaplen
 
                 self._sniffer = AsyncSniffer(**sniffer_kwargs)
                 self._sniffer.start()
+
+                # 4. Bounded wait for started_callback
+                started = started_evt.wait(timeout=startup_timeout)
+
+                # 5. Verify capture worker thread liveness
+                thread_alive = False
+                if hasattr(self._sniffer, "thread") and self._sniffer.thread is not None:
+                    thread_alive = self._sniffer.thread.is_alive()
+
+                if not started or not thread_alive:
+                    self.lifecycle_state = "COLLECTOR_FAILED"
+                    reason = "startup timeout" if not started else "capture worker thread died immediately"
+                    self.last_error = f"[CAPTURE_START_FAILED] AsyncSniffer failed to start ({reason})."
+                    logger.error("%s", self.last_error)
+                    self._cleanup_sniffer_and_socket()
+                    self._quarantine_failed_start(self.last_error)
+                    raise RuntimeError(self.last_error)
+
                 self.lifecycle_state = "COLLECTOR_ACTIVE"
+                logger.info("Physical capture successfully verified and active on interface '%s'", self.config.interface)
 
                 # Start duration timer thread if positive duration
                 if self.config.duration_seconds > 0:
@@ -178,13 +232,12 @@ class PhysicalTrafficCollector:
                     self._timer_thread.start()
 
             except Exception as e:
-                self.lifecycle_state = "COLLECTOR_FAILED"
-                self.last_error = f"Physical capture start failure: {e}"
-                logger.error("Failed to start physical packet sniffer: %s", e)
-                raise RuntimeError(
-                    f"Physical capture failed to start on interface '{self.config.interface}': {e}. "
-                    "Dataset V3 refuses to fall back to synthetic capture."
-                ) from e
+                if self.lifecycle_state != "COLLECTOR_FAILED":
+                    self.lifecycle_state = "COLLECTOR_FAILED"
+                    self.last_error = f"[CAPTURE_INIT_FAILED] {e}"
+                    self._cleanup_sniffer_and_socket()
+                    self._quarantine_failed_start(self.last_error)
+                raise
 
     def _packet_callback(self, raw_packet: Any) -> None:
         """Internal callback invoked for each packet captured on the physical wire."""
@@ -276,10 +329,85 @@ class PhysicalTrafficCollector:
             self.processing_failures_count += 1
             logger.error("Processing failure for packet in session %s: %s", self.session_id, e)
 
+    def _quarantine_failed_start(self, failure_reason: str) -> None:
+        """Helper to ensure staging directory is quarantined when capture fails to start or crashes."""
+        try:
+            self._stop_event.set()
+            if self._manifest is not None:
+                ManifestManager.finalize_manifest(
+                    manifest=self._manifest,
+                    packet_count=self.packets_processed_count,
+                    flow_count=0,
+                    status="FAILED",
+                    label_quality="AMBIGUOUS",
+                    notes=f"Capture failure: {failure_reason}",
+                    kernel_buffer_drops=None,
+                    queue_drops=self.queue_drops_count,
+                    parsing_failures=self.parsing_failures_count,
+                    processing_failures=self.processing_failures_count,
+                )
+                self.metadata_writer.write_manifest(self._manifest)
+            self.metadata_writer.quarantine_incomplete_session(
+                self._manifest or ManifestManager.create_initial_manifest(self.config),
+                failure_reason=failure_reason,
+            )
+        except Exception as q_err:
+            logger.warning("Error quarantining failed session: %s", q_err)
+
+    def _cleanup_sniffer_and_socket(self) -> None:
+        """Safely stops AsyncSniffer and closes Layer-2 socket."""
+        if self._sniffer is not None:
+            try:
+                if getattr(self._sniffer, "running", False):
+                    self._sniffer.stop()
+            except Exception as e:
+                logger.debug("Error stopping AsyncSniffer: %s", e)
+            finally:
+                self._sniffer = None
+
+        if self._socket is not None:
+            try:
+                self._socket.close()
+            except Exception as e:
+                logger.debug("Error closing Layer-2 socket: %s", e)
+            finally:
+                self._socket = None
+
+    def is_worker_alive(self) -> bool:
+        """Checks whether the capture worker thread is active and alive."""
+        if self.lifecycle_state != "COLLECTOR_ACTIVE":
+            return False
+        # If dry-run, no sniffer thread exists
+        if self._sniffer is None:
+            return True
+        if hasattr(self._sniffer, "thread") and self._sniffer.thread is not None:
+            return self._sniffer.thread.is_alive()
+        return False
+
+    def fail_capture(self, reason: str, stage: str = "RUNTIME") -> None:
+        """Transitions collector to FAILED and immediately quarantines staging session."""
+        with self._lock:
+            if self.lifecycle_state in ("COLLECTOR_FAILED", "COLLECTOR_STOPPING", "COLLECTOR_COMPLETED"):
+                return
+            self.lifecycle_state = "COLLECTOR_FAILED"
+            self.last_error = f"[{stage}] {reason}"
+            self._stop_event.set()
+            logger.error("Failing capture session %s: %s", self.session_id, self.last_error)
+            self._cleanup_sniffer_and_socket()
+            self._quarantine_failed_start(self.last_error)
+
     def _duration_timer_worker(self) -> None:
         """Monitors session duration and triggers graceful stop upon timeout."""
         duration = self.config.duration_seconds
         while not self._stop_event.is_set():
+            if not self.is_worker_alive():
+                logger.error("Capture worker died unexpectedly during session %s!", self.session_id)
+                self.fail_capture(
+                    reason="Capture worker thread died unexpectedly during active collection.",
+                    stage="CAPTURE_WORKER_DIED",
+                )
+                break
+
             elapsed = time.monotonic() - (self.start_monotonic or time.monotonic())
             if elapsed >= duration:
                 logger.info("Session duration (%.1f s) reached. Stopping capture...", duration)
@@ -300,16 +428,29 @@ class PhysicalTrafficCollector:
             if self.lifecycle_state in ("COLLECTOR_STOPPING", "COLLECTOR_COMPLETED", "COLLECTOR_FAILED"):
                 return
 
+            # Check if capture worker was dead when stop was called
+            if self._sniffer is not None and not self.is_worker_alive():
+                self.lifecycle_state = "COLLECTOR_FAILED"
+                self.last_error = "[CAPTURE_WORKER_DEAD] Sniffer thread died before capture completed."
+                logger.error("%s", self.last_error)
+                self._cleanup_sniffer_and_socket()
+                self._quarantine_failed_start(self.last_error)
+                return
+
+            # Check zero packet condition
+            is_empty_capture = (self.packets_processed_count == 0)
+            if status == "COMPLETE" and is_empty_capture and not getattr(self.config, "allow_empty_capture", False):
+                status = "FAILED"
+                notes = f"{notes} | Zero physical packets received during capture session.".strip(" |")
+
             self.lifecycle_state = "COLLECTOR_STOPPING"
             self._stop_event.set()
             logger.info("Stopping Dataset V3 capture session '%s'", self.session_id)
 
-            # 1. Stop live sniffer if active
+            # 1. Fetch drops and stop live sniffer / socket
             kernel_drops = None
             if self._sniffer is not None:
                 try:
-                    if getattr(self._sniffer, "running", False):
-                        self._sniffer.stop()
                     if hasattr(self._sniffer, "stats"):
                         try:
                             s = self._sniffer.stats()
@@ -318,9 +459,9 @@ class PhysicalTrafficCollector:
                         except Exception:
                             pass
                 except Exception as e:
-                    logger.warning("Error stopping AsyncSniffer: %s", e)
-                finally:
-                    self._sniffer = None
+                    logger.warning("Error fetching AsyncSniffer stats: %s", e)
+
+            self._cleanup_sniffer_and_socket()
 
             # 2. Finalize all active flows
             completed_flows = self.flow_manager.finalize_all()
@@ -361,7 +502,7 @@ class PhysicalTrafficCollector:
             self.metadata_writer.write_validation_report(val_report)
 
             # 7. Atomic publication or quarantine
-            if val_report.is_valid and status == "COMPLETE":
+            if val_report.is_valid and status == "COMPLETE" and not is_empty_capture:
                 published_path = self.metadata_writer.publish_complete_session(self._manifest)
                 self.lifecycle_state = "COLLECTOR_COMPLETED"
                 logger.info(
@@ -371,11 +512,19 @@ class PhysicalTrafficCollector:
                     len(completed_flows),
                 )
             else:
-                fail_reason = "; ".join(val_report.errors) if val_report.errors else f"Status: {status}"
+                if is_empty_capture and status == "FAILED":
+                    fail_reason = "Zero physical packets received during capture session."
+                else:
+                    fail_reason = "; ".join(val_report.errors) if val_report.errors else f"Status: {status}"
                 quarantined_path = self.metadata_writer.quarantine_incomplete_session(
                     self._manifest, failure_reason=fail_reason
                 )
-                self.lifecycle_state = "COLLECTOR_FAILED" if not val_report.is_valid else "COLLECTOR_INTERRUPTED"
+                if status == "INTERRUPTED":
+                    self.lifecycle_state = "COLLECTOR_INTERRUPTED"
+                elif not val_report.is_valid or status == "FAILED" or is_empty_capture:
+                    self.lifecycle_state = "COLLECTOR_FAILED"
+                else:
+                    self.lifecycle_state = "COLLECTOR_INTERRUPTED"
                 logger.warning(
                     "Session validation failed or status=%s. Quarantined to %s (Reason: %s)",
                     status,
