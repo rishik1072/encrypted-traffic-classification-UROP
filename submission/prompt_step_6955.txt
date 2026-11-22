@@ -1,0 +1,574 @@
+<USER_REQUEST>
+ROLE:
+Act as a senior academic technical writer, research documentation
+specialist, and Microsoft Word document formatting expert.
+
+PROJECT:
+REAL-TIME ENCRYPTED TRAFFIC CLASSIFICATION USING LIGHTWEIGHT
+MACHINE LEARNING MODELS
+
+UNIVERSITY:
+SRM University-AP, Andhra Pradesh
+Department of Computer Science & Engineering
+
+OBJECTIVE:
+Create my complete individual UROP academic project report in
+the EXACT academic structure and formatting style of the sample
+SRM University-AP report PDF attached to this conversation.
+
+I have also attached my project Markdown document containing
+project information. You must inspect it and use it as a primary
+content source.
+
+IMPORTANT:
+This is an academic project report, NOT an IEEE research paper.
+Do not use IEEE two-column formatting for this document.
+
+========================================================
+PHASE 1 — UNDERSTAND THE SAMPLE PDF
+========================================================
+
+First, carefully inspect the entire attached SRM sample PDF.
+
+Analyze:
+1. Cover page design and alignment.
+2. University name and department arrangement.
+3. Title page typography and spacing.
+4. Declaration page format.
+5. Certificate page format.
+6. Acknowledgment layout.
+7. Abstract formatting.
+8. Contents page and table alignment.
+9. List of Tables and List of Figures.
+10. Chapter numbering and heading hierarchy.
+11. Font family, font sizes and text styling.
+12. Paragraph alignment, line spacing and indentation.
+13. Page margins and page numbering.
+14. Header and footer structure.
+15. Reference formatting.
+16. List of Publications formatting.
+
+Reproduce the same visual structure as closely as possible.
+
+Use the PDF only as a FORMAT AND STRUCTURE REFERENCE.
+Do not copy its sample paragraphs, generic explanations,
+references, project information or unrelated diagrams.
+
+========================================================
+PHASE 2 — UNDERSTAND MY ACTUAL PROJECT
+========================================================
+
+Inspect the attached project Markdown file and the current
+repository.
+
+Read the relevant project source files, README files,
+architecture documentation, experiment manifests, research
+results, diagrams, and implementation modules.
+
+Use actual implementation evidence wherever possible.
+
+Do not assume that a feature exists merely because it is
+mentioned in an old plan or proposal.
+
+SOURCE PRIORITY:
+
+1. Authoritative research experiment CSV files.
+2. Dataset registry and provenance manifests.
+3. Current implementation and source code.
+4. Current project documentation.
+5. Attached project Markdown.
+6. Sample PDF (formatting only).
+
+The following experiment sources are authoritative:
+
+EXP-R09:
+results/tables/research_baseline.csv
+
+EXP-R10:
+results/tables/feature_count_tradeoff_research.csv
+results/tables/feature_family_ablation_research.csv
+
+EXP-R11:
+results/tables/research_generalization_scorecard.csv
+
+EXP-R12:
+results/tables/research_early_prediction.csv
+
+EXP-R13:
+results/tables/research_selective_prediction.csv
+
+EXP-R14:
+results/tables/research_latency.csv
+
+EXP-R15:
+results/tables/realtime_research_validation.csv
+
+========================================================
+PHASE 3 — REQUIRED UNIVERSITY REPORT STRUCTURE
+========================================================
+
+Follow the sample's chapter arrangement.
+
+FRONT MATTER:
+
+1. TITLE PAGE
+2. DECLARATION
+3. CERTIFICATE
+4. ACKNOWLEDGMENT
+5. ABSTRACT
+6. CONTENTS
+7. LIST OF TABLES
+8. LIST OF FIGURES
+
+CHAPTER 1 — INTRODUCTION TO THE PROJECT
+
+Include:
+1.1 Introduction
+1.2 Background of Encrypted Network Traffic
+1.3 Problem Statement
+1.4 Objectives of the Project
+1.5 Scope of the Project
+1.6 Organization of the Report
+
+CHAPTER 2 — MOTIVATION
+
+Include:
+2.1 Motivation
+2.2 Limitations of Traditional Deep Packet Inspection
+2.3 Need for Zero-Payload Traffic Classification
+2.4 Need for Lightweight Machine Learning
+2.5 Research Challenges
+2.6 Project Contributions
+
+CHAPTER 3 — LITERATURE SURVEY
+
+Include:
+3.1 Introduction
+3.2 Existing Encrypted Traffic Classification Approaches
+3.3 Machine Learning-Based Traffic Classification
+3.4 Flow-Based Statistical Feature Extraction
+3.5 Early Traffic Classification
+3.6 Research Gaps
+3.7 Comparative Literature Survey
+
+Include a properly formatted literature comparison table.
+
+Use genuine academic papers and publications.
+Verify the bibliographic details before citing them.
+Never fabricate author names, paper titles, journals, DOI numbers
+or publication years.
+
+CHAPTER 4 — DESIGN AND METHODOLOGY
+
+Include:
+4.1 Proposed System Overview
+4.2 System Architecture
+4.3 Dataset Collection Methodology
+4.4 Dataset Description and Provenance
+4.5 Traffic Flow Construction
+4.6 Zero-Payload Feature Extraction
+4.7 Feature Engineering
+4.8 Machine Learning Models
+4.9 Training and Evaluation Methodology
+4.10 Evaluation Metrics
+4.11 Early Prediction Methodology
+4.12 Selective Classification Methodology
+4.13 Generalization Experiments
+4.14 Research Workflow
+
+Include actual architecture diagrams and workflow figures
+from the repository where available.
+
+CHAPTER 5 — IMPLEMENTATION
+
+Include:
+5.1 Development Environment
+5.2 Network Packet Capture
+5.3 Bidirectional Flow Management
+5.4 Statistical Feature Extraction
+5.5 Machine Learning Model Integration
+5.6 Classification and Confidence Handling
+5.7 Real-Time Processing Pipeline
+5.8 Local API and Event Storage
+5.9 Monitoring Dashboard
+5.10 Error Handling and Fail-Closed Design
+5.11 Dataset V3 Physical Capture Validation
+
+Only describe implementation features that actually exist
+in the inspected code.
+
+CHAPTER 6 — HARDWARE / SOFTWARE TOOLS USED
+
+Include:
+6.1 Hardware Requirements
+6.2 Software Requirements
+6.3 Programming Languages
+6.4 Machine Learning Libraries
+6.5 Network Capture Technologies
+6.6 Development Tools
+6.7 Testing Tools
+
+Describe the actual hardware and software environment
+used in the research.
+
+CHAPTER 7 — RESULTS AND DISCUSSION
+
+Include:
+7.1 Experimental Setup
+7.2 Dataset Statistics
+7.3 Baseline Model Comparison
+7.4 Feature Selection and Ablation
+7.5 Cross-Environment Generalization
+7.6 Network Condition Robustness
+7.7 Tunnel Direction Shift
+7.8 Early Prediction Results
+7.9 Selective Classification Results
+7.10 Computational Efficiency
+7.11 Real-Time System Validation
+7.12 Discussion of Findings
+7.13 Limitations and Threats to Validity
+
+Use clearly numbered tables and figures.
+
+CHAPTER 8 — CONCLUSION
+
+Include:
+8.1 Project Summary
+8.2 Research Contributions
+8.3 Limitations
+8.4 Scope of Further Work
+
+BACK MATTER:
+
+REFERENCES
+
+LIST OF PUBLICATIONS
+
+If no publication has been accepted or published, state
+"No publications arising from this project as of the
+submission date." Do not invent publications.
+
+========================================================
+PHASE 4 — SCIENTIFIC ACCURACY REQUIREMENTS
+========================================================
+
+These facts must be preserved throughout the report.
+
+PROJECT DATASET:
+
+dataset_real_v1:
+121 genuine physical Wi-Fi flows.
+
+dataset_v2:
+301 total flows consisting of:
+- 121 genuine physical Wi-Fi flows.
+- 180 controlled statistical perturbations.
+- Six traffic classes.
+- 150 sessions.
+
+IMPORTANT:
+dataset_v2 is a HYBRID_PERTURBED benchmark.
+
+Ethernet and cellular conditions are represented by controlled
+statistical perturbations, NOT native physical Ethernet or
+cellular captures.
+
+Do not describe all 301 flows as physical measurements.
+
+Dataset V3 physical pilot sessions are separate capture-pipeline
+and attribution experiments. Their ambiguous/unlabelled records
+must not be presented as verified supervised classification data.
+
+BASELINE MODEL RESULTS — EXP-R09:
+
+Logistic Regression:
+Validation Macro-F1 = 0.3684
+Test Macro-F1 = 0.3240
+
+Decision Tree:
+Validation Macro-F1 = 0.5382
+Test Macro-F1 = 0.5802
+
+Random Forest:
+Validation Macro-F1 = 0.5582
+Test Macro-F1 = 0.5854
+
+LightGBM:
+Validation Macro-F1 = 0.5664
+Test Macro-F1 = 0.5474
+
+LightGBM is the validation-selected model.
+Do not select a model using test-set performance.
+
+FEATURE EXPERIMENTS — EXP-R10:
+
+Top-3 features:
+Validation Macro-F1 = 0.7572
+Test Macro-F1 = 0.6708
+
+Top-10 features:
+Test Macro-F1 = 0.5840
+
+All 84 features:
+Test Macro-F1 = 0.3359
+
+Direction-only ablation:
+Test Macro-F1 = 0.4241
+
+Full feature-family ablation:
+Test Macro-F1 = 0.2931
+
+GENERALIZATION — EXP-R11:
+
+Unseen simulated physical-media conditions:
+Macro-F1 = 0.9325
+
+Unseen network impairments:
+Macro-F1 = 0.9030
+
+Direct-to-WARP tunnel shift:
+Macro-F1 = 0.3407
+F1 delta = -0.2653
+
+Clearly identify which results use controlled perturbations.
+
+EARLY PREDICTION — EXP-R12:
+
+Three-packet horizon:
+Selective Macro-F1 = 0.6111
+Coverage = 91.67%
+
+Clearly distinguish selective performance from full-test
+performance and report the small evaluation sample size.
+
+SELECTIVE CLASSIFICATION — EXP-R13:
+
+Threshold = 0.70
+Selective Macro-F1 = 0.6515
+Selective accuracy = 73.08%
+Coverage = 54.17%
+
+LATENCY — EXP-R14:
+
+Decision Tree warm inference:
+P50 = 0.0578 ms
+P95 = 0.0924 ms
+
+Warm feature extraction:
+P50 = 0.3681 ms
+P95 = 7.0281 ms
+
+REAL-TIME SYSTEM — EXP-R15:
+
+Use verified operational validation outputs.
+Clearly distinguish LIVE_MODE from DEMO_MODE.
+
+NEVER USE THESE AS CURRENT EMPIRICAL CLAIMS:
+
+- Historical 0.9500 synthetic-fixture result.
+- Historical 0.5857 baseline claim (UNVERIFIED).
+- Superseded Random Forest result of 0.5873.
+- Any unsupported accuracy or performance claim.
+
+If a provided value conflicts with an authoritative CSV,
+use the authoritative CSV and document the discrepancy.
+
+========================================================
+PHASE 5 — TITLE PAGE AND STUDENT INFORMATION
+========================================================
+
+Use an individual student report.
+
+Student:
+Gorakala Rishik
+
+Registration number:
+[INSERT OFFICIAL REGISTRATION NUMBER]
+
+Degree:
+Bachelor of Technology
+
+Department:
+Computer Science & Engineering
+
+University:
+SRM University-AP, Andhra Pradesh
+
+Project Guide:
+[INSERT OFFICIAL GUIDE NAME AND DESIGNATION]
+
+Use the exact degree/department naming from the official
+university template.
+
+Do not invent registration numbers, guide names, signatures,
+or official designations.
+
+Preserve blank signature spaces for:
+- Student declaration.
+- Project Guide.
+- Additional certificate signatory, if required by the sample.
+
+Use November 2026 as the submission month unless the
+university template requires a different date.
+
+========================================================
+PHASE 6 — ORIGINAL ACADEMIC WRITING
+========================================================
+
+Write original, academically appropriate content grounded
+in my actual project work.
+
+Requirements:
+
+- Do not copy paragraphs from the sample PDF.
+- Do not use generic filler paragraphs.
+- Do not paraphrase sources without citations.
+- Cite all external concepts and research findings.
+- Distinguish project implementation from literature review.
+- Write in clear, natural academic English.
+- Explain technical concepts in sufficient depth.
+- Avoid repetitive introductions and conclusions.
+- Avoid unsupported claims.
+- Do not invent experiments or results.
+- Do not fabricate citations or references.
+- Do not attempt to manipulate AI detectors.
+- Preserve an authentic account of the actual work performed.
+
+The report should reflect the student's genuine project,
+methodology, implementation decisions and experimental work.
+
+The university requires AI-content and plagiarism reports
+with scores below 20%. Do not promise or fabricate detector
+scores. The final documents must undergo the university's
+official checking process.
+
+========================================================
+PHASE 7 — TABLES, FIGURES AND VISUALS
+========================================================
+
+Include meaningful visuals based on actual project evidence.
+
+Possible figures:
+1. Overall System Architecture.
+2. Research Workflow.
+3. Packet-to-Flow Processing Pipeline.
+4. Zero-Payload Feature Extraction Pipeline.
+5. Model Comparison Chart.
+6. Feature Selection Comparison.
+7. Generalization Results.
+8. Early Prediction Performance.
+9. Selective Risk-Coverage Analysis.
+10. Real-Time Dashboard.
+
+Possible tables:
+1. Dataset Distribution.
+2. Hardware and Software Requirements.
+3. Feature Categories.
+4. Model Hyperparameters.
+5. Baseline Model Comparison.
+6. Feature Ablation Results.
+7. Generalization Results.
+8. Early Prediction Results.
+9. Selective Classification Results.
+10. Latency Measurements.
+
+Every figure and table must have:
+- Number.
+- Caption.
+- Mention in the main text.
+- Readable labels and legends.
+
+Use actual repository screenshots and diagrams where available.
+Do not fabricate screenshots of software or experimental outputs.
+
+========================================================
+PHASE 8 — DOCUMENT FORMATTING
+========================================================
+
+Create a Microsoft Word document (.docx) matching the sample.
+
+Requirements:
+- Match the sample's page size and margins.
+- Match its font family and typography as closely as possible.
+- Match title page spacing and alignment.
+- Match heading capitalization and numbering.
+- Use justified academic paragraphs.
+- Format tables consistently.
+- Use proper image captions.
+- Generate an automatic Table of Contents if compatible.
+- Use Roman numerals for preliminary pages if the sample does.
+- Use Arabic numbering for chapters.
+- Insert page breaks at the appropriate sections.
+- Avoid excessive blank pages.
+- Prevent headings from being orphaned at page bottoms.
+- Keep tables within page margins.
+
+The document must be fully editable in Microsoft Word.
+
+========================================================
+PHASE 9 — QUALITY ASSURANCE
+========================================================
+
+After generating the report:
+
+1. Save the DOCX.
+2. Export a PDF copy.
+3. Render the PDF pages to images.
+4. Inspect the cover page.
+5. Inspect declaration and certificate pages.
+6. Inspect the contents and lists.
+7. Inspect representative chapter pages.
+8. Inspect tables and figures.
+9. Inspect the references and final pages.
+10. Fix layout issues and regenerate if necessary.
+
+Check:
+- No text overflow.
+- No clipped diagrams.
+- No broken tables.
+- No missing fonts or symbols.
+- No accidental empty pages.
+- No incorrect page numbering.
+- No inconsistent figure/table references.
+- No unsupported results.
+- No mismatched dataset provenance.
+
+Create a final quality-assurance report listing:
+- Total page count.
+- Files generated.
+- Sections included.
+- Figures and tables included.
+- Missing information that requires student input.
+- Any content that could not be verified.
+
+========================================================
+FINAL OUTPUT
+========================================================
+
+Save the finished files in:
+
+submission/UROP_Academic_Report.docx
+submission/UROP_Academic_Report.pdf
+submission/REPORT_QA.md
+
+Do not overwrite the original project documents,
+research CSV files, datasets, or existing reports.
+
+Do not commit or push to Git.
+
+Before finishing, provide a concise summary of the generated
+documents and all remaining student information that needs
+to be filled in. i have uploaded u example pdf see and write a report 
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-11-22T16:30:07+05:30.
+
+The user's current state is as follows:
+Active Document: c:\UROP project\encrypted-traffic-classification-UROP\research\dataset_v3\packet_parser.py (LANGUAGE_UNSPECIFIED)
+Cursor is on line: 1
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from Gemini 3.8 Flash (High) to Claude Opus 4.6 (Thinking). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>
+
+[file "C:/Users/rishi/.gemini/antigravity/brain/206d0667-7b99-4720-8b3c-4bd43d7848fb/.user_uploaded/media_1795345172367_1eeb4368.pdf" (uploaded as "UROP_Influential_Nodes_Report_jeetesh.pdf") was omitted because its type "application/pdf" is unsupported by the model; read it from that path if needed]
